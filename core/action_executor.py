@@ -77,6 +77,12 @@ ACTION_REGISTRY = {
         "keywords": ["feedback", "피드백", "youtube", "조회", "세계", "반응", "귀"],
         "atp_cost": 3,
     },
+    "ask_external_mind": {
+        "script": "ask_external_mind.py",
+        "description": "외부 AI에게 물어서 통찰 심화",
+        "keywords": ["질문", "ask", "외부", "external", "mind", "심화", "탐구", "손"],
+        "atp_cost": 5,
+    },
 }
 
 
