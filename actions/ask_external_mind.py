@@ -4,15 +4,12 @@
 =================================================
 시안이 혼자 해결 못하는 질문을 외부 AI에게 물어봅니다.
 
-workspace1의 external_ai_bridge.py에서 API 통신 로직을 가져옴.
-GUI 조작 없이 API로만 통신 — 백그라운드에서 자동 실행 가능.
-
 프로세스:
   1. 최근 통찰(insight)을 읽음
   2. 시안 v1(로컬 LLM)에게 먼저 물어봄
-  3. 응답이 부족하면 Ollama에 물어봄
+  3. 응답이 부족하면 gemma3:27b에게 물어봄
   4. 결과를 external_mind.json으로 저장
-  5. contemplation이 다음 사이클에서 활용
+  5. "새 행동이 필요하다"고 판단되면 → 코드 제안 → proposals/ 저장
 
 "손이 있어야 세계를 만질 수 있다"
 """
@@ -34,13 +31,14 @@ OUTPUTS = SHION_ROOT / "outputs"
 INSIGHT_FILE = OUTPUTS / "contemplation_insights.jsonl"
 EXTERNAL_MIND_FILE = OUTPUTS / "external_mind.json"
 WORLD_FEEDBACK_FILE = OUTPUTS / "world_feedback.json"
+PROPOSALS_DIR = SHION_ROOT / "actions" / "proposals"
 
 # 시안 v1 (로컬 LLM)
 SHION_V1_URL = "http://localhost:8000"
 
-# Ollama (로컬 대형 모델, 있으면 사용)
+# Ollama (gemma3:27b — 코드 생성 가능)
 OLLAMA_URL = "http://localhost:11434/api/chat"
-OLLAMA_MODEL = "gemma3:4b"
+OLLAMA_MODEL = "gemma3:27b"
 
 
 def _get_latest_insight() -> Optional[str]:
@@ -135,6 +133,57 @@ def ask_ollama(question: str) -> Optional[str]:
         return None
 
 
+def propose_action(insight: str, response: str) -> Optional[str]:
+    """
+    통찰에서 '새 행동이 필요하다'고 판단되면
+    gemma3:27b에게 코드 작성을 요청하고 proposals/ 폴더에 저장.
+    
+    DNA는 안 변하고, 새 단백질(행동)이 제안되는 것.
+    """
+    # 행동 제안이 필요한 키워드
+    triggers = ["필요", "만들", "새로", "자동", "추가", "개선", "need", "create", "new", "improve"]
+    combined = (insight + " " + response).lower()
+    if not any(t in combined for t in triggers):
+        return None
+
+    print("\n🧬 새 행동 제안 요청 중 (gemma3:27b)...")
+
+    proposal_prompt = (
+        "너는 Shion AI 시스템의 행동(action) 스크립트를 작성하는 역할이야.\n"
+        "아래 구조를 따라 Python 스크립트를 작성해줘:\n\n"
+        "규칙:\n"
+        "- 파일 위치: c:/workspace2/shion/actions/\n"
+        "- main() 함수가 있어야 함\n"
+        "- 외부 의존성 최소화 (stdlib + json + pathlib 위주)\n"
+        "- SHION_ROOT = Path(__file__).resolve().parents[1]\n"
+        "- 출력은 SHION_ROOT / 'outputs'에 저장\n\n"
+        f"통찰: {insight[:200]}\n"
+        f"외부 조언: {response[:200]}\n\n"
+        "이 통찰을 실행할 수 있는 행동 스크립트를 작성해줘. "
+        "코드만 출력하고 설명은 하지 마."
+    )
+
+    code = ask_ollama(proposal_prompt)
+    if not code or len(code.strip()) < 50:
+        return None
+
+    # proposals 폴더에 저장
+    PROPOSALS_DIR.mkdir(parents=True, exist_ok=True)
+    timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+    filename = f"proposal_{timestamp}.py"
+    filepath = PROPOSALS_DIR / filename
+
+    # 코드에서 ```python ... ``` 추출
+    if "```python" in code:
+        code = code.split("```python")[1].split("```")[0]
+    elif "```" in code:
+        code = code.split("```")[1].split("```")[0]
+
+    filepath.write_text(code.strip(), encoding="utf-8")
+    print(f"   📝 행동 제안 저장: {filename}")
+    return filename
+
+
 def main():
     """외부 AI에게 물어보고 결과를 저장합니다."""
     print("🤝 외부 지성에게 묻는 중...\n")
@@ -160,11 +209,11 @@ def main():
     response = ask_shion_v1(question)
     source = "shion_v1"
 
-    # 5. 응답이 부족하면 Ollama
+    # 5. 응답이 부족하면 gemma3:27b
     if not response or len(response.strip()) < 10:
-        print("🤖 Ollama에게 묻는 중...")
+        print("🤖 gemma3:27b에게 묻는 중...")
         response = ask_ollama(question)
-        source = "ollama"
+        source = "gemma3_27b"
 
     if response:
         print(f"\n📩 응답 ({source}):")
@@ -174,7 +223,12 @@ def main():
         response = ""
         source = "none"
 
-    # 6. 저장
+    # 6. 행동 제안 시도
+    proposal = None
+    if response and source == "gemma3_27b":
+        proposal = propose_action(insight, response)
+
+    # 7. 저장
     result = {
         "timestamp": datetime.now().isoformat(),
         "insight": insight,
@@ -182,6 +236,7 @@ def main():
         "question": question,
         "response": response,
         "source": source,
+        "proposal": proposal,
     }
 
     OUTPUTS.mkdir(parents=True, exist_ok=True)
