@@ -1,0 +1,32 @@
+# Outputs (auto-generated, contains personal data)
+outputs/
+!outputs/.gitkeep
+
+# Memory (personal evolution data)
+memory/
+
+# Credentials
+credentials/
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+venv/
+
+# System
+.git/
+*.log
+*.bak
+
+# IDE
+.vscode/
+.idea/
+
+# Windows
+Thumbs.db
+desktop.ini
+
+# Antigravity
+.gemini/
+.antigravity/
