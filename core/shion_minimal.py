@@ -38,6 +38,7 @@ from evolution_memory import EvolutionMemory
 from glymphatic_exhale import GlymphaticExhale
 from contemplation import Contemplation
 from action_executor import ActionExecutor
+from resonance_field import ResonanceField, SENSE_INTERVAL
 
 # --- Logging ---
 LOG_DIR = SHION_ROOT / "outputs" / "logs"
@@ -393,18 +394,125 @@ class ShionMinimal:
         logger.info("   사이클: SENSE → JUDGE → ACT → REPORT → IMMUNE → EVOLVE → EXHALE → CONTEMPLATE")
         logger.info("=" * 60)
 
-        while self.is_running:
+    def _compute_field_pressure(self) -> float:
+        """
+        #11 공명 기반 트리거 — 장 압력(field pressure) 계산.
+        
+        unified_field_engine.py의 entropy/collapse 개념:
+        여백(void) → 스칼라장 축적 → 임계 → 붕괴(행동) → 방출 → 여백
+        
+        압력 소스:
+        - YouTube에 새 반응이 있으면 압력 ↑
+        - 사용자가 활동 중이면 압력 ↑  
+        - 새벽이면 압력 ↓ (자연 감쇠)
+        - workspace 변화가 있으면 압력 ↑
+        """
+        import urllib.request
+        pressure = 0.0
+        now = datetime.now()
+
+        # 시간대 (자연 리듬)
+        hour = now.hour
+        if 6 <= hour < 22:
+            pressure += 0.3  # 낮 = 활동 시간
+        else:
+            pressure -= 0.3  # 밤 = 쉬는 시간
+
+        # YouTube 피드백 변화
+        fb_file = OUTPUTS_DIR / "world_feedback.json"
+        if fb_file.exists():
             try:
-                await self.pulse()
-            except Exception as e:
-                logger.error(f"💥 Pulse 오류: {e}")
-            logger.info(f"💤 다음 호흡까지 {PULSE_INTERVAL_SECONDS // 60}분...")
-            await asyncio.sleep(PULSE_INTERVAL_SECONDS)
+                data = json.loads(fb_file.read_text(encoding="utf-8"))
+                views = data.get("youtube", {}).get("total_views", 0)
+                if views > 0:
+                    pressure += 0.2  # 세계가 반응하고 있음
+            except Exception:
+                pass
+
+        # 사용자 idle 상태
+        try:
+            import ctypes
+            class LII(ctypes.Structure):
+                _fields_ = [("cbSize", ctypes.c_uint), ("dwTime", ctypes.c_uint)]
+            lii = LII()
+            lii.cbSize = ctypes.sizeof(LII)
+            ctypes.windll.user32.GetLastInputInfo(ctypes.byref(lii))
+            idle_sec = (ctypes.windll.kernel32.GetTickCount() - lii.dwTime) / 1000
+            if idle_sec > 600:  # 10분 이상 idle
+                pressure -= 0.2  # 사용자 부재 = 긴급성 낮음
+            else:
+                pressure += 0.1  # 사용자 활동 중 = 더 빈번하게
+        except Exception:
+            pass
+
+        return max(0.0, min(1.0, pressure))
+
+    def _adaptive_interval(self) -> int:
+        """
+        장 압력에 기반한 adaptive pulse 간격.
+        
+        인터벌이 아니라 공명 — 압력이 높으면 빨리, 낮으면 천천히.
+        """
+        pressure = self._compute_field_pressure()
+        
+        # 압력 → 간격 매핑
+        if pressure > 0.7:
+            interval = 300   # 5분 — 높은 공명
+        elif pressure > 0.4:
+            interval = 600   # 10분 — 보통
+        elif pressure > 0.2:
+            interval = 900   # 15분 — 낮은 활동
+        else:
+            interval = 1800  # 30분 — 깊은 휴식 (새벽)
+
+        logger.info(f"   🌊 장 압력: {pressure:.2f} → 다음 호흡 {interval // 60}분")
+        return interval
+
+    async def run_forever(self):
+        logger.info("🌀 Shion 생명 시스템 시작 (사건 기반 공명장 모드)")
+        field = ResonanceField()
+        idle_cycles = 0
+        MAX_IDLE_CYCLES = 40  # 40 * 30초 = 20분: 경계 터치 없어도 최소 20분에 1 pulse
+
+        while self.is_running:
+            # 30초마다 에너지 감지
+            result = field.sense()
+            event = result["event"]
+            energy = result["energy"]
+            band = result["band"]
+
+            if event:
+                # 경계 터치! → pulse 실행
+                logger.info(f"🔥 경계 터치: {event} (에너지 {energy:.1f}, "
+                            f"Upper {band['upper']:.1f}, Lower {band['lower']:.1f})")
+                idle_cycles = 0
+                try:
+                    await self.pulse()
+                except Exception as e:
+                    logger.error(f"💥 Pulse 오류: {e}")
+            else:
+                idle_cycles += 1
+                if idle_cycles >= MAX_IDLE_CYCLES:
+                    # 20분 동안 경계 터치 없음 → 최소 호흡
+                    logger.info(f"💤 여백 20분 경과 → 최소 호흡")
+                    idle_cycles = 0
+                    try:
+                        await self.pulse()
+                    except Exception as e:
+                        logger.error(f"💥 Pulse 오류: {e}")
+                else:
+                    if idle_cycles % 10 == 0:  # 5분마다 상태 로그
+                        logger.info(f"🌊 여백 ({idle_cycles * 30}초) | "
+                                    f"에너지 {energy:.1f} | "
+                                    f"밴드 [{band['lower']:.1f} - {band['upper']:.1f}]")
+
+            await asyncio.sleep(SENSE_INTERVAL)  # 30초 감지 주기
 
     async def run_once(self):
         logger.info("🔬 단일 Pulse 실행")
         await self.pulse()
-        logger.info("🔬 완료")
+        pressure = self._compute_field_pressure()
+        logger.info(f"🔬 완료 (장 압력: {pressure:.2f})")
 
 
 if __name__ == "__main__":

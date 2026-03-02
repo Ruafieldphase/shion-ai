@@ -102,6 +102,31 @@ class ActionExecutor:
         self.outputs_dir = self.root / "outputs"
         self.execution_log = self.outputs_dir / "action_execution_log.jsonl"
 
+    def _load_world_resonance_keywords(self) -> set:
+        """
+        #12 귀→두뇌: YouTube 피드백에서 공명 키워드를 읽음.
+        조회수/좋아요가 높은 콘텐츠의 키워드가 행동 선택에 반영됨.
+        """
+        fb_file = self.outputs_dir / "world_feedback.json"
+        if not fb_file.exists():
+            return set()
+        try:
+            data = json.loads(fb_file.read_text(encoding="utf-8"))
+            keywords = data.get("youtube", {}).get("resonance_keywords", [])
+            return set(k.lower() for k in keywords)
+        except Exception:
+            return set()
+
+    def _load_meta_shift(self) -> dict:
+        """meta_shift 그래디언트를 읽음."""
+        ms_file = self.outputs_dir / "meta_shift_latest.json"
+        if not ms_file.exists():
+            return {}
+        try:
+            return json.loads(ms_file.read_text(encoding="utf-8"))
+        except Exception:
+            return {}
+
     def choose_action(
         self,
         insight: Optional[str] = None,
@@ -163,6 +188,11 @@ class ActionExecutor:
 
         # evolution_memory 인스턴스를 통해 맥락 기반 공명도 계산
         evo = EvolutionMemory(shion_root=self.root)
+        # meta_shift 반영
+        meta_shift = self._load_meta_shift()
+
+        # ═══ #12 귀→두뇌: 세계 피드백 공명 키워드 로드 ═══
+        world_keywords = self._load_world_resonance_keywords()
 
         available = []
         for name, meta in ACTION_REGISTRY.items():
@@ -177,6 +207,17 @@ class ActionExecutor:
 
             # 맥락 기반 공명도 계산: R = f(A, C)
             resonance = evo.get_resonance(name, system_phase, context)
+
+            # ═══ #12 세계 공명 부스트 ═══
+            # YouTube에서 반응 좋은 키워드와 행동 키워드가 겹치면 공명 증폭
+            if world_keywords:
+                action_kw = set(k.lower() for k in meta["keywords"])
+                overlap = action_kw & world_keywords
+                if overlap:
+                    boost = 0.1 * len(overlap)
+                    resonance += boost
+                    logger.debug(f"   🌍 {name}: 세계 공명 +{boost:.2f} ({overlap})")
+
             action_phase = 0.0
             experience = 0
 
