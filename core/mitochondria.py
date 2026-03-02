@@ -28,18 +28,21 @@ class Mitochondria:
         self.state = self._load_state()
         
     def _load_state(self) -> Dict[str, Any]:
-        if self.state_file.exists():
-            try:
-                return json.loads(self.state_file.read_text(encoding='utf-8'))
-            except: pass
-        
-        return {
+        defaults = {
             "atp_level": 50.0,
             "pulse_rate": 1.0,
             "last_update": datetime.now().isoformat(),
             "status": "STABLE",
             "shion_aura": "CYAN"
         }
+        if self.state_file.exists():
+            try:
+                data = json.loads(self.state_file.read_text(encoding='utf-8'))
+                # 다른 시스템이 덮어씌워도 atp_level 보존
+                if "atp_level" in data:
+                    return data
+            except: pass
+        return defaults
         
     def metabolize(self) -> Dict[str, Any]:
         """Calculates ATP cycle based on real environmental atoms."""
