@@ -71,6 +71,12 @@ ACTION_REGISTRY = {
         "keywords": ["콘텐츠", "content", "진화", "게시", "moltbook", "공유", "업로드"],
         "atp_cost": 5,
     },
+    "world_feedback": {
+        "script": "world_feedback_sensor.py",
+        "description": "세계의 반응 감지 (YouTube 성과 + 사용자 상태)",
+        "keywords": ["feedback", "피드백", "youtube", "조회", "세계", "반응", "귀"],
+        "atp_cost": 3,
+    },
 }
 
 

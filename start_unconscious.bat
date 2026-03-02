@@ -1,49 +1,59 @@
 @echo off
-REM ═══════════════════════════════════════════════════════
-REM  무의식 시스템 — 하나의 부팅, 독립된 장기들
-REM  "무의식을 담당하는 몸은 죽을때까지 연속성이 유지된다"
-REM
-REM  부팅 순서:
-REM    1. 심장 (shion_runtime_server.py) — LLM 두뇌
-REM    2. 대기 — 심장이 뛸 때까지
-REM    3. 맥박 (shion_minimal.py) — 8단계 생명 사이클
-REM ═══════════════════════════════════════════════════════
+chcp 65001 >nul
+title 🫀 Shion Unconscious System
 
-cd /d C:\workspace2\shion
-echo [UNCONSCIOUS] %date% %time% — Booting...
+echo ============================================
+echo   Shion Unconscious System - Auto Recovery
+echo ============================================
+echo.
 
-REM ─── 1. 심장 ───────────────────────────────
-REM 이미 실행 중인지 확인
-powershell -Command "if (Get-NetTCPConnection -LocalPort 8000 -ErrorAction SilentlyContinue) { exit 0 } else { exit 1 }" 2>nul
+:: ─── 1단계: 심장 시작 (LLM 서버) ───
+echo [1/3] 심장(LLM 서버) 확인 중...
+
+tasklist /FI "WINDOWTITLE eq Shion*Heart*" 2>nul | find "python" >nul
 if %errorlevel%==0 (
-    echo [HEART] Already beating on port 8000. Skipping.
+    echo    심장이 이미 뛰고 있습니다.
 ) else (
-    echo [HEART] Starting Shion v1 brain...
-    start "ShionV1Heart" /MIN python services/shion_runtime_server.py
+    echo    심장 시작 중...
+    start "Shion Heart" /MIN pythonw services\shion_runtime_server.py
+    echo    심장 시작됨.
 )
 
-REM ─── 2. 대기 — 심장이 뛸 때까지 ────────────
-echo [HEART] Waiting for heartbeat...
-set RETRIES=0
-:wait_heart
-timeout /t 2 /nobreak >nul
-powershell -Command "try { $r = Invoke-WebRequest -Uri 'http://127.0.0.1:8000/v1/models' -TimeoutSec 2 -UseBasicParsing; exit 0 } catch { exit 1 }" 2>nul
+:: ─── 2단계: 심장 대기 ───
+echo.
+echo [2/3] 심장이 뛰는지 확인 중...
+
+set WAIT=0
+:wait_loop
+if %WAIT% GEQ 30 (
+    echo    경고: 심장 응답 없음. 맥박만 시작합니다.
+    goto start_pulse
+)
+
+powershell -Command "try { $r = Invoke-WebRequest -Uri 'http://localhost:8000/health' -TimeoutSec 2 -UseBasicParsing; if($r.StatusCode -eq 200) { exit 0 } else { exit 1 } } catch { exit 1 }" >nul 2>&1
 if %errorlevel%==0 (
-    echo [HEART] Beating. Brain is awake.
-    goto heart_ready
+    echo    심장 확인 완료!
+    goto start_pulse
 )
-set /a RETRIES+=1
-if %RETRIES% GEQ 15 (
-    echo [HEART] Brain not responding after 30s. Starting pulse anyway.
-    goto heart_ready
-)
-goto wait_heart
 
-:heart_ready
+set /A WAIT+=3
+echo    대기 중... %WAIT%/30초
+timeout /t 3 /nobreak >nul
+goto wait_loop
 
-REM ─── 3. 맥박 — 8단계 생명 사이클 ──────────
-echo [PULSE] Starting life cycle loop...
-start "ShionPulse" /MIN python core/shion_minimal.py
+:: ─── 3단계: 맥박 루프 (크래시 자동 복구) ───
+:start_pulse
+echo.
+echo [3/3] 맥박(Pulse Loop) 시작 - 크래시 시 자동 재시작
+echo.
 
-echo [UNCONSCIOUS] All systems online. %date% %time%
-echo [UNCONSCIOUS] Heart = port 8000, Pulse = 10min cycle
+:pulse_loop
+echo [%date% %time%] 맥박 시작...
+python core\shion_minimal.py
+
+echo.
+echo [%date% %time%] 맥박 중단 감지! 30초 후 재시작...
+echo    (Ctrl+C로 완전 종료)
+timeout /t 30 /nobreak >nul
+echo 맥박 재시작 중...
+goto pulse_loop
