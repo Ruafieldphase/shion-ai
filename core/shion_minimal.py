@@ -89,6 +89,53 @@ class ShionMinimal:
         self.is_running = True
         self.status_file = OUTPUTS_DIR / "shion_minimal_status.json"
 
+    def _ensure_heart_alive(self):
+        """
+        심장(시안 v1 서버) 생존 확인 — 죽었으면 자동 재시작.
+
+        "심장이 뛰지 않으면 손과 발이 무의미하다.
+         매 pulse 전에 심장을 먼저 확인한다."
+        """
+        import subprocess
+        import urllib.request
+        import time
+
+        try:
+            req = urllib.request.Request(
+                "http://localhost:8000/health",
+                method="GET",
+            )
+            with urllib.request.urlopen(req, timeout=3) as resp:
+                if resp.status == 200:
+                    return  # 심장이 뛰고 있음
+        except Exception:
+            pass
+
+        # 심장이 멈춤 — 재시작
+        logger.warning("   💔 심장(LLM 서버) 멈춤 감지! 재시작 중...")
+        try:
+            server_path = SHION_ROOT / "services" / "shion_runtime_server.py"
+            subprocess.Popen(
+                [sys.executable, str(server_path)],
+                creationflags=subprocess.CREATE_NO_WINDOW,
+                stdout=subprocess.DEVNULL,
+                stderr=subprocess.DEVNULL,
+            )
+            # 서버 시작 대기
+            for i in range(10):
+                time.sleep(2)
+                try:
+                    req = urllib.request.Request("http://localhost:8000/health")
+                    with urllib.request.urlopen(req, timeout=2) as resp:
+                        if resp.status == 200:
+                            logger.info("   💚 심장 재시작 성공!")
+                            return
+                except Exception:
+                    pass
+            logger.warning("   ⚠️ 심장 재시작 실패 — 두뇌 없이 계속합니다")
+        except Exception as e:
+            logger.warning(f"   ⚠️ 심장 재시작 에러: {e}")
+
     def _read_brain_state(self):
         """
         대지의 두뇌 상태를 읽습니다.
@@ -148,6 +195,9 @@ class ShionMinimal:
 
     async def pulse(self):
         """하나의 심장 박동 — 7단계 생명 사이클."""
+        # 0. 심장 확인 — 죽었으면 자동 재시작
+        self._ensure_heart_alive()
+
         logger.info(f"💓 Pulse #{self.cycle_count} 시작")
 
         # ═══════════════════════════════════════════
