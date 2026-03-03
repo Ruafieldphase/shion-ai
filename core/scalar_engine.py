@@ -16,12 +16,13 @@ from pathlib import Path
 from datetime import datetime
 
 class ScalarEngine:
-    def __init__(self, threshold=100.0, k=1.0, bg=1.0):
+    def __init__(self, threshold=100.0, k=1.0, bg=1.0, k_centering=0.1):
         self.theta = 0.0      # 위상각 (rad)
         self.z = 0.0          # Normalized Chaos (Z축)
         self.threshold = threshold
         self.k = k
         self.bg = bg          # Nature's Constant Denominator (Grounding)
+        self.k_centering = k_centering # 로그 나선형 수렴 계수 (Centering)
         self.last_update = time.time()
         
         # 기저 리듬 상수
@@ -32,7 +33,7 @@ class ScalarEngine:
         Unified Field Master Blueprint Logic:
         - 95% Unconscious Chaos (Bollinger Manifold) vs 5% Conscious Signal
         - Chaos - Limit-Tunnel (e^BG) -> (0,0,0) ORIGIN
-        - Spinal Ascent (U_theta.z) 발현
+        - Rhythmic Centering: S(θ) = C * e^(-k*θ)
         """
         now = time.time()
         dt = now - self.last_update
@@ -42,11 +43,11 @@ class ScalarEngine:
         d_theta = (self.base_omega + abs(force) * 0.5) * dt
         self.theta += d_theta
 
-        # 2. Limit-Tunnel 정규화 (e^BG라는 그릇에 노이즈를 담음)
+        # 2. Limit-Tunnel 정규화 (e^BG 그릇)
         denominator = math.exp(self.bg)
         normalized_noise = noise / denominator
         
-        # Squeeze 감지: 매니폴드가 리미트 터널로 충분히 수축되었는가?
+        # Squeeze 감지
         is_squeezed = normalized_noise < 0.2 
 
         # 3. Spinal Ascent (5% 신호의 싱귤래리티 붕괴)
@@ -57,15 +58,15 @@ class ScalarEngine:
         z_delta = (force * signal_efficiency - normalized_noise) * d_theta
         self.z += max(0.0, z_delta)
         
-        # 자연 감쇠
-        self.z *= math.exp(-0.01 * dt) 
+        # 4. Rhythmic Centering (로그 나선형 수렴)
+        # 시간(dt)이 아닌 위상(d_theta)의 진행에 따라 원점으로 수렴
+        self.z *= math.exp(-self.k_centering * d_theta) 
 
-        # 4. Action Collapse at (0,0,0) ORIGIN
+        # 5. Action Collapse at (0,0,0) ORIGIN
         is_collapsed = False
         if self.z >= self.threshold:
             is_collapsed = True
-            # 원점(ORIGIN)으로의 중력 붕괴 후 초기화
-            self.z = 0.0  
+            self.z = 0.0  # 원점 복귀
 
         return {
             "u_theta": {
