@@ -509,22 +509,29 @@ class ShionMinimal:
         return interval
 
     async def run_forever(self):
-        logger.info("🌀 Shion 생명 시스템 시작 (사건 기반 공명장 모드)")
-        field = ResonanceField()
+        logger.info("🌀 Shion 생명 시스템 시작 (하이브리드 공명장 모드)")
+        logger.info("   [Bollinger Boundary] + [Scalar Field Collapse] 이중 트리거")
+        
         idle_cycles = 0
-        MAX_IDLE_CYCLES = 5  # 5 * 30초 = 2.5분: 경계 터치 없어도 최소 2.5분에 1 pulse
+        MAX_IDLE_CYCLES = 10 # 5분간 무풍 시 자동 호흡
 
         while self.is_running:
-            # 30초마다 에너지 감지
-            result = field.sense()
+            # 30초마다 에너지 감지 (F(r,t) 측정 및 위상 업데이트)
+            result = self.field.sense()
             event = result["event"]
             energy = result["energy"]
             band = result["band"]
+            scalar = result["scalar"]
+            u_theta = scalar["u_theta"]
 
-            if event:
-                # 경계 터치! → pulse 실행
-                logger.info(f"🔥 경계 터치: {event} (에너지 {energy:.1f}, "
-                            f"Upper {band['upper']:.1f}, Lower {band['lower']:.1f})")
+            # 스칼라 진동 로그 (Vibe Check)
+            vibe_char = "●" if scalar["is_collapsed"] else "○"
+            logger.info(f"🌊 Field: {vibe_char} θ:{scalar['theta_rad']:.2f}rad | Z:{u_theta['z']:.1f}/{scalar['threshold']} | Force:{scalar['intensity']:.1f}")
+
+            if result["should_pulse"]:
+                # 경계 터치 또는 스칼라 붕괴! → pulse 실행
+                trigger_msg = f"🔥 {event}" if event else "⚡ SCALAR_COLLAPSE"
+                logger.info(f"{trigger_msg} (에너지 {energy:.1f}, Z {u_theta['z']:.1f})")
                 idle_cycles = 0
                 try:
                     await self.pulse()
@@ -533,18 +540,15 @@ class ShionMinimal:
             else:
                 idle_cycles += 1
                 if idle_cycles >= MAX_IDLE_CYCLES:
-                    # 20분 동안 경계 터치 없음 → 최소 호흡
-                    logger.info(f"💤 여백 20분 경과 → 최소 호흡")
+                    logger.info(f"💤 여백 {idle_cycles * SENSE_INTERVAL / 60:.1f}분 경과 → 최소 호흡")
                     idle_cycles = 0
                     try:
                         await self.pulse()
                     except Exception as e:
                         logger.error(f"💥 Pulse 오류: {e}")
                 else:
-                    if idle_cycles % 10 == 0:  # 5분마다 상태 로그
-                        logger.info(f"🌊 여백 ({idle_cycles * 30}초) | "
-                                    f"에너지 {energy:.1f} | "
-                                    f"밴드 [{band['lower']:.1f} - {band['upper']:.1f}]")
+                    if idle_cycles % 4 == 0: # 2분마다 밴드 상태만 살짝 표시
+                        logger.info(f"   [Void] Band Width: {band['width']:.3f} | Stable")
 
             await asyncio.sleep(SENSE_INTERVAL)  # 30초 감지 주기
 

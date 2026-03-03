@@ -28,6 +28,7 @@ from pathlib import Path
 from datetime import datetime
 from typing import Dict, Any, Optional, List
 from collections import deque
+from scalar_engine import ScalarEngine
 
 logger = logging.getLogger("ResonanceField")
 
@@ -118,6 +119,7 @@ class ResonanceField:
         # High-dimensional metrics (Bohmian folding)
         self.folding_density = 0.5  # Implicate density (0~1)
         self.unfolding_intensity = 0.5 # Explicate flow (0~1)
+        self.scalar_engine = ScalarEngine(threshold=150.0, k=1.2) # Unified Field Core
 
     def measure_energy(self) -> float:
         """
@@ -261,6 +263,10 @@ class ResonanceField:
             "sense_count": self.sense_count,
             "pulse_count": self.pulse_count,
             "energy_history": list(self.band.history)[-50:],
+            "scalar_state": {
+                "u_theta": self.scalar_engine.update(0)['u_theta'], # Current state snapshot
+                "threshold": self.scalar_engine.threshold
+            }
         }
         OUTPUTS_DIR.mkdir(parents=True, exist_ok=True)
         FIELD_STATE_FILE.write_text(
@@ -288,12 +294,27 @@ class ResonanceField:
 
     def sense(self) -> Dict[str, Any]:
         """
-        한 번의 감지 — 에너지 측정 → 밴드 갱신 → 경계 체크.
+        한 번의 감지 — 에너지 측정 → 밴드 갱신 → 경계 체크 → 스칼라장 업데이트.
         """
         self.sense_count += 1
+        
+        # 1. 물리적 에너지 측정
         energy = self.measure_energy()
+        
+        # 2. 볼린저 밴드 (의식/무의식 경계) 갱신
         band_data = self.band.update(energy)
         event = self.check_boundary(band_data)
+
+        # 3. Scalar Engine Update (Unified Field)
+        # 에너지를 F(r,t)로 해석하여 위상 업데이트
+        scalar_result = self.scalar_engine.update(energy)
+        
+        # 4. 행동 결정 (Hybrid: Boundary Touch OR Action Collapse)
+        should_pulse = (event is not None) or scalar_result["is_collapsed"]
+        
+        if scalar_result["is_collapsed"]:
+            event = "SCALAR_COLLAPSE" if event is None else f"{event}+SCALAR"
+            logger.info(f"🌊 [Field] Scalar Action Collapse Triggered at Z={scalar_result['u_theta']['z']}")
 
         self.save_state(band_data, event)
 
@@ -301,7 +322,8 @@ class ResonanceField:
             "energy": energy,
             "band": band_data,
             "event": event,
-            "should_pulse": event is not None,
+            "scalar": scalar_result,
+            "should_pulse": should_pulse,
         }
 
 
