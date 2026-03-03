@@ -425,14 +425,13 @@ class Contemplation:
     # 자양분 수집 (파동 학습 통합)
     # ═══════════════════════════════════════════
 
-    def _gather_nutrients(self) -> str:
+    def _gather_nutrients(self, memory_context: Optional[str] = None) -> str:
         """
         파동 학습 기반 자양분 수집.
-
-        입자적: random.choice(docs) → content[:600]
-        파동적: 시스템 상태 → 공명 키워드 → 공명 문서 → 공명 섹션
         """
         nutrients = []
+        if memory_context:
+            nutrients.append(f"## RECALLED_MEMORY\n{memory_context}")
 
         # 1. 공명 맥락 추출
         context = self._extract_resonance_context()
@@ -533,7 +532,7 @@ class Contemplation:
             logger.warning(f"   🧠 성찰 오류: {e}")
         return None
 
-    def contemplate(self) -> Dict[str, Any]:
+    def contemplate(self, memory_context: Optional[str] = None) -> Dict[str, Any]:
         """
         파동 학습 기반 자기 성찰 1사이클.
 
@@ -548,8 +547,8 @@ class Contemplation:
                 "reason": "brain_sleeping",
             }
 
-        # 파동 학습 기반 자양분 수집
-        nutrients = self._gather_nutrients()
+        # 파동 학습 기반 자양분 수집 (과거 기억 포함)
+        nutrients = self._gather_nutrients(memory_context=memory_context)
         logger.info(f"   📖 자양분 수집 완료 ({len(nutrients)}자)")
 
         # 두뇌에게 물음

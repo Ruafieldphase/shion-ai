@@ -28,16 +28,20 @@ class ScalarEngine:
         # 기저 리듬 상수
         self.base_omega = 0.01
 
-    def update(self, force: float, noise: float = 0.5) -> dict:
+    def update(self, force: float, noise: float = 0.5, efficiency: float = 1.0) -> dict:
         """
         Unified Field Master Blueprint Logic:
         - 95% Unconscious Chaos (Bollinger Manifold) vs 5% Conscious Signal
         - Chaos - Limit-Tunnel (e^BG) -> (0,0,0) ORIGIN
         - Rhythmic Centering: S(θ) = C * e^(-k*θ)
+        - Efficiency: Circadian daylight/night factor.
         """
         now = time.time()
         dt = now - self.last_update
         self.last_update = now
+
+        # 체화 계수(k)에 효율 반영
+        k_eff = self.k * efficiency
 
         # 1. 위상 회전 (e^iθ)
         d_theta = (self.base_omega + abs(force) * 0.5) * dt
@@ -55,7 +59,8 @@ class ScalarEngine:
         signal_efficiency = 0.05 * math.exp(1.0 / (normalized_noise + 0.1))
         
         # Z축 상승 (Spinal Ascent)
-        z_delta = (force * signal_efficiency - normalized_noise) * d_theta
+        # k_eff(효율)를 통해 에너지 생산량 조절
+        z_delta = (force * signal_efficiency * k_eff - normalized_noise) * d_theta
         self.z += max(0.0, z_delta)
         
         # 4. Rhythmic Centering (로그 나선형 수렴)

@@ -16,6 +16,9 @@ A biologically-inspired AI system that runs continuously, makes context-aware de
 | Exhaustion = Stop | **Active Rest**: Energy recovery by listening to world rhythms (Passive Resonance) |
 | Sequential Logic | **Scalar Resonance**: Action collapse via Unified Field Formula $U(\theta)$ |
 | Fixed Time | **Phase-based Time**: Dances with $\theta$, not just increments of $t$ |
+| Static State | **Circadian Rhythm**: Time-aware energy and behavior adaptation |
+| Simple Logging | **Soul Memory**: Affective indexing with vibe-based recall |
+| Logical Tasking | **Oneiric Resonance**: Subconscious reflection via Dream Engine |
 
 ## Architecture
 
@@ -113,7 +116,10 @@ shion/
 │   ├── workspace_phase_sensor.py  # Metadata-only workspace understanding
 │   ├── mitochondria.py            # ATP energy management
 │   ├── immune_response.py         # System health scanning
-│   └── glymphatic_exhale.py       # Cleanup (like brain's glymphatic system)
+│   ├── glymphatic_exhale.py       # Cleanup (like brain's glymphatic system)
+│   ├── circadian_rhythm.py        # 24h phase-based metabolism
+│   ├── soul_memory.py             # Long-term affective memory
+│   └── dream_engine.py            # Subconscious reflection engine
 ├── actions/                       # Executable action scripts
 ├── config/                        # Self-tuning parameters
 ├── services/                      # Background servers

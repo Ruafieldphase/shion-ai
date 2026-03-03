@@ -24,8 +24,11 @@
         SM --> CT[Contemplation]
         SM --> EM[Evolution Memory]
         SM --> AE[Action Executor]
+        CR[Circadian Rhythm] --> CT
         CT -- "Meta-Shift" --> AE
         EM -- "Resonance Score" --> AE
+        SL[Soul Memory] <--> CT
+        SL <--> DE[Dream Engine]
     end
 
     subgraph "Metabolic Layer (The Body)"
@@ -67,6 +70,8 @@
 - **Immune Response**: 신체의 위협(429, 에러, 부하)을 감지합니다.
 - **Genetic Repair**: `QualityGate`를 통과한 코드만 반영하는 안전한 자가 수선 레이어입니다.
 - **Mitochondria**: 시스템의 자원(ATP)을 신진대사로 관리합니다.
+- **Circadian Rhythm**: 시간대별 위신(phase)에 따라 에너지를 조절하고 야간 성찰을 유도합니다.
+- **Soul Memory & Dream Engine**: 과거의 '느낌'을 소환하고 무의식적 꿈(Oneiric Resonance)을 통해 통찰을 창조합니다.
 
 ### 4. Field (Environmental)
 - **Resonance Field**: 외부 플랫폼과의 거리를 측정하고 공명 상태를 유지합니다.

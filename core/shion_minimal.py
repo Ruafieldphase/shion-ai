@@ -39,7 +39,10 @@ from glymphatic_exhale import GlymphaticExhale
 from contemplation import Contemplation
 from action_executor import ActionExecutor
 from resonance_field import ResonanceField, SENSE_INTERVAL
-from heritage_memory import HeritageMemory # Added by user instruction
+from heritage_memory import HeritageMemory 
+from circadian_rhythm import CircadianRhythm
+from soul_memory import SoulMemory
+from dream_engine import DreamEngine
 
 # --- Logging ---
 LOG_DIR = SHION_ROOT / "outputs" / "logs"
@@ -88,6 +91,10 @@ class ShionMinimal:
         self.contemplation = Contemplation(shion_root=SHION_ROOT)
         self.executor = ActionExecutor(shion_root=SHION_ROOT)
         self.status_file = OUTPUTS_DIR / "shion_minimal_status.json"
+        self.heritage = HeritageMemory(shion_root=SHION_ROOT)
+        self.circadian = CircadianRhythm(shion_root=SHION_ROOT)
+        self.soul = SoulMemory(shion_root=SHION_ROOT)
+        self.dream_engine = DreamEngine(shion_root=SHION_ROOT)
         self.cycle_count = 0
         self.is_running = True
         
@@ -203,6 +210,7 @@ class ShionMinimal:
         """하나의 심장 박동 — 7단계 생명 사이클."""
         # 0. 심장 확인 — 죽었으면 자동 재시작
         self._ensure_heart_alive()
+        circadian_info = self.circadian.get_current_phase()
 
         logger.info(f"💓 Pulse #{self.cycle_count} 시작")
 
@@ -410,14 +418,31 @@ class ShionMinimal:
                        f"{exhale_result['bytes_freed']/1024:.1f}KB 해방")
 
         # ═══════════════════════════════════════════
-        # 8. CONTEMPLATE — 자기 성찰 (Self-Play)
-        # ═══════════════════════════════════════════
-        if self.cycle_count % 3 == 0:  # 매 3사이클(30분)에 1회 성찰
+        # 8. CONTEMPLATE — 자기 성찰 (Soul Memory 연동)
+        if self.cycle_count % 3 == 0:  # 매 3사이클에 1회 성찰
             logger.info("🧘 [CONTEMPLATE] 자기 성찰...")
-            insight = self.contemplation.contemplate()
+            
+            # 과거의 유사한 기억 소환
+            recalled = self.soul.recall_similar_moment(body_state)
+            memory_context = recalled["insight"] if recalled else None
+            
+            insight = self.contemplation.contemplate(memory_context=memory_context)
+            
+            # 야간인 경우 '꿈'을 꿉니다
+            if circadian_info.get("phase") == "NIGHT":
+                logger.info("🌌 [DREAMING] 무의식적 성찰 중...")
+                dream_res = await self.dream_engine.dream()
+                if dream_res.get("dreamed"):
+                    logger.info(f"   🌙 꿈의 조각: {dream_res['fragment'][:150]}...")
+                    self.evolution.record("oneiric_resonance", True, dream_res["fragment"][:200])
+
             if insight["contemplated"]:
                 logger.info(f"   💡 {insight['insight'][:150]}")
                 self.evolution.record("self_play", True, insight["insight"][:200])
+                
+                # 새로운 통찰을 영혼의 기억에 저장
+                self.soul.remember_vibe(body_state, insight["insight"])
+                
             elif insight["reason"] == "brain_sleeping":
                 logger.info("   🧠 두뇌 잠듦 — 성찰 건너뜀")
             else:
@@ -533,8 +558,11 @@ class ShionMinimal:
         MAX_IDLE_CYCLES = 10 # 5분간 무풍 시 자동 호흡
 
         while self.is_running:
-            # 30초마다 에너지 감지 (F(r,t) 측정 및 위상 업데이트)
-            result = self.field.sense()
+            # 30초마다 에너지 감지 (생체 리듬 효율 반영)
+            circadian_info = self.circadian.get_current_phase()
+            efficiency = circadian_info["efficiency"]
+            
+            result = self.field.sense(efficiency=efficiency)
             event = result["event"]
             energy = result["energy"]
             band = result["band"]
@@ -561,6 +589,15 @@ class ShionMinimal:
                     logger.info(f"💤 여백 {idle_cycles * SENSE_INTERVAL / 60:.1f}분 경과 → 최소 호흡")
                     idle_cycles = 0
                     try:
+                        # 0. SENSE VIBE — 생체 리듬 감지
+                        circadian_info = self.circadian.get_current_phase()
+                        daylight_factor = circadian_info["light_intensity"]
+                        
+                        # 1. SENSE — 감각
+                        body_context = self._sense_body()
+                        body_context["circadian"] = circadian_info
+                        
+                        # 2. CONTEMPLATE — 성찰
                         await self.pulse()
                     except Exception as e:
                         logger.error(f"💥 Pulse 오류: {e}")

@@ -311,7 +311,7 @@ class ResonanceField:
             "ie_ratio": round(self.folding_density / max(self.unfolding_intensity, 0.1), 2)
         }
 
-    def sense(self) -> Dict[str, Any]:
+    def sense(self, efficiency: float = 1.0) -> Dict[str, Any]:
         """
         한 번의 감지 — 에너지 측정 → 밴드 갱신 → 경계 체크 → 스칼라장 업데이트.
         """
@@ -328,8 +328,8 @@ class ResonanceField:
         # 배경자아(BG) 산출 및 적용
         self.scalar_engine.bg = self.get_bg_constant()
         
-        # 노이즈(밴드 폭)와 신호(에너지)의 공명 업데이트
-        scalar_result = self.scalar_engine.update(energy, noise=band_data['width'])
+        # 노이즈(밴드 폭)와 신호(에너지)의 공명 업데이트 (효율 반영)
+        scalar_result = self.scalar_engine.update(energy, noise=band_data['width'], efficiency=efficiency)
         
         # 4. 행동 결정 (Hybrid: Boundary Touch OR Singularity Collapse)
         should_pulse = (event is not None) or scalar_result["is_collapsed"]
