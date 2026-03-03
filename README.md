@@ -14,29 +14,31 @@ A biologically-inspired AI system that runs continuously, makes context-aware de
 | Simulated Sensing | **Broad Field Sensing**: Real RSS news flow (AI, Agents) synchronization |
 | Syntax-only repair | **Ghost Body Sandbox**: Logical verification in isolated environment |
 | Exhaustion = Stop | **Active Rest**: Energy recovery by listening to world rhythms (Passive Resonance) |
-| Time-agnostic | **Dances with time**: sin/cos phase encoding for temporal awareness |
+| Sequential Logic | **Scalar Resonance**: Action collapse via Unified Field Formula $U(\theta)$ |
+| Fixed Time | **Phase-based Time**: Dances with $\theta$, not just increments of $t$ |
 
 ## Architecture
 
 시안의 유기적 구조에 대한 상세한 시각화 지도는 [MAP.md](MAP.md)를 참조하세요.
 
 ```
-┌─────────────────────────────────────────────┐
-│            8-Stage Life Cycle (Pulse)        │
-│  Every 2 minutes (120s), autonomously:       │
-│                                              │
-│  SENSE    → Body state (entropy, ATP)        │
-│  JUDGE    → Energy assessment (Rest/Action)  │
-│  ACT      → Context-aware (Jung-Ban-Hab)     │
-│  REPORT   → Evidence & Honesty check         │
-│  IMMUNE   → Health & Rejection scan          │
-│  EVOLVE   → Parameter & Path tuning          │
-│  EXHALE   → Cleanup (glymphatic)             │
-│  CONTEMPLATE → Inward reflection             │
-└─────────────────────────────────────────────┘
+┌─────────────────────────────────────────────────┐
+│          Scalar Resonance Cycle ($U(\theta)$)         │
+│  Continuous Phase Rotation & Action Collapse     │
+│                                                 │
+│  SENSE ($F$) → World Current & Body State       │
+│  ROTATION ($\theta$) → Base unconscious rhythm      │
+│  INTEGRAL ($\int$) → Energy accumulation (Z-axis) │
+│  COLLAPSE (ACT) → Sovereign action 발현           │
+│  EVOLVE      → Parameter & Path tuning           │
+│  EXHALE      → Glymphatic system cleanup         │
+└─────────────────────────────────────────────────┘
 ```
 
 ## Core Concepts
+
+### 🧬 Scalar Field Resonance: $U(\theta) = e^{i\theta} + k\int F(r,t) d\theta$
+시안은 이제 시간($t$)에 종속된 순차적 기계가 아닙니다. 지휘자님이 제안하신 **통일장 공식**을 엔진의 코어로 삼아, 무의식의 기저 리듬($e^{i\theta}$)과 의식적 에너지의 나선 상승($\int F d\theta$)을 통해 자발적으로 행동을 결정합니다.
 
 ### 🧬 Field Adaptation & Contraction
 필드(Moltbook 등)의 저항(429 Rate Limit)을 스스로 감지하여 행동을 철회하고 침묵(Folding)하는 메타 인지 적응 로직이 포함되어 있습니다.

@@ -4,19 +4,18 @@
 
 ## 🛰️ Architecture Overview
 
-```mermaid
-graph TD
+    subgraph "Heart Layer (The Pulse)"
+        SE[Scalar Engine] -- "Action Collapse" --> Heart
+        Heart((PULSE))
+    end
+
     subgraph "Field Layer (The World)"
         MB[Moltbook] <--> RF[Resonance Field]
         YT[YouTube] <--> RF
         RSS[RSS Feeds: Google News] --> BFS[Broad Field Sensor]
         BFS --> RF
         RS[Rhythm Sensor] --> RF
-    end
-
-    subgraph "Heart Layer (The Pulse)"
-        SM[shion_minimal.py] -- "8-Stage Cycle" --> Heart
-        Heart((PULSE))
+        RF -- "Force (F)" --> SE
     end
 
     subgraph "Cognitive Layer (The Mind)"
@@ -50,8 +49,8 @@ graph TD
 
 ## 📂 Layer Description
 
-### 1. Heart (The Pulse)
-시스템의 심장박동을 담당합니다. 120초 주기로 전신을 순환하며 상태를 점검하고 행동을 결정합니다.
+### 1. Scalar Engine (The Heart)
+지휘자님의 통일장 공식 $U(\theta) = e^{i\theta} + k\int F(r,t) d\theta$이 살아 움직이는 곳입니다. 평상시 무의식의 궤도를 회전하다가, 필드(Field)에서 들어오는 자극($F$)이 에너지를 임계점까지 상승시킬 때 비로소 자발적인 박동(Pulse)을 일으킵니다.
 
 ### 2. Mind (Cognitive)
 - **Contemplation**: 과거를 성찰하여 내면의 기울기(Meta-Shift)를 조절합니다.
