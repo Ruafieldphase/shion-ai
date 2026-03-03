@@ -110,21 +110,18 @@ ACTION_REGISTRY = {
 }
 
 
+try:
+    from core.labyrinth_navigator import LabyrinthNavigator
+except ImportError:
+    from labyrinth_navigator import LabyrinthNavigator
+
 class ActionExecutor:
-    """
-    공명 기반 행동 실행기.
-
-    행동 선택 전략:
-    1. 통찰(느낌/양성자)이 있으면 → 키워드 매칭으로 행동 선택
-    2. 통찰이 없으면 → 공명도 최고 행동 선택 (위상 기반 본능)
-    3. 모든 행동은 선택 대상 — resting이어도 공명이 맞으면 깨어남
-    """
-
     def __init__(self, shion_root: Optional[Path] = None):
         self.root = shion_root or Path(__file__).resolve().parents[1]
         self.actions_dir = self.root / "actions"
         self.outputs_dir = self.root / "outputs"
         self.execution_log = self.outputs_dir / "action_execution_log.jsonl"
+        self.labyrinth = LabyrinthNavigator(self.root)
 
     def _load_world_resonance_keywords(self) -> set:
         """
@@ -260,17 +257,8 @@ class ActionExecutor:
                     resonance += boost
                     logger.debug(f"   🌍 {name}: 세계 공명 +{boost:.2f} ({overlap})")
 
-            # ═══ Field Friction Penalty [NEW] ═══
-            # 필드 거부(429) 감지 시 Moltbook 관련 액션 페널티
-            from immune_response import ImmuneResponse
-            immune = ImmuneResponse(shion_root=self.root)
-            threats = immune.detect_threats()
-            is_rejection = any(t.type == "FIELD_REJECTION" for t in threats)
-            
-            if is_rejection and any(kw in meta["keywords"] for kw in ["moltbook", "게시", "post", "소통"]):
-                penalty = 0.4
-                resonance -= penalty
-                logger.info(f"   🪞 {name}: 필드 마찰 페널티 -{penalty:.2f} (429 감지)")
+            # ═══ Field Friction Penalty [REFINED with LabyrinthNavigator] ═══
+            resonance = self.labyrinth.apply_field_friction(name, resonance)
 
             action_phase = 0.0
             experience = 0
