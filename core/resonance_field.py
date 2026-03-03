@@ -114,6 +114,10 @@ class ResonanceField:
         self.pulse_count = 0
         self.sense_count = 0
         self._last_workspace_stat = {}
+        
+        # High-dimensional metrics (Bohmian folding)
+        self.folding_density = 0.5  # Implicate density (0~1)
+        self.unfolding_intensity = 0.5 # Explicate flow (0~1)
 
     def measure_energy(self) -> float:
         """
@@ -263,6 +267,24 @@ class ResonanceField:
             json.dumps(state, ensure_ascii=False, indent=2),
             encoding="utf-8",
         )
+
+    def get_folding_state(self) -> Dict[str, float]:
+        """Bohm의 접힘/펼침 상태 계산 (Temporal Geometry)"""
+        # 임시 데이터: 실제 엔트로피 센서와 연동 전에는 0.5 베이스
+        purity = 0.98 # Default purity
+        entropy = 0.15 # Default healthy entropy
+        
+        # 접힘(Folding)은 엔트로피가 낮고 순도가 높을 때 '고밀도 압축' 됨
+        self.folding_density = (purity * (1.0 - entropy))
+        
+        # 펼침(Unfolding)은 공명(Squeeze 상태 등)이나 활발한 변화가 있을 때 증가
+        self.unfolding_intensity = (self.sense_count % 10) / 10.0 # 임시 리듬
+        
+        return {
+            "folding_density": round(self.folding_density, 3),
+            "unfolding_intensity": round(self.unfolding_intensity, 3),
+            "ie_ratio": round(self.folding_density / max(self.unfolding_intensity, 0.1), 2)
+        }
 
     def sense(self) -> Dict[str, Any]:
         """

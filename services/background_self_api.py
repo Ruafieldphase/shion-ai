@@ -219,7 +219,9 @@ class DarkFieldState:
                 "aura": self._get_aura_color(),
                 "last_background_sync": datetime.now().isoformat(),
                 "field_symmetry": round(self.symmetry, 4),
-                "purity": round(self.void_purity, 4)
+                "purity": round(self.void_purity, 4),
+                "folding_ratio": round(self.symmetry * self.void_purity, 3),
+                "unfolding_intensity": round(self.lua_resonance, 3)
             }
             BRAIN_STATE_FILE.parent.mkdir(parents=True, exist_ok=True)
             BRAIN_STATE_FILE.write_text(json.dumps(state, indent=2), encoding="utf-8")

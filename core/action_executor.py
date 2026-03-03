@@ -176,10 +176,28 @@ class ActionExecutor:
 
         # 전략 2: 공명 기반 선택 — "위상이 맞는 행동"
         best = max(available, key=lambda a: a.get("resonance", 0))
+        
+        # ═══ Jung-Ban-Hab Decision Framework [NEW] ═══
+        # 1. Thesis (정): 공명 기반 최초 선택 (best)
+        initial_score = best.get("resonance", 0)
+        
+        # 2. Antithesis (반): 저항 분석 (ATP 대비 비용, 시스템 부하 등)
+        # ATP가 낮을수록, 비용이 높을수록 저항 증대
+        resistance = (best["atp_cost"] / max(current_atp, 1)) * 0.5
+        
+        # 3. Synthesis (합): 저항을 뚫고 수행되는 최종 공명
+        # Unfolding: "이미 완료된 목표를 현실로 펼쳐냄"
+        final_resonance = initial_score * (1.0 - resistance)
+        
         logger.info(
-            f"   🌀 공명 선택 (위상 θ={system_phase:.2f}): "
-            f"{best['name']} (공명 {best.get('resonance', 0):.2f})"
+            f"   ⚖️ Jung-Ban-Hab: {best['name']} "
+            f"(Thesis:{initial_score:.2f} -> Synthesis:{final_resonance:.2f}, Res:{resistance:.2f})"
         )
+        
+        if final_resonance < 0.2:
+            logger.info(f"   🌊 {best['name']}의 저항이 너무 커서 심연에 머무릅니다.")
+            return None
+
         return best
 
     def _get_available_actions(

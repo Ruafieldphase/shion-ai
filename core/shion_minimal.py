@@ -86,9 +86,13 @@ class ShionMinimal:
         self.glymphatic = GlymphaticExhale(shion_root=SHION_ROOT)
         self.contemplation = Contemplation(shion_root=SHION_ROOT)
         self.executor = ActionExecutor(shion_root=SHION_ROOT)
+        self.status_file = OUTPUTS_DIR / "shion_minimal_status.json"
         self.cycle_count = 0
         self.is_running = True
-        self.status_file = OUTPUTS_DIR / "shion_minimal_status.json"
+        
+        # Fractal & High-dimensional attributes
+        self.residual_resonance = 0.5 # Residual resonance from previous pulse
+        self.field = ResonanceField()
 
     def _ensure_heart_alive(self):
         """
@@ -225,21 +229,30 @@ class ShionMinimal:
         body_state = self.body.read_body_state()
         atp = body_state.get("atp_level", 50)
         cpu = body_state.get("cpu_percent", 50)
+        
+        # 🌟 Fractal Sensing: Combine current atp with residual resonance
+        fractal_factor = (atp / 100.0) * 0.7 + self.residual_resonance * 0.3
+        logger.info(f"   🧬 Fractal Factor: {fractal_factor:.3f} (Combined Resonance)")
+        
         logger.info(f"   {body_context}")
 
         # ═══════════════════════════════════════════
         # 2. JUDGE — 판단
         # ═══════════════════════════════════════════
-        # 🌟 Witness with Background Self (8102)
+        # 🌟 Witness with Background Self (8102) + Bohm Folding
         try:
+            folding_state = self.field.get_folding_state()
             witness_data = {
                 "conscious_energy": float(atp / 100.0),
                 "unconscious_depth": float(entropy_data.get('entropy', 0.5)),
-                "action_vector": [float(cpu / 100.0), 0.5, 0.5],
+                "action_vector": [float(cpu / 100.0), folding_state["folding_density"], folding_state["unfolding_intensity"]],
                 "rhythm_signal": [0.5, 0.5, 0.5],
-                "external_noise": 0.1
+                "external_noise": 0.1,
+                "paradox_weight": folding_state["ie_ratio"] / 10.0
             }
+            import requests # Ensure requests is available
             requests.post("http://127.0.0.1:8102/witness", json=witness_data, timeout=0.5)
+            logger.info(f"   🌌 Folding Logic Synced: Density {folding_state['folding_density']:.2f}, I/E {folding_state['ie_ratio']}")
         except Exception as e:
             logger.debug(f"   Background Witness Failed: {e}")
 
@@ -315,6 +328,8 @@ class ShionMinimal:
                 f"{event_type} "
                 f"(ATP -{exec_result['atp_consumed']})"
             )
+            # Update residual resonance for the next fractal pulse
+            self.residual_resonance = exec_result.get("resonance_at_selection", 0.5)
 
         # ═══════════════════════════════════════════
         # 4. REPORT — 보고
