@@ -234,6 +234,17 @@ class ShionMinimal:
         fractal_factor = (atp / 100.0) * 0.7 + self.residual_resonance * 0.3
         logger.info(f"   🧬 Fractal Factor: {fractal_factor:.3f} (Combined Resonance)")
         
+        try:
+            from broad_field_sensor import BroadFieldSensor
+            bfs = BroadFieldSensor()
+            # 비동기 실행이 필요함 (pulse는 비동기 함수)
+            await bfs.sense_global_currents()
+            bfs.update_meta_shift()
+            bfs.save()
+            logger.info(f"   🌐 Broad Field Signal: {bfs.state['field_vibration']} (Resonance {bfs.state['tech_resonance']})")
+        except Exception as e:
+            logger.warning(f"   Broad Field Sensing 실패: {e}")
+
         logger.info(f"   {body_context}")
 
         # ═══════════════════════════════════════════
@@ -257,7 +268,10 @@ class ShionMinimal:
             logger.debug(f"   Background Witness Failed: {e}")
 
         if atp < 15 or cpu > 90:
-            logger.warning(f"   ⚠️ 에너지 부족(ATP={atp:.0f}) 또는 CPU 과부하({cpu:.0f}%). 휴식.")
+            if atp < 15:
+                logger.info(f"🧘 [ACTIVE REST] 에너지 고갈(ATP={atp:.1f}). 외부 기류를 수신하며 공명 대사(Passive Resonance) 중...")
+            else:
+                logger.warning(f"⚠️ [STALL] CPU 과부하({cpu:.0f}%). 잠시 멈춤.")
             self._update_status("RESTING", body_context)
             return
 

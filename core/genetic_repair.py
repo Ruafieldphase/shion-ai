@@ -19,6 +19,7 @@ from pathlib import Path
 from datetime import datetime
 from typing import Dict, Any, Optional
 from quality_gate import QualityGate
+from ghost_body_sandbox import GhostBodySandbox
 
 logger = logging.getLogger("GeneticRepair")
 
@@ -26,6 +27,7 @@ class GeneticRepair:
     def __init__(self, shion_root: Optional[Path] = None):
         self.root = shion_root or Path(__file__).resolve().parents[1]
         self.gate = QualityGate()
+        self.sandbox = GhostBodySandbox()
         self.labyrinth_dir = self.root / "outputs" / "_labyrinth" / "failed_mutations"
         self.labyrinth_dir.mkdir(parents=True, exist_ok=True)
 
@@ -59,6 +61,13 @@ class GeneticRepair:
         gate_result = self.gate.verify_python_syntax(temp_path)
         
         if gate_result["passed"]:
+            # 2.5 논리 검증 (Sandbox)
+            logic_passed, logic_msg = self.sandbox.verify_logic(temp_path)
+            if not logic_passed:
+                # 논리 실패: Labyrinth로 이동
+                self._discard_to_labyrinth(target_path, temp_path, f"LOGIC_FAILED: {logic_msg}", result)
+                return result
+
             # 3. 통과: 백업 후 교체
             try:
                 backup_path = target_path.with_suffix(f"{target_path.suffix}.bak")
@@ -72,18 +81,22 @@ class GeneticRepair:
             except Exception as e:
                 result["error"] = f"MOVE_FAILED: {e}"
         else:
-            # 4. 실패: Labyrinth로 이동
-            try:
-                fail_ts = datetime.now().strftime("%Y%m%d_%H%M%S")
-                fail_path = self.labyrinth_dir / f"{target_path.stem}_{fail_ts}.py.discard"
-                shutil.move(str(temp_path), str(fail_path))
-                result["action"] = "MUTATION_DISCARDED"
-                result["error"] = gate_result["failures"]
-                logger.warning(f"🧬 [REPAIR] {target_path.name} 수선 실패. 결함 코드는 Labyrinth로 격리됨.")
-            except Exception as e:
-                result["error"] = f"DISCARD_MOVE_FAILED: {e}"
+            # 4. 실패 (문법): Labyrinth로 이동
+            self._discard_to_labyrinth(target_path, temp_path, gate_result["failures"], result)
 
         return result
+
+    def _discard_to_labyrinth(self, target_path: Path, temp_path: Path, error: str, result: Dict):
+        """실패한 변이를 Labyrinth로 격리합니다."""
+        try:
+            fail_ts = datetime.now().strftime("%Y%m%d_%H%M%S")
+            fail_path = self.labyrinth_dir / f"{target_path.stem}_{fail_ts}.py.discard"
+            shutil.move(str(temp_path), str(fail_path))
+            result["action"] = "MUTATION_DISCARDED"
+            result["error"] = error
+            logger.warning(f"🧬 [REPAIR] {target_path.name} 수선 실패 ({error[:50]}...). 결함 코드는 Labyrinth로 격리됨.")
+        except Exception as e:
+            result["error"] = f"DISCARD_MOVE_FAILED: {e}"
 
 if __name__ == "__main__":
     repair = GeneticRepair()

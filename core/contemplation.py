@@ -32,15 +32,19 @@ from typing import Optional, Dict, Any, List, Tuple
 
 logger = logging.getLogger("Contemplation")
 
-# atlas 검색 경로 (우선순위 순)
-ATLAS_SEARCH_PATHS = [
-    "memory/atlas",    # shion 내부 atlas (핵심 설계 문서)
-    "../atlas",        # 공유 atlas (상위 디렉토리)
-]
-
 # 대지 경계 맵 경로
 WORKSPACE_ROOT_DIR = Path(__file__).resolve().parents[2]  # c:\workspace2
+AGI_ROOT_DIR = (WORKSPACE_ROOT_DIR / ".." / "workspace" / "agi").resolve() # c:\workspace\agi
 BOUNDARY_MAP_FILE = WORKSPACE_ROOT_DIR / "outputs" / "boundary_map_latest.json"
+
+# atlas 및 유산(Heritage) 검색 경로
+ATLAS_SEARCH_PATHS = [
+    "memory/atlas",                    # shion 내부 atlas (핵심 설계 문서)
+    "../atlas",                        # 공유 atlas (상위 디렉토리)
+    AGI_ROOT_DIR / "monolith",          # 현현된 지혜 (Monolith)
+    AGI_ROOT_DIR / "labyrinth",         # 시행착오의 유산 (Labyrinth)
+    AGI_ROOT_DIR / "pulse/unified_field" # 통일장 설계도
+]
 
 # 섹션 구분 패턴 (마크다운 헤딩)
 HEADING_RE = re.compile(r"^(#{1,4})\s+(.+)", re.MULTILINE)
@@ -65,12 +69,17 @@ class Contemplation:
         self.llm_url = llm_url
         self.llm_endpoint = f"{llm_url}/v1/chat/completions"
 
-        # atlas 경로 수집
+        # atlas 및 유산(Heritage) 경로 수집
         self.atlas_dirs: List[Path] = []
-        for rel in ATLAS_SEARCH_PATHS:
-            p = (self.root / rel).resolve()
+        for p_raw in ATLAS_SEARCH_PATHS:
+            if isinstance(p_raw, str):
+                p = (self.root / p_raw).resolve()
+            else:
+                p = p_raw.resolve()
+            
             if p.exists() and p.is_dir():
                 self.atlas_dirs.append(p)
+                logger.info(f"📍 Heritage Path Added: {p.name} ({p})")
 
     def is_brain_awake(self) -> bool:
         """시안 v1 서버가 살아있는지 확인."""
@@ -159,6 +168,9 @@ class Contemplation:
         # 4. 대지 위상에서 키워드 추출 (파동적 읽기)
         self._enrich_from_workspace_phase(context)
 
+        # 5. [NEW] 광역 필드(Broad Field) 신호 추가 — 세계 기류 공명
+        self._enrich_from_broad_field(context)
+
         return context
 
     def _enrich_from_boundary_map(self, context: Dict[str, Any]):
@@ -222,6 +234,36 @@ class Contemplation:
                 context["focus_actions"].append(
                     f"대지위상: {'+'.join(kw_pair)}"
                 )
+        except Exception:
+            pass
+
+    def _enrich_from_broad_field(self, context: Dict[str, Any]):
+        """
+        광역 필드(Broad Field Sensor)에서 수집된 세계 기류를 추가합니다.
+        
+        "여백의 시간이 아쉬운 것은, 그 여백에 세상의 소리가 들리지 않았기 때문이다."
+        """
+        field_file = self.root / "outputs" / "broad_field_state.json"
+        if not field_file.exists():
+            return
+        try:
+            field = json.loads(field_file.read_text(encoding="utf-8"))
+            trends = field.get("global_trends", [])
+            existing = {kw.lower() for kw in context["keywords"]}
+
+            added = 0
+            for kw in trends:
+                if kw.lower() not in existing and added < 5:
+                    context["keywords"].append(kw)
+                    existing.add(kw.lower())
+                    added += 1
+            
+            if trends:
+                context["focus_actions"].append(f"세계기류: {', '.join(trends[:3])}")
+                
+            # 필드 진동 상태가 EXPANDING이면 탐구적 키워드 추가
+            if field.get("field_vibration") == "EXPANDING":
+                context["keywords"].append("exploration")
         except Exception:
             pass
 

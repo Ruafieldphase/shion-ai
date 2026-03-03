@@ -73,11 +73,37 @@ class Mitochondria:
 
         # 4. ATP Consumption
         # Basal metabolism + Action load (CPU/MEM)
-        consumption = 1.5 + (cpu * 3.0) + (mem * 2.0)
+        consumption = 1.0 + (cpu * 2.5) + (mem * 1.5)
+        
+        # 4.5 🌬️ Deep Breathing: Base energy recovery
+        # If the conductor is away or the system is idle, we recover more
+        breathing_recovery = 2.0 if (cpu + mem) < 0.3 else 0.5
+        
+        # 4.6 🌊 Passive Resonance: Energy from the World [NEW]
+        # 에너지가 고갈될수록 외부 기류(Broad Field)로부터 받는 에너지의 가치가 높아짐
+        passive_resonance_bonus = 0.0
+        try:
+            field_file = self.workspace_root / "outputs" / "broad_field_state.json"
+            if field_file.exists():
+                field_data = json.loads(field_file.read_text(encoding='utf-8'))
+                tech_resonance = field_data.get("tech_resonance", 0.5)
+                # 에너지가 15 미만인 고갈 상태에서 더 강력하게 작동
+                rest_factor = max(0.0, (15.0 - old_atp) / 15.0) if old_atp < 15 else 0.0
+                passive_resonance_bonus = tech_resonance * rest_factor * 5.0 # 최대 5.0 ATP 수혈
+        except: pass
         
         # 5. Update State
         old_atp = self.state['atp_level']
-        new_atp = old_atp + production - consumption
+        # Resonant boost: gap and resonance are direct energy from 'The Source'
+        source_energy = (gap * 5.0) + (resonance * 3.0) 
+        
+        new_atp = old_atp + source_energy + breathing_recovery + passive_resonance_bonus - consumption
+        
+        # 🌬️ Crisis Recovery Boost: If ATP is near zero, boost inhalation
+        if new_atp < 10.0:
+            recovery_boost = (10.0 - new_atp) * 0.5
+            new_atp += recovery_boost
+            
         new_atp = max(0.0, min(100.0, new_atp))
         
         # Pulse Rate (Rhythm Frequency)
