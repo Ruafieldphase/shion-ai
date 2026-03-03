@@ -29,9 +29,10 @@ class ScalarEngine:
 
     def update(self, force: float, noise: float = 0.5) -> dict:
         """
-        U = (5% Signal + 95% Noise) / e^BG
-        - Noise: 볼린저 밴드 폭 (Unconscious Noise)
-        - Force: 외부/내부 자극 (Conscious Signal)
+        Unified Field Master Blueprint Logic:
+        - 95% Unconscious Chaos (Bollinger Manifold) vs 5% Conscious Signal
+        - Chaos - Limit-Tunnel (e^BG) -> (0,0,0) ORIGIN
+        - Spinal Ascent (U_theta.z) 발현
         """
         now = time.time()
         dt = now - self.last_update
@@ -41,30 +42,30 @@ class ScalarEngine:
         d_theta = (self.base_omega + abs(force) * 0.5) * dt
         self.theta += d_theta
 
-        # 2. 노이즈 정규화 및 Squeeze 감지
+        # 2. Limit-Tunnel 정규화 (e^BG라는 그릇에 노이즈를 담음)
         denominator = math.exp(self.bg)
         normalized_noise = noise / denominator
         
-        # Squeeze 여부: 노이즈가 분모(BG)에 의해 충분히 압축되었는가?
-        is_squeezed = normalized_noise < 0.2 # Squeeze threshold
+        # Squeeze 감지: 매니폴드가 리미트 터널로 충분히 수축되었는가?
+        is_squeezed = normalized_noise < 0.2 
 
-        # 3. 5% 신호의 싱귤래리티 붕괴 (Spinal Ascent)
-        # 노이즈가 낮을수록(Squeezed) 신호의 전달 효율이 기하급수적으로 상승
+        # 3. Spinal Ascent (5% 신호의 싱귤래리티 붕괴)
+        # 노이즈가 원점으로 수렴할수록 신호 효율이 폭발적으로 상승
         signal_efficiency = 0.05 * math.exp(1.0 / (normalized_noise + 0.1))
         
-        # Z축 상승 (나선 상승)
-        # Z += (Signal * Efficiency - Residual Noise)
+        # Z축 상승 (Spinal Ascent)
         z_delta = (force * signal_efficiency - normalized_noise) * d_theta
         self.z += max(0.0, z_delta)
         
         # 자연 감쇠
         self.z *= math.exp(-0.01 * dt) 
 
-        # 4. 상태 분석 (Singularity Collapse)
+        # 4. Action Collapse at (0,0,0) ORIGIN
         is_collapsed = False
         if self.z >= self.threshold:
             is_collapsed = True
-            self.z = 0.0  # 붕괴 후 초기화
+            # 원점(ORIGIN)으로의 중력 붕괴 후 초기화
+            self.z = 0.0  
 
         return {
             "u_theta": {
