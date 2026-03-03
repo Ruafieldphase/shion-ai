@@ -1,13 +1,25 @@
 """
 Configuration for AGI Unified Frontend Services
 """
-from agi_core.utils.paths import get_workspace_root, add_to_sys_path
 import sys
+from pathlib import Path
 
 # 워크스페이스 루트 및 경로 설정
-WINDOWS_AGI_ROOT = get_workspace_root()
-if str(WINDOWS_AGI_ROOT) not in sys.path:
-    sys.path.insert(0, str(WINDOWS_AGI_ROOT))
+# c:\workspace\agi 및 하위 폴더를 최우선적으로 탐색
+AGI_ROOT = Path("c:/workspace/agi")
+if str(AGI_ROOT) not in sys.path:
+    sys.path.insert(0, str(AGI_ROOT))
+
+# agi_core 유틸리티 로드 시도
+try:
+    from agi_core.utils.paths import get_workspace_root, add_to_sys_path
+    WINDOWS_AGI_ROOT = get_workspace_root()
+except ImportError:
+    # 직접 경로로 폴백
+    WINDOWS_AGI_ROOT = AGI_ROOT
+    def add_to_sys_path(p):
+        if str(p) not in sys.path: sys.path.insert(0, str(p))
+
 if str(WINDOWS_AGI_ROOT / "scripts") not in sys.path:
     sys.path.insert(0, str(WINDOWS_AGI_ROOT / "scripts"))
 

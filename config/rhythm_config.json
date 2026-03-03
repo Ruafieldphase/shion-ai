@@ -4,12 +4,12 @@
   "resonance": {
     "_doc": "공명 계산 파라미터",
     "phase_increment": 0.1,
-    "reflection_threshold": 11,
+    "reflection_threshold": 12,
     "rest_phase_diff": 1.5
   },
   "meta_shift": {
     "_doc": "통찰 → 기울기 변경 파라미터",
-    "shift_strength": 0.05,
+    "shift_strength": 0.06,
     "decay_rate": 0.85,
     "max_axis_value": 0.3
   },
@@ -69,6 +69,23 @@
           "shift_strength 0.045→0.05"
         ],
         "transmission_rate": 0.857
+      },
+      {
+        "gen": 25,
+        "time": "2026-03-03T15:00",
+        "changes": [
+          "reflection_threshold 11→12 (투과율 87% 높음)",
+          "shift_strength 0.05→0.055"
+        ],
+        "transmission_rate": 0.867
+      },
+      {
+        "gen": 26,
+        "time": "2026-03-03T15:00",
+        "changes": [
+          "shift_strength 0.055→0.06"
+        ],
+        "transmission_rate": 0.867
       }
     ]
   }

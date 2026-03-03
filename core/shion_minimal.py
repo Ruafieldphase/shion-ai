@@ -57,7 +57,7 @@ PULSE_INTERVAL_SECONDS = 600  # 10분
 OUTPUTS_DIR = SHION_ROOT / "outputs"
 
 # 대지(workspace) 루트 — 기존 두뇌 시스템 연결
-WORKSPACE_ROOT = SHION_ROOT.parent  # c:\workspace2
+WORKSPACE_ROOT = SHION_ROOT  # c:\workspace2\shion
 BRAIN_STATE_FILE = WORKSPACE_ROOT / "memory" / "agi_internal_state.json"
 
 
@@ -230,7 +230,18 @@ class ShionMinimal:
         # ═══════════════════════════════════════════
         # 2. JUDGE — 판단
         # ═══════════════════════════════════════════
-        logger.info("🧠 [JUDGE] 판단...")
+        # 🌟 Witness with Background Self (8102)
+        try:
+            witness_data = {
+                "conscious_energy": float(atp / 100.0),
+                "unconscious_depth": float(entropy_data.get('entropy', 0.5)),
+                "action_vector": [float(cpu / 100.0), 0.5, 0.5],
+                "rhythm_signal": [0.5, 0.5, 0.5],
+                "external_noise": 0.1
+            }
+            requests.post("http://127.0.0.1:8102/witness", json=witness_data, timeout=0.5)
+        except Exception as e:
+            logger.debug(f"   Background Witness Failed: {e}")
 
         if atp < 15 or cpu > 90:
             logger.warning(f"   ⚠️ 에너지 부족(ATP={atp:.0f}) 또는 CPU 과부하({cpu:.0f}%). 휴식.")

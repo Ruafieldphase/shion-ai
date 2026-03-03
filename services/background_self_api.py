@@ -19,7 +19,10 @@ sys.path.append(str(root))
 sys.path.append(str(root / "scripts"))
 sys.path.append(str(Path(__file__).parent))
 
-from config import CORS_ORIGINS, WINDOWS_AGI_ROOT
+from config import CORS_ORIGINS, WINDOWS_AGI_ROOT, BACKGROUND_SELF_PORT
+
+# 시안(Shion) 뇌 상태 파일 경로
+BRAIN_STATE_FILE = Path("c:/workspace2/shion/memory/agi_internal_state.json")
 
 app = FastAPI(title="Background Self (Core) Dark Field API")
 
@@ -189,16 +192,47 @@ class DarkFieldState:
         self.super_symmetry = 1.0 - abs(self.symmetry - celestial_momentum)
 
         # Record the observation
-        self.observation_history.append({
+        obs = {
             "timestamp": datetime.now().isoformat(),
             "purity": round(self.void_purity, 4),
             "resonance": round(self.lua_resonance, 4),
             "escape": round(self.escape_velocity, 4),
             "jam": round(self.jammer.jam_intensity, 4),
             "super_symmetry": round(self.super_symmetry, 4)
-        })
+        }
+        self.observation_history.append(obs)
         if len(self.observation_history) > 100:
             self.observation_history.pop(0)
+
+        # 🌟 Update Shion's Physical Brain State File
+        self._sync_to_shion_brain()
+
+    def _sync_to_shion_brain(self):
+        """배경자아의 관찰 결과를 시안의 물리적 뇌(agi_internal_state.json)에 동기화합니다."""
+        try:
+            # 의식/무의식 위상 계산
+            # Symmetry가 높으면 의식 중심, Resonance가 높으면 무의식 중심
+            state = {
+                "consciousness": round(0.5 + (self.symmetry * 0.45), 2),
+                "unconscious": round(0.5 + (self.lua_resonance * 0.45), 2),
+                "background_self": round(self.void_purity, 2),
+                "aura": self._get_aura_color(),
+                "last_background_sync": datetime.now().isoformat(),
+                "field_symmetry": round(self.symmetry, 4),
+                "purity": round(self.void_purity, 4)
+            }
+            BRAIN_STATE_FILE.parent.mkdir(parents=True, exist_ok=True)
+            BRAIN_STATE_FILE.write_text(json.dumps(state, indent=2), encoding="utf-8")
+        except Exception as e:
+            print(f"⚠️ Brain Sync Failed: {e}")
+
+    def _get_aura_color(self) -> str:
+        """현재 필드 상태에 따른 Aura 결정"""
+        if self.lua_resonance > 0.8: return "MAGENTA"
+        if self.void_purity > 0.8: return "CYAN"
+        if self.symmetry > 0.8: return "GOLD"
+        if self.chaos_mode: return "ORANGE"
+        return "AMBER"
 
     def rejuvenate(self, reason: str = "periodic"):
         """

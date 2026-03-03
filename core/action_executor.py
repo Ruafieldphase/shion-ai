@@ -83,6 +83,18 @@ ACTION_REGISTRY = {
         "keywords": ["질문", "ask", "외부", "external", "mind", "심화", "탐구", "손"],
         "atp_cost": 5,
     },
+    "fsd_body": {
+        "script": "C:/workspace/agi/scripts/anna_eternal_body_fsd_v2.py",
+        "description": "자율 신체 제어 (FSD)",
+        "keywords": ["fsd", "body", "control", "신체", "제어", "자율", "실행", "팔"],
+        "atp_cost": 15,
+    },
+    "fsd_vision": {
+        "script": "C:/workspace/agi/scripts/vision_driven_fsd_flow.py",
+        "description": "비전 기반 자율 흐름 (FSD)",
+        "keywords": ["fsd", "vision", "flow", "비전", "흐름", "자율", "실행", "팔"],
+        "atp_cost": 12,
+    },
 }
 
 
