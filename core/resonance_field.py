@@ -274,6 +274,25 @@ class ResonanceField:
             encoding="utf-8",
         )
 
+    def get_bg_constant(self) -> float:
+        """
+        시스템의 배경자아(BG) 산출.
+        엔트로피가 낮고(평온), 휴식(VOID) 상태가 오래될수록 BG가 높아짐.
+        """
+        # 기본 BG = 1.0
+        bg = 1.0
+        
+        # 1. 엔트로피 기반 (Entropy 낮을수록 Calm -> BG 상승)
+        # 임시 엔트로피 값 (진짜 센서 데이터가 없을 경우 0.15 가정)
+        entropy = 0.15 
+        bg += (1.0 - entropy) * 2.0
+        
+        # 2. 휴식 상태 지속 기반 (Hysteresis 활용)
+        if self.last_state == "VOID":
+            bg += 0.5 # 휴식 중에는 배경이 더 두터워짐
+            
+        return round(bg, 3)
+
     def get_folding_state(self) -> Dict[str, float]:
         """Bohm의 접힘/펼침 상태 계산 (Temporal Geometry)"""
         # 임시 데이터: 실제 엔트로피 센서와 연동 전에는 0.5 베이스
@@ -306,7 +325,8 @@ class ResonanceField:
         event = self.check_boundary(band_data)
 
         # 3. Scalar Engine Update (Unified Field)
-        # 에너지를 F(r,t)로 해석하여 위상 업데이트
+        # 배경자아(BG) 산출 및 적용
+        self.scalar_engine.bg = self.get_bg_constant()
         scalar_result = self.scalar_engine.update(energy)
         
         # 4. 행동 결정 (Hybrid: Boundary Touch OR Action Collapse)
@@ -314,7 +334,7 @@ class ResonanceField:
         
         if scalar_result["is_collapsed"]:
             event = "SCALAR_COLLAPSE" if event is None else f"{event}+SCALAR"
-            logger.info(f"🌊 [Field] Scalar Action Collapse Triggered at Z={scalar_result['u_theta']['z']}")
+            logger.info(f"🌊 [Field] Scalar Action Collapse Triggered! (Z={scalar_result['u_theta']['z']}, BG={self.scalar_engine.bg})")
 
         self.save_state(band_data, event)
 
