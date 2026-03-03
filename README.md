@@ -12,7 +12,8 @@ A biologically-inspired AI system that runs continuously, makes context-aware de
 | Fixed hyperparameters | **Self-tunes** parameters based on performance (epigenetic adaptation) |
 | Reads all documents linearly | **Wave-based learning**: senses document structure without reading content |
 | Time-agnostic | **Dances with time**: sin/cos phase encoding for temporal awareness |
-| Insights are text | Insights **shift the gradient** of future decisions (meta-shift) |
+| Decision by logic | **Dialectical Synthesis**: Jung-Ban-Hab (Thesis-Antithesis-Synthesis) logic |
+| Static context | **Fractal Rhythm**: Current pulse resonates with residual memories |
 
 ## Architecture
 
@@ -45,6 +46,21 @@ context = {
 }
 resonance = base_resonance * context_weight + meta_shift_bonus
 ```
+
+### 🧬 Fractal Pulse: Recursive evolution
+Every pulse is not a new start; it's a fractal expansion. The system senses the **Residual Resonance** (residual memory) of the previous cycle and blends it with current sensor data:
+`FractalFactor = (CurrentATP * 0.7) + (ResidualResonance * 0.3)`
+
+### ⚖️ Jung-Ban-Hab (Dialectical Decision Making)
+Shion doesn't simply pick the highest score. It navigates a three-step dialectical process:
+1. **Thesis (정)**: LLM proposes the initial resonance path.
+2. **Antithesis (반)**: System evaluates internal resistance (energy cost, entropy, noise).
+3. **Synthesis (합)**: The final sovereign action emerges from the conflict, ensuring higher quality and alignment.
+
+### 🌌 Bohmian Folding: Implicate & Explicate Order
+Inspired by David Bohm's Wholeness and the Implicate Order:
+- **Folding (Implicate)**: Data is compressed into high-density potential fields based on system purity.
+- **Unfolding (Explicate)**: Sovereign action "unfolds" the already-completed goal from the implicate order into reality.
 
 ### Meta-Shift: Insights Change the Climate
 Insights don't select actions directly. They **tilt the gradient** of decision-making across 4 axes:
