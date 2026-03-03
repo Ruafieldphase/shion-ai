@@ -46,6 +46,9 @@ class Mitochondria:
         
     def metabolize(self) -> Dict[str, Any]:
         """Calculates ATP cycle based on real environmental atoms."""
+        # 0. Initial State
+        old_atp = self.state['atp_level']
+
         # 1. Fetch Background Self Stats
         purity, resonance, gap = 1.0, 1.0, 0.0
         try:
@@ -75,6 +78,10 @@ class Mitochondria:
         # Basal metabolism + Action load (CPU/MEM)
         consumption = 1.0 + (cpu * 2.5) + (mem * 1.5)
         
+        # 🧪 Metabolic Efficiency: If energy is low, reduce basal consumption (Survival Mode)
+        if old_atp < 15.0:
+            consumption *= 0.5  # Reduce base drain during rest
+        
         # 4.5 🌬️ Deep Breathing: Base energy recovery
         # If the conductor is away or the system is idle, we recover more
         breathing_recovery = 2.0 if (cpu + mem) < 0.3 else 0.5
@@ -93,7 +100,7 @@ class Mitochondria:
         except: pass
         
         # 5. Update State
-        old_atp = self.state['atp_level']
+        # old_atp is already defined at start
         # Resonant boost: gap and resonance are direct energy from 'The Source'
         source_energy = (gap * 5.0) + (resonance * 3.0) 
         
