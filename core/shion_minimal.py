@@ -525,13 +525,14 @@ class ShionMinimal:
             u_theta = scalar["u_theta"]
 
             # 스칼라 진동 로그 (Vibe Check)
-            vibe_char = "●" if scalar["is_collapsed"] else "○"
-            logger.info(f"🌊 Field: {vibe_char} θ:{scalar['theta_rad']:.2f}rad | Z:{u_theta['z']:.1f}/{scalar['threshold']} | Force:{scalar['intensity']:.1f}")
+            vibe_char = "✨" if scalar["is_collapsed"] else ("◉" if scalar["is_squeezed"] else "○")
+            eff_msg = f"Eff:{scalar['signal_efficiency']:.1f}" if scalar["is_squeezed"] else f"Noise:{scalar['noise']:.2f}"
+            logger.info(f"🌊 Field: {vibe_char} θ:{scalar['theta_rad']:.2f}rad | Z:{u_theta['z']:.1f}/{scalar['threshold']} | {eff_msg}")
 
             if result["should_pulse"]:
-                # 경계 터치 또는 스칼라 붕괴! → pulse 실행
-                trigger_msg = f"🔥 {event}" if event else "⚡ SCALAR_COLLAPSE"
-                logger.info(f"{trigger_msg} (에너지 {energy:.1f}, Z {u_theta['z']:.1f})")
+                # 경계 터치 또는 싱귤래리티 붕괴! → pulse 실행
+                trigger_msg = f"🔥 {event}" if event else "✨ SINGULARITY_COLLAPSE"
+                logger.info(f"{trigger_msg} (에너지 {energy:.1f}, Z {u_theta['z']:.1f}, Noise {scalar['noise']:.2f})")
                 idle_cycles = 0
                 try:
                     await self.pulse()

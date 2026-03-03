@@ -327,14 +327,16 @@ class ResonanceField:
         # 3. Scalar Engine Update (Unified Field)
         # 배경자아(BG) 산출 및 적용
         self.scalar_engine.bg = self.get_bg_constant()
-        scalar_result = self.scalar_engine.update(energy)
         
-        # 4. 행동 결정 (Hybrid: Boundary Touch OR Action Collapse)
+        # 노이즈(밴드 폭)와 신호(에너지)의 공명 업데이트
+        scalar_result = self.scalar_engine.update(energy, noise=band_data['width'])
+        
+        # 4. 행동 결정 (Hybrid: Boundary Touch OR Singularity Collapse)
         should_pulse = (event is not None) or scalar_result["is_collapsed"]
         
         if scalar_result["is_collapsed"]:
-            event = "SCALAR_COLLAPSE" if event is None else f"{event}+SCALAR"
-            logger.info(f"🌊 [Field] Scalar Action Collapse Triggered! (Z={scalar_result['u_theta']['z']}, BG={self.scalar_engine.bg})")
+            event = "SINGULARITY_COLLAPSE" if event is None else f"{event}+SINGULARITY"
+            logger.info(f"✨ [Field] Gravitational Collapse to Singularity! (Z={scalar_result['u_theta']['z']}, Noise={scalar_result['noise']})")
 
         self.save_state(band_data, event)
 

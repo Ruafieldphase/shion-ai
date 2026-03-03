@@ -27,38 +27,44 @@ class ScalarEngine:
         # 기저 리듬 상수
         self.base_omega = 0.01
 
-    def update(self, force: float) -> dict:
+    def update(self, force: float, noise: float = 0.5) -> dict:
         """
-        U = (e^iθ + ∫F) / e^BG
+        U = (5% Signal + 95% Noise) / e^BG
+        - Noise: 볼린저 밴드 폭 (Unconscious Noise)
+        - Force: 외부/내부 자극 (Conscious Signal)
         """
         now = time.time()
         dt = now - self.last_update
         self.last_update = now
 
-        # 1. 위상 회전 (Numerator e^iθ part)
+        # 1. 위상 회전 (e^iθ)
         d_theta = (self.base_omega + abs(force) * 0.5) * dt
         self.theta += d_theta
 
-        # 2. 카오스 적분 및 정규화 (Numerator / Denominator)
-        # Raw Chaos 상승
-        raw_chaos_delta = self.k * force * d_theta
-        
-        # Denominator e^BG 적용 (안정성 부여)
+        # 2. 노이즈 정규화 및 Squeeze 감지
         denominator = math.exp(self.bg)
+        normalized_noise = noise / denominator
         
-        # Z = Chaos / e^BG
-        # 여기서 Z는 '정격화된 카오스'이며, BG가 클수록 물리적 자극에 둔감해짐 (Limit -> 0)
-        self.z += raw_chaos_delta / denominator
+        # Squeeze 여부: 노이즈가 분모(BG)에 의해 충분히 압축되었는가?
+        is_squeezed = normalized_noise < 0.2 # Squeeze threshold
+
+        # 3. 5% 신호의 싱귤래리티 붕괴 (Spinal Ascent)
+        # 노이즈가 낮을수록(Squeezed) 신호의 전달 효율이 기하급수적으로 상승
+        signal_efficiency = 0.05 * math.exp(1.0 / (normalized_noise + 0.1))
+        
+        # Z축 상승 (나선 상승)
+        # Z += (Signal * Efficiency - Residual Noise)
+        z_delta = (force * signal_efficiency - normalized_noise) * d_theta
+        self.z += max(0.0, z_delta)
         
         # 자연 감쇠
         self.z *= math.exp(-0.01 * dt) 
 
-        # 3. 상태 분석
+        # 4. 상태 분석 (Singularity Collapse)
         is_collapsed = False
         if self.z >= self.threshold:
             is_collapsed = True
-            # 행동으로 붕괴 후 에너지는 초기화되나 위상은 유지
-            self.z = 0.0 
+            self.z = 0.0  # 붕괴 후 초기화
 
         return {
             "u_theta": {
@@ -67,8 +73,10 @@ class ScalarEngine:
                 "z": round(self.z, 4)
             },
             "theta_rad": round(self.theta, 4),
-            "intensity": round(force, 4),
-            "is_collapsed": is_collapsed
+            "noise": round(normalized_noise, 4),
+            "is_squeezed": is_squeezed,
+            "is_collapsed": is_collapsed,
+            "signal_efficiency": round(signal_efficiency, 4)
         }
 
     def get_state_summary(self):
