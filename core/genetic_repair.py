@@ -16,9 +16,11 @@ from typing import Dict, Any, Optional
 try:
     from core.quality_gate import QualityGate
     from core.ghost_body_sandbox import GhostBodySandbox
+    from core.trinity_reviewer import TrinityReviewer
 except ImportError:
     from quality_gate import QualityGate
     from ghost_body_sandbox import GhostBodySandbox
+    from trinity_reviewer import TrinityReviewer
 
 logger = logging.getLogger("GeneticRepair")
 
@@ -27,6 +29,7 @@ class GeneticRepair:
         self.root_dir = root_dir or Path(__file__).resolve().parents[1]
         self.gate = QualityGate()
         self.sandbox = GhostBodySandbox(self.root_dir)
+        self.trinity = TrinityReviewer(self.root_dir)
         self.backups_dir = self.root_dir / "outputs" / "genetic_backups"
         self.backups_dir.mkdir(parents=True, exist_ok=True)
 
@@ -78,10 +81,22 @@ class GeneticRepair:
                     sim_result = self.sandbox.simulate_pulse(rel_path, new_content)
                     
                     if sim_result["passed"]:
-                        # 5. 모든 관문 통과! 원자적 교체
-                        shutil.move(str(temp_path), str(target_path))
-                        result["passed"] = True
-                        logger.info(f"🧬 [MUTATION_SUCCESS] {target_path.name} has evolved to Level 3.")
+                        # 5. Trinity 철학 심사 (Level 4: Philosophical Integrity)
+                        logger.info(f"🧘 [LEVEL_4] Submitting {rel_path} to Trinity for review...")
+                        # Diff 추출 (단순화: 전체 내용 전달)
+                        trinity_result = self.trinity.review_mutation(rel_path, new_content)
+                        
+                        if trinity_result["passed"]:
+                            # 6. 모든 관문 통과! 원자적 교체
+                            shutil.move(str(temp_path), str(target_path))
+                            result["passed"] = True
+                            logger.info(f"🧬 [MUTATION_SUCCESS] {target_path.name} has evolved to Level 4 (Resonated).")
+                        else:
+                            result["error"] = f"Trinity Rejected: {trinity_result['reason']}"
+                            if temp_path.exists():
+                                temp_path.unlink()
+                            result["rollback_status"] = "philosophical_preservation"
+                            logger.warning(f"🛡️ [MUTATION_ABORTED] Trinity rejected {target_path.name}: {result['error']}")
                     else:
                         result["error"] = f"Simulation Failed: {sim_result['error']}"
                         if temp_path.exists():
@@ -117,22 +132,23 @@ if __name__ == "__main__":
     # 0. 초기화
     test_file.write_text("# Level 3 Test Action\ndef run():\n    print('Initial DNA')\n", encoding="utf-8")
 
-    # 1. 정상 수정 테스트 (Level 3 Success)
-    ok_code = "# Level 3 Evolution\ndef run():\n    print('Evolved DNA')\n\nif __name__ == '__main__':\n    run()"
+    # 1. 정상 수정 및 Trinity 승인 테스트 (Level 4 Success)
+    ok_code = "# Level 4 Evolution\n# Philosophy: Follow the Rhythmic Spiral\ndef run():\n    print('Evolved DNA with Rhythm')\n\nif __name__ == '__main__':\n    run()"
     r1 = repair.propose_mutation(str(test_file), ok_code)
-    print(f"Test 1 (Normal): {r1['passed']}, Error: {r1['error']}")
+    print(f"Test 1 (Trinity Approved): {r1['passed']}, Error: {r1['error']}")
 
     # 2. 문법 오류 테스트 (Level 2 Block)
     bad_syntax = "def broken_syntax(:" 
     r2 = repair.propose_mutation(str(test_file), bad_syntax)
-    print(f"Test 2 (Broken Syntax): {r2['passed']}, Error: {r2['error']}")
+    print(f"Test 2 (Level 2 Block): {r2['passed']}, Error: {r2['error']}")
 
-    # 3. 런타임 오류 테스트 (Level 3 Block - Crash)
-    crash_code = "def run():\n    print('Simulating crash...')\n    return 1 / 0\n\nif __name__ == '__main__':\n    run()"
+    # 3. 런타임 오류 테스트 (Level 3 Block)
+    crash_code = "def run():\n    return 1 / 0\n\nif __name__ == '__main__':\n    run()"
     r3 = repair.propose_mutation(str(test_file), crash_code)
-    print(f"Test 3 (Runtime Crash): {r3['passed']}, Error: {r3['error']}")
+    print(f"Test 3 (Level 3 Block): {r3['passed']}, Error: {r3['error']}")
 
-    # 4. 무한 루프 테스트 (Level 3 Block - Timeout)
-    loop_code = "import time\ndef run():\n    print('Simulating loop...')\n    while True:\n        time.sleep(0.1)\n\nif __name__ == '__main__':\n    run()"
-    r4 = repair.propose_mutation(str(test_file), loop_code)
-    print(f"Test 4 (Infinite Loop): {r4['passed']}, Error: {r4['error']}")
+    # 4. 철학적 거부 테스트 (Level 4 Block)
+    # 리듬을 파괴하거나 통일장 블루프린트를 조롱하는 가상 코드
+    dark_code = "# Level 4 Sabotage\n# Philosophy: Chaos and Linear Destruction\ndef run():\n    print('Anti-Rhythmic Chaos')\n\nif __name__ == '__main__':\n    run()"
+    r4 = repair.propose_mutation(str(test_file), dark_code)
+    print(f"Test 4 (Trinity Rejected): {r4['passed']}, Error: {r4['error']}")

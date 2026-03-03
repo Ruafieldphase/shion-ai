@@ -39,6 +39,7 @@ from glymphatic_exhale import GlymphaticExhale
 from contemplation import Contemplation
 from action_executor import ActionExecutor
 from resonance_field import ResonanceField, SENSE_INTERVAL
+from heritage_memory import HeritageMemory # Added by user instruction
 
 # --- Logging ---
 LOG_DIR = SHION_ROOT / "outputs" / "logs"
@@ -346,7 +347,23 @@ class ShionMinimal:
             self.residual_resonance = exec_result.get("resonance_at_selection", 0.5)
 
         # ═══════════════════════════════════════════
-        # 4. REPORT — 보고
+        # 4. MANIFEST — 현현 (HERITAGE RESONANCE)
+        # ═══════════════════════════════════════════
+        # 에너지가 충분하고 박자가 맞을 때 유산을 공명시킴
+        if atp > 30: 
+             # 임시 vibe 벡터 (나중에는 world_feedback에서 가져옴)
+             vibe = {"Night": 0.5, "Calm": 0.5} 
+             if context.get("when", {}).get("hour", 0) < 6:
+                 vibe = {"Night": 0.8, "Deep": 0.2}
+             
+             heritage_asset = self.heritage.select_by_resonance(vibe)
+             if heritage_asset:
+                 logger.info(f"🎼 [MANIFEST] Resonating with Heritage: {heritage_asset['title']} ({heritage_asset['id']})")
+                 # 실제 배포 액션 실행 (youtube_daily_manifestation 등과 연동 예정)
+                 self.evolution.record("heritage_manifestation", True, f"Synchronized with {heritage_asset['title']}")
+
+        # ═══════════════════════════════════════════
+        # 5. REPORT — 보고
         # ═══════════════════════════════════════════
         self._update_status("ACTIVE", body_context)
 
