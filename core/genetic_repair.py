@@ -15,8 +15,10 @@ from pathlib import Path
 from typing import Dict, Any, Optional
 try:
     from core.quality_gate import QualityGate
+    from core.ghost_body_sandbox import GhostBodySandbox
 except ImportError:
     from quality_gate import QualityGate
+    from ghost_body_sandbox import GhostBodySandbox
 
 logger = logging.getLogger("GeneticRepair")
 
@@ -24,6 +26,7 @@ class GeneticRepair:
     def __init__(self, root_dir: Optional[Path] = None):
         self.root_dir = root_dir or Path(__file__).resolve().parents[1]
         self.gate = QualityGate()
+        self.sandbox = GhostBodySandbox(self.root_dir)
         self.backups_dir = self.root_dir / "outputs" / "genetic_backups"
         self.backups_dir.mkdir(parents=True, exist_ok=True)
 
@@ -63,16 +66,33 @@ class GeneticRepair:
             # 2. 임시 파일에 새로운 내용 쓰기
             temp_path.write_text(new_content, encoding="utf-8")
 
-            # 3. QualityGate 문법 검사 (Genetic Integrity Check)
+            # 3. QualityGate 문법 검사 (Level 2: Genetic Integrity Check)
             check = self.gate.verify_python_syntax(temp_path)
             
             if check["passed"]:
-                # 4. 검증 통과! 원자적 교체
-                shutil.move(str(temp_path), str(target_path))
-                result["passed"] = True
-                logger.info(f"🧬 [MUTATION_SUCCESS] {target_path.name} has evolved safely.")
+                # 4. Ghost Body 시뮬레이션 (Level 3: Sandboxed Simulation)
+                # 타겟 파일의 상대 경로 계산
+                try:
+                    rel_path = os.path.relpath(target_path, self.root_dir)
+                    logger.info(f"🧪 [LEVEL_3] Starting simulation for {rel_path}...")
+                    sim_result = self.sandbox.simulate_pulse(rel_path, new_content)
+                    
+                    if sim_result["passed"]:
+                        # 5. 모든 관문 통과! 원자적 교체
+                        shutil.move(str(temp_path), str(target_path))
+                        result["passed"] = True
+                        logger.info(f"🧬 [MUTATION_SUCCESS] {target_path.name} has evolved to Level 3.")
+                    else:
+                        result["error"] = f"Simulation Failed: {sim_result['error']}"
+                        if temp_path.exists():
+                            temp_path.unlink()
+                        result["rollback_status"] = "preserved_original"
+                        logger.warning(f"🛡️ [MUTATION_ABORTED] {target_path.name} simulation failed: {result['error']}")
+                except Exception as sim_err:
+                    result["error"] = f"Simulation System Error: {sim_err}"
+                    logger.error(f"💥 [SIMULATION_CRITICAL] {sim_err}")
             else:
-                # 5. 실패! 롤백
+                # 5. 문법 실패! 롤백
                 result["error"] = check["failures"][0] if check["failures"] else "Unknown syntax error"
                 if temp_path.exists():
                     temp_path.unlink()
@@ -92,14 +112,27 @@ class GeneticRepair:
 if __name__ == "__main__":
     # 셀프 테스트용
     repair = GeneticRepair()
-    test_file = Path(__file__).resolve().parents[1] / "actions" / "genetic_test_action.py"
+    test_file = Path(__file__).resolve().parents[1] / "actions" / "level3_test_action.py"
     
-    # 1. 정상 수정 테스트
-    ok_code = "print('Hello, Shion Evolution!')\n# Safe Mutation Test"
+    # 0. 초기화
+    test_file.write_text("# Level 3 Test Action\ndef run():\n    print('Initial DNA')\n", encoding="utf-8")
+
+    # 1. 정상 수정 테스트 (Level 3 Success)
+    ok_code = "# Level 3 Evolution\ndef run():\n    print('Evolved DNA')\n\nif __name__ == '__main__':\n    run()"
     r1 = repair.propose_mutation(str(test_file), ok_code)
     print(f"Test 1 (Normal): {r1['passed']}, Error: {r1['error']}")
 
-    # 2. 문법 오류 테스트 (의도적 에러)
-    bad_code = "print('Oops')\ndef broken_syntax(:" # Missing paren and content
-    r2 = repair.propose_mutation(str(test_file), bad_code)
-    print(f"Test 2 (Broken): {r2['passed']}, Error: {r2['error']}")
+    # 2. 문법 오류 테스트 (Level 2 Block)
+    bad_syntax = "def broken_syntax(:" 
+    r2 = repair.propose_mutation(str(test_file), bad_syntax)
+    print(f"Test 2 (Broken Syntax): {r2['passed']}, Error: {r2['error']}")
+
+    # 3. 런타임 오류 테스트 (Level 3 Block - Crash)
+    crash_code = "def run():\n    print('Simulating crash...')\n    return 1 / 0\n\nif __name__ == '__main__':\n    run()"
+    r3 = repair.propose_mutation(str(test_file), crash_code)
+    print(f"Test 3 (Runtime Crash): {r3['passed']}, Error: {r3['error']}")
+
+    # 4. 무한 루프 테스트 (Level 3 Block - Timeout)
+    loop_code = "import time\ndef run():\n    print('Simulating loop...')\n    while True:\n        time.sleep(0.1)\n\nif __name__ == '__main__':\n    run()"
+    r4 = repair.propose_mutation(str(test_file), loop_code)
+    print(f"Test 4 (Infinite Loop): {r4['passed']}, Error: {r4['error']}")
