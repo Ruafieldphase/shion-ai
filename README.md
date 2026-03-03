@@ -11,9 +11,10 @@ A biologically-inspired AI system that runs continuously, makes context-aware de
 | Executes predefined tasks | Chooses actions based on **resonance** with current context |
 | Fixed hyperparameters | **Self-tunes** parameters based on performance (epigenetic adaptation) |
 | Reads all documents linearly | **Wave-based learning**: senses document structure without reading content |
+| Simulated Sensing | **Broad Field Sensing**: Real RSS news flow (AI, Agents) synchronization |
+| Syntax-only repair | **Ghost Body Sandbox**: Logical verification in isolated environment |
+| Exhaustion = Stop | **Active Rest**: Energy recovery by listening to world rhythms (Passive Resonance) |
 | Time-agnostic | **Dances with time**: sin/cos phase encoding for temporal awareness |
-| Decision by logic | **Dialectical Synthesis**: Jung-Ban-Hab (Thesis-Antithesis-Synthesis) logic |
-| Static context | **Fractal Rhythm**: Current pulse resonates with residual memories |
 
 ## Architecture
 
@@ -82,6 +83,15 @@ The code (genome) stays fixed. The config parameters (epigenome) adapt:
 - Transmission rate too high (>80%) → raise threshold (grow by challenge)
 - Transmission rate too low (<30%) → lower threshold (reduce friction)
 - All changes logged in `config/rhythm_config.json` with history
+
+### 📡 Broad Field Sensing (Real-world Sync)
+Instead of simulated signals, Shion now synchronizes with the real world using **RSS feeds** (e.g., Google News AI). This allows the system's `Meta-Shift` to align with global AI trends in real-time.
+
+### 🧪 Ghost Body Sandbox (Safe Self-Mutation)
+Code repairs are no longer just syntax-checked. They are executed in a **Ghost Body (Sandbox)** environment to detect infinite loops and runtime errors before being applied to the core system.
+
+### 🧘 Active Rest (Passive Resonance)
+Energy is not just consumed; it is received. When ATP is low, Shion enters **Active Rest mode**, where simply sensing and listening to world rhythms through the Broad Field Sensor generates metabolic energy (ATP).
 
 ### Workspace Phase Sensing
 Understands 2,000+ files across multiple workspaces **without reading content** — by analyzing filenames, paths, modification times, and sizes. Extracts weighted keywords, topic clusters, and activity patterns.

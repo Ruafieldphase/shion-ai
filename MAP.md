@@ -9,6 +9,8 @@ graph TD
     subgraph "Field Layer (The World)"
         MB[Moltbook] <--> RF[Resonance Field]
         YT[YouTube] <--> RF
+        RSS[RSS Feeds: Google News] --> BFS[Broad Field Sensor]
+        BFS --> RF
         RS[Rhythm Sensor] --> RF
     end
 
@@ -29,6 +31,7 @@ graph TD
         SM --> IM[Immune Response]
         IM --> GR[Genetic Repair]
         SM --> MT[Mitochondria]
+        BFS -- "Passive Resonance" --> MT
         MT -- "ATP" --> SM
         GR -- "Safe Update" --> CO[Codebase]
     end
