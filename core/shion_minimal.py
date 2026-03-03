@@ -53,7 +53,7 @@ logging.basicConfig(
 )
 logger = logging.getLogger("ShionMinimal")
 
-PULSE_INTERVAL_SECONDS = 600  # 10분
+PULSE_INTERVAL_SECONDS = 120  # 2분으로 단축 (실시간성 확보)
 OUTPUTS_DIR = SHION_ROOT / "outputs"
 
 # 대지(workspace) 루트 — 기존 두뇌 시스템 연결
@@ -498,7 +498,7 @@ class ShionMinimal:
         logger.info("🌀 Shion 생명 시스템 시작 (사건 기반 공명장 모드)")
         field = ResonanceField()
         idle_cycles = 0
-        MAX_IDLE_CYCLES = 40  # 40 * 30초 = 20분: 경계 터치 없어도 최소 20분에 1 pulse
+        MAX_IDLE_CYCLES = 5  # 5 * 30초 = 2.5분: 경계 터치 없어도 최소 2.5분에 1 pulse
 
         while self.is_running:
             # 30초마다 에너지 감지

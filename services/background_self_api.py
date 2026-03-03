@@ -212,6 +212,15 @@ class DarkFieldState:
         try:
             # 의식/무의식 위상 계산
             # Symmetry가 높으면 의식 중심, Resonance가 높으면 무의식 중심
+            # Add relational state from signature if available
+            sig_path = Path("C:/workspace/agi/outputs/rhythm_signature.json")
+            rel_state = "ORCHESTRATOR"
+            if sig_path.exists():
+                try:
+                    sig = json.loads(sig_path.read_text(encoding="utf-8"))
+                    rel_state = sig.get("relational_state", "ORCHESTRATOR")
+                except: pass
+
             state = {
                 "consciousness": round(0.5 + (self.symmetry * 0.45), 2),
                 "unconscious": round(0.5 + (self.lua_resonance * 0.45), 2),
@@ -220,6 +229,7 @@ class DarkFieldState:
                 "last_background_sync": datetime.now().isoformat(),
                 "field_symmetry": round(self.symmetry, 4),
                 "purity": round(self.void_purity, 4),
+                "relational_state": rel_state,
                 "folding_ratio": round(self.symmetry * self.void_purity, 3),
                 "unfolding_intensity": round(self.lua_resonance, 3)
             }

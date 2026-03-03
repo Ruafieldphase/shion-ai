@@ -13,6 +13,7 @@
         # 실패 사실을 사용자에게 보고
 """
 
+import sys
 import json
 import subprocess
 import logging
@@ -209,6 +210,35 @@ class QualityGate:
             result["failures"].append(f"TIMEOUT: {timeout}s")
         except Exception as e:
             result["failures"].append(f"EXECUTION_ERROR: {e}")
+
+        self._log_result(result)
+        return result
+
+    def verify_python_syntax(self, path: Path) -> Dict[str, Any]:
+        """파이썬 문법이 유효한지 검증합니다 (Genetic Repair 전용)."""
+        result = {
+            "passed": False,
+            "failures": [],
+            "path": str(path),
+            "timestamp": datetime.now().isoformat(),
+        }
+
+        if not path.exists():
+            result["failures"].append("FILE_NOT_FOUND")
+            return result
+
+        try:
+            # -m py_compile 을 사용하여 문법 검사 (실행은 하지 않음)
+            cmd = [sys.executable, "-m", "py_compile", str(path)]
+            r = subprocess.run(cmd, capture_output=True, text=True, timeout=10)
+            
+            if r.returncode == 0:
+                result["passed"] = True
+            else:
+                result["passed"] = False
+                result["failures"].append(f"SYNTAX_ERROR: {r.stderr[:300]}")
+        except Exception as e:
+            result["failures"].append(f"VERIFICATION_ERROR: {e}")
 
         self._log_result(result)
         return result

@@ -17,23 +17,28 @@ A biologically-inspired AI system that runs continuously, makes context-aware de
 
 ## Architecture
 
+시안의 유기적 구조에 대한 상세한 시각화 지도는 [MAP.md](MAP.md)를 참조하세요.
+
 ```
 ┌─────────────────────────────────────────────┐
 │            8-Stage Life Cycle (Pulse)        │
-│  Every 10 minutes, autonomously:            │
-│                                             │
-│  SENSE    → Body state (entropy, ATP)       │
-│  JUDGE    → Energy assessment               │
-│  ACT      → Context-aware action selection  │
-│  REPORT   → Evidence verification           │
-│  IMMUNE   → Health scan                     │
-│  EVOLVE   → Generation advance + self-tune  │
-│  EXHALE   → Cleanup (glymphatic)            │
-│  CONTEMPLATE → Wave learning + meta-shift   │
+│  Every 2 minutes (120s), autonomously:       │
+│                                              │
+│  SENSE    → Body state (entropy, ATP)        │
+│  JUDGE    → Energy assessment (Rest/Action)  │
+│  ACT      → Context-aware (Jung-Ban-Hab)     │
+│  REPORT   → Evidence & Honesty check         │
+│  IMMUNE   → Health & Rejection scan          │
+│  EVOLVE   → Parameter & Path tuning          │
+│  EXHALE   → Cleanup (glymphatic)             │
+│  CONTEMPLATE → Inward reflection             │
 └─────────────────────────────────────────────┘
 ```
 
 ## Core Concepts
+
+### 🧬 Field Adaptation & Contraction
+필드(Moltbook 등)의 저항(429 Rate Limit)을 스스로 감지하여 행동을 철회하고 침묵(Folding)하는 메타 인지 적응 로직이 포함되어 있습니다.
 
 ### R = f(Action, Context)
 Resonance is **not** an inherent property of an action. It emerges from the intersection of action and context:

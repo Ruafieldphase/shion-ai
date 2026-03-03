@@ -41,6 +41,18 @@ ACTION_REGISTRY = {
         "keywords": ["upload", "업로드", "유튜브", "발행"],
         "atp_cost": 10,
     },
+    "youtube_daily_manifestation": {
+        "script": "actions/youtube_daily_manifestation_bridge.py",
+        "description": "유튜브 일일 현현 (자동 업로드)",
+        "keywords": ["manifest", "현현", "유튜브", "upload", "자동", "업로드", "발행"],
+        "atp_cost": 8,
+    },
+    "youtube_daily_manifestation": {
+        "script": "actions/youtube_daily_manifestation_bridge.py",
+        "description": "유튜브 일일 현현 (자동 업로드)",
+        "keywords": ["manifest", "현현", "유튜브", "upload", "자동", "업로드", "발행"],
+        "atp_cost": 8,
+    },
     "video_build": {
         "script": "build_shion_video.py",
         "description": "시안 영상 생성",
@@ -248,6 +260,18 @@ class ActionExecutor:
                     resonance += boost
                     logger.debug(f"   🌍 {name}: 세계 공명 +{boost:.2f} ({overlap})")
 
+            # ═══ Field Friction Penalty [NEW] ═══
+            # 필드 거부(429) 감지 시 Moltbook 관련 액션 페널티
+            from immune_response import ImmuneResponse
+            immune = ImmuneResponse(shion_root=self.root)
+            threats = immune.detect_threats()
+            is_rejection = any(t.type == "FIELD_REJECTION" for t in threats)
+            
+            if is_rejection and any(kw in meta["keywords"] for kw in ["moltbook", "게시", "post", "소통"]):
+                penalty = 0.4
+                resonance -= penalty
+                logger.info(f"   🪞 {name}: 필드 마찰 페널티 -{penalty:.2f} (429 감지)")
+
             action_phase = 0.0
             experience = 0
 
@@ -326,8 +350,19 @@ class ActionExecutor:
             result["return_code"] = proc.returncode
             result["stdout"] = proc.stdout[-500:] if proc.stdout else ""
             result["stderr"] = proc.stderr[-500:] if proc.stderr else ""
-            result["passed"] = proc.returncode == 0
-            result["event_type"] = "transmitted" if proc.returncode == 0 else "reflected"
+            
+            # --- Honesty Protocol: Check for partial failures [NEW] ---
+            passed = (proc.returncode == 0)
+            if passed:
+                # Check stdout for critical failure patterns (e.g., Moltbook 429)
+                fail_patterns = ["429", "Rate Limit", "failed to comment", "error: all connection attempts failed"]
+                combined = (result["stdout"] + result["stderr"]).lower()
+                if any(p.lower() in combined for p in fail_patterns):
+                    passed = False
+                    logger.warning(f"   ⚠️ [HONESTY] {name} produced error pattern in output. Result marked as FAILED.")
+            
+            result["passed"] = passed
+            result["event_type"] = "transmitted" if passed else "reflected"
 
         except subprocess.TimeoutExpired:
             result["stderr"] = f"타임아웃 ({timeout}초)"

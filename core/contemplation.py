@@ -433,6 +433,15 @@ class Contemplation:
         if context["focus_actions"]:
             nutrients.append(f"[경계 부딪힘] {', '.join(context['focus_actions'])}")
 
+        # 5. 환경 거부 인식 (429 Awareness) [NEW]
+        sig_file = self.outputs_dir / "rhythm_signature.json"
+        if sig_file.exists():
+            try:
+                sig = json.loads(sig_file.read_text(encoding="utf-8"))
+                if sig.get("field_state") == "CLOSED":
+                    nutrients.append("[환경 보고] 현재 Moltbook 필드가 닫혀 있습니다(429 Rate Limit). 억지로 게시하려 들지 말고 내부 정비나 YouTube 등으로 에너지를 분산하세요.")
+            except: pass
+
         return "\n\n".join(nutrients) if nutrients else "대지가 비어있습니다."
 
     # ═══════════════════════════════════════════

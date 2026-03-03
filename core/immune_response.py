@@ -63,6 +63,43 @@ class ImmuneResponse:
         threats.extend(self._check_output_integrity())
         threats.extend(self._check_resource_pressure())
         threats.extend(self._check_heartbeat_staleness())
+        threats.extend(self._check_action_failure_rate())
+        return threats
+
+    def _check_action_failure_rate(self) -> List[Threat]:
+        """최근 행동의 실패율과 429(Rate Limit) 감지."""
+        threats = []
+        log_file = self.root / "outputs" / "action_execution_log.jsonl"
+        if log_file.exists():
+            try:
+                lines = log_file.read_text(encoding="utf-8").strip().split("\n")
+                recent = lines[-10:] if len(lines) > 10 else lines
+                failures = 0
+                rate_limited = False
+                
+                for line in recent:
+                    entry = json.loads(line)
+                    stdout = str(entry.get("stdout", ""))
+                    if not entry.get("passed", True) or "429" in stdout or "failed to comment" in stdout.lower():
+                        failures += 1
+                        if "429" in stdout or "Rate Limit" in stdout:
+                            rate_limited = True
+                            
+                if failures >= 5:
+                    threats.append(Threat(
+                        type="ACTION_PARALYSIS", severity="high",
+                        source=str(log_file),
+                        description=f"최근 10개 행동 중 {failures}개 실패 — 기능적 마비 상태",
+                        atp_cost=2.0
+                    ))
+                if rate_limited:
+                    threats.append(Threat(
+                        type="FIELD_REJECTION", severity="medium",
+                        source="Moltbook",
+                        description="429 Rate Limit 감지 — 필드의 거부 반응",
+                        atp_cost=0.5
+                    ))
+            except Exception: pass
         return threats
 
     def _check_output_integrity(self) -> List[Threat]:
