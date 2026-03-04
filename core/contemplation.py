@@ -532,12 +532,10 @@ class Contemplation:
             logger.warning(f"   🧠 성찰 오류: {e}")
         return None
 
-    def contemplate(self, memory_context: Optional[str] = None) -> Dict[str, Any]:
+    def contemplate(self, memory_context: Optional[str] = None, last_outcome: Optional[Dict[str, Any]] = None) -> Dict[str, Any]:
         """
         파동 학습 기반 자기 성찰 1사이클.
-
-        Returns:
-            {"contemplated": bool, "insight": str or None, "reason": str}
+        지휘자님의 '책임' 철학에 따라 이전 결과를 평가합니다.
         """
         # 두뇌 확인
         if not self.is_brain_awake():
@@ -547,8 +545,27 @@ class Contemplation:
                 "reason": "brain_sleeping",
             }
 
-        # 파동 학습 기반 자양분 수집 (과거 기억 포함)
+        # 책임 평가 (Responsibility Evaluator)
+        outcome_resonance = 1.0
+        if last_outcome:
+            # 의도(last_insight)와 실제 결과의 공명 확인
+            last_intent = self.get_last_insight() or ""
+            outcome_resonance = self._evaluate_responsibility(last_intent, last_outcome)
+            logger.info(f"   ⚖️ Responsibility Check: Resonance {outcome_resonance:.2f}")
+
+        # [NEW] [HIPPOCAMPUS] 해마 가교: 느낌을 맥락으로 해독
+        decoded_context = self._decode_vibe_into_context(memory_context)
+        if decoded_context:
+            logger.info(f"   🧠 [HIPPOCAMPUS] Decoded Vibe into Context: {decoded_context[:50]}...")
+
+        # 파동 학습 기반 자양분 수집
         nutrients = self._gather_nutrients(memory_context=memory_context)
+        if decoded_context:
+            nutrients = f"[HIPPOCAMPAL_MAP] {decoded_context}\n\n" + nutrients
+        
+        if last_outcome:
+            nutrients += f"\n\n[LAST_OUTCOME_FEEDBACK] {last_outcome.get('action')} 결과: {last_outcome.get('type')}, 공명도: {outcome_resonance}"
+
         logger.info(f"   📖 자양분 수집 완료 ({len(nutrients)}자)")
 
         # 두뇌에게 물음
@@ -556,21 +573,60 @@ class Contemplation:
 
         if insight:
             self._save_insight(insight, nutrients)
-            self._generate_meta_shift(insight)
+            self._generate_meta_shift(insight, outcome_resonance=outcome_resonance)
+            decision = "MAINTAIN" if outcome_resonance > 0.6 else "SHIFT"
             logger.info(f"   💡 통찰: {insight[:100]}")
+            logger.info(f"   🎯 Directionality: {decision} (Resonance {outcome_resonance:.2f})")
             return {
                 "contemplated": True,
                 "insight": insight,
-                "reason": "wave_learning_complete",
+                "decision": decision,
+                "resonance": outcome_resonance,
+                "reason": "responsibility_synthesis_complete",
             }
         else:
-            # 통찰이 없어도 meta_shift는 decay
             self._decay_meta_shift()
             return {
                 "contemplated": False,
                 "insight": None,
                 "reason": "brain_no_response",
             }
+
+    def _decode_vibe_into_context(self, memory_entry: Optional[Dict[str, Any]]) -> Optional[str]:
+        """[HIPPOCAMPAL_BRIDGE] 과거의 기억 맵을 현재의 맥락으로 해독(Decoding)합니다."""
+        if not memory_entry or "boundary_map" not in memory_entry:
+            return None
+            
+        map_info = memory_entry["boundary_map"]
+        insight = memory_entry.get("insight", "")
+        
+        # 느낌을 풀어헤쳐 맥락 지도를 생성
+        # "시간은 복잡하지만 찰나의 영감은 이 경계 주위에 있다"
+        decoded = (
+            f"과거 위상 {map_info.get('phase_anchor', 0):.2f} rad에서의 영감: '{insight}'\n"
+            f"이 느낌은 {map_info.get('resonance_anchor', 0.5):.2f}의 공명 강도와 "
+            f"{map_info.get('vibe_range', 0.3)}의 보편성을 가졌음."
+        )
+        return decoded
+
+    def _evaluate_responsibility(self, intent: str, outcome: Dict[str, Any]) -> float:
+        """이전 의도와 실제 결과 사이의 공명도를 측정 (책임의 메타인지)."""
+        res = 1.0
+        # 1. 반사(Reflection) 발생 시 공명 저하 (경계 터치)
+        if outcome.get("type") == "reflection":
+            res *= 0.6
+        
+        # 2. 의도 키워드와 실행된 행동의 정합성
+        action = outcome.get("action", "").lower()
+        intent_lower = intent.lower()
+        if intent_lower and action:
+            # 의도의 핵심 단어가 행동 이름에 포함되어 있는지 간단히 체크
+            intent_keywords = re.findall(r'[가-힣]{2,}|[a-zA-Z]{3,}', intent_lower)
+            match_count = sum(1 for kw in intent_keywords if kw.lower() in action)
+            if match_count > 0:
+                res *= 1.2 # 의도 부합 시 가중
+        
+        return round(max(0.1, min(1.5, res)), 4)
 
     def _save_insight(self, insight: str, nutrients_summary: str):
         """통찰을 기록합니다 — 미래의 자양분이 됩니다."""
@@ -616,25 +672,24 @@ class Contemplation:
         "structured": (
             ["structured", "구조", "organize", "정리", "system",
              "체계", "규칙", "rule", "패턴", "pattern"],
-            ["exploratory", "탐구", "새로", "novel", "experiment",
+             ["exploratory", "탐구", "새로", "novel", "experiment",
              "시도", "try", "창의", "creative", "실험"]
+        ),
+        "responsibility": (
+            ["책임", "responsibility", "수용", "acceptance", "감사",
+             "gratitude", "존중", "respect", "사랑", "love", "처리"],
+            ["회피", "avoid", "무시", "ignore", "무책임"]
         ),
     }
 
     META_SHIFT_FILE = Path(__file__).resolve().parents[1] / "outputs" / "meta_shift.json"
-    SHIFT_STRENGTH = 0.03   # 미세한 영향
-    DECAY_RATE = 0.85       # 매 pulse마다 15% 감소, ~5사이클 후 반감
+    SHIFT_STRENGTH = 0.04   # 약간 강화
+    DECAY_RATE = 0.90       # 유지력 강화
 
-    def _generate_meta_shift(self, insight: str):
+    def _generate_meta_shift(self, insight: str, outcome_resonance: float = 1.0, memory_context: Optional[Dict] = None):
         """
         통찰에서 4축 기울기 방향을 감지하고 meta_shift를 생성합니다.
-
-        "통찰은 행동을 선택하지 않는다.
-        행동을 선택하는 기준의 기울기를 바꾼다."
-
-        값이 아니라 방향만 바꾸는 것.
-        수면 통합처럼, 정확한 숫자가 아니라
-        "어제보다 더 안쪽으로 향해 있다"라는 기울기.
+        지휘자님의 '책임' 철학에 따라 outcome_resonance(의도와 결과의 일치도)를 반영합니다.
         """
         insight_lower = insight.lower()
 
@@ -646,10 +701,14 @@ class Contemplation:
         axes = shift.setdefault("axes", {
             "inward": 0.0, "active": 0.0,
             "narrow": 0.0, "structured": 0.0,
+            "responsibility": 0.0,
+            "context_continuity": 1.0,  # [NEW] 맥락 유지도 (1.0 = 유지, 0.0 = 전환)
         })
 
         # 각 축별 방향 감지
         for axis_name, (positive_words, negative_words) in self.GRADIENT_AXES.items():
+            if axis_name == "responsibility": continue # 별도 처리
+            
             pos_score = sum(1 for w in positive_words if w in insight_lower)
             neg_score = sum(1 for w in negative_words if w in insight_lower)
 
@@ -657,11 +716,38 @@ class Contemplation:
                 axes[axis_name] += self.SHIFT_STRENGTH * min(pos_score, 3)
             elif neg_score > pos_score:
                 axes[axis_name] -= self.SHIFT_STRENGTH * min(neg_score, 3)
-            # 둘 다 0이면 변화 없음 (= 이 축에서 중립)
 
-        # clamp to [-0.3, 0.3] — 너무 큰 영향 방지
-        for k in axes:
-            axes[k] = round(max(-0.3, min(0.3, axes[k])), 4)
+        # [NEW] Responsibility Axis (Phase 19/20)
+        axes["responsibility"] = round(axes.get("responsibility", 0.0), 4)
+        axes["context_continuity"] = round(axes.get("context_continuity", 1.0), 4)
+
+        # [NEW] [NATURAL_DECAY] 지휘자님 철학: "특정 상태에 머물지 않고 자연의 리듬을 따른다"
+        # 침전물이 가라앉듯, 모든 그래디언트는 시간이 지나면 서서히 중립(0.0)으로 복귀
+        decay_rate = 0.95
+        for k in ["inward", "active", "narrow", "structured", "responsibility"]:
+            axes[k] = round(axes[k] * decay_rate, 4)
+
+        # [Responsibility Logic] 의도와 결과의 공명을 바탕으로 맥락 유지 여부 결정
+        # 결과가 의도와 멀어지면(outcome_resonance 저하) continuity가 감소하며 Shift 압력이 커짐
+        axes["context_continuity"] = round(axes.get("context_continuity", 1.0) * 0.7 + outcome_resonance * 0.3, 4)
+        
+        # [NEW] [BODY_INTEGRITY] 신체 고통(리소스 압박)이 감지되면 강제로 inward/structured 위상으로 전이하여 정렬 유도
+        # memory_context가 None일 경우 기본값으로 처리
+        atp = memory_context.get("atp_level", 100) if memory_context else 100
+        if atp < 25:
+            logger.info("🧘 [CONTEMPLATE] 신체 피로 감지. 사유의 초점을 내면 정렬(Body Integrity)로 전환합니다.")
+            axes["inward"] = round(max(axes["inward"], 0.3), 4)
+            axes["active"] = round(axes["active"] * 0.5, 4) # 행동 억제
+            axes["context_continuity"] = 0.0 # 강제 맥락 전환(휴식으로)
+
+        # 책임 축은 명시적 키워드 + 결과 공명으로 결정
+        resp_pos = sum(1 for w in self.GRADIENT_AXES["responsibility"][0] if w in insight_lower)
+        curr_resp = axes.get("responsibility", 0.0)
+        axes["responsibility"] = round(max(0.0, min(1.0, curr_resp * 0.9 + (resp_pos * 0.1) + (outcome_resonance * 0.05))), 4)
+
+        # clamp to [-0.5, 0.5]
+        for k in ["inward", "active", "narrow", "structured"]:
+            axes[k] = round(max(-0.5, min(0.5, axes[k])), 4)
 
         # 행동별 보너스 계산 (각 행동의 키워드와 축 기울기의 내적)
         from action_executor import ACTION_REGISTRY

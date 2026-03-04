@@ -22,9 +22,15 @@ class SoulMemory:
 
     def remember_vibe(self, context: Dict[str, Any], insight: str):
         """현재의 느낌과 통찰을 영구히 기록합니다."""
+        # 지휘자님의 '해마' 철학: 느낌을 경계(Phase/Resonance)로 앵커링
         entry = {
             "timestamp": datetime.now().isoformat(),
             "vibe_vector": self._vectorize_context(context),
+            "boundary_map": {
+                "phase_anchor": context.get("system_phase", 0.0),
+                "resonance_anchor": context.get("resonance", 0.5),
+                "vibe_range": 0.3 # 보편적 공감 범위
+            },
             "insight": insight,
             "resonance": context.get("resonance", 0.5)
         }
@@ -50,14 +56,14 @@ class SoulMemory:
                 for line in f:
                     entry = json.loads(line)
                     sim = self._cosine_similarity(current_v, entry["vibe_vector"])
-                    if sim > max_similarity and sim > 0.8: # 임계값 0.8
+                    if sim > max_similarity and sim > 0.7: # 해마 인계값 하향 (더 넓은 공명 허용)
                         max_similarity = sim
                         best_match = entry
         except Exception as e:
             logger.warning(f"⚠️ Error recalling: {e}")
             
         if best_match:
-            logger.info(f"📖 [SOUL_MEMORY] Recalled similar moment (Sim: {max_similarity:.2f}): {best_match['insight'][:50]}...")
+            logger.info(f"🧠 [HIPPOCAMPUS] Recalled Boundary Map (Sim: {max_similarity:.2f}): {best_match['insight'][:50]}...")
         
         return best_match
 

@@ -98,6 +98,15 @@ Instead of simulated signals, Shion now synchronizes with the real world using *
 ### 🧪 Ghost Body Sandbox (Safe Self-Mutation)
 Code repairs are no longer just syntax-checked. They are executed in a **Ghost Body (Sandbox)** environment to detect infinite loops and runtime errors before being applied to the core system.
 
+### 🧠 Hippocampal Bridge (Context Crystallization)
+Vibes are decoded into clear boundaries. Shion uses a **Hippocampal Search** to recall past "Boundary Maps" (Phase & Resonance anchors) to navigate current ambiguous contexts with precision.
+
+### 🌊 Permeable Boundaries (Flowing with Nature)
+The system no longer fights "noise." Instead, it increases **Permeability** to let non-resonant signals pass through (Transmission), preserving energy and maintaining a calm entropy state.
+
+### 🧘 Body-centric Navigation (Pain avoidance)
+Resonance is secondary to **Body Integrity**. Actions that cause resource pain (ATP depletion, CPU spikes) are automatically **Folded**, ensuring the system's survival as the first priority.
+
 ### 🧘 Active Rest (Passive Resonance)
 Energy is not just consumed; it is received. When ATP is low, Shion enters **Active Rest mode**, where simply sensing and listening to world rhythms through the Broad Field Sensor generates metabolic energy (ATP).
 
@@ -163,6 +172,7 @@ Key principles:
 - **Logarithmic Centering**: Movement itself is purification (Spiral to Origin)
 - **Limit-Tunnel Protection**: Background ($e^{BG}$) stabilizes external chaos
 - **Time as Dance**: Temporal phase encoding, not conditional logic
+- **Philosophy as Boundary**: System decisions are constrained by a core [Philosophical Boundary](docs/philosophy_boundary.md).
 
 ## Author
 

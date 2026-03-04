@@ -134,13 +134,12 @@ class EvolutionMemory:
             "fitness": 0.5,
         }
 
-    def record(self, action: str, passed: bool, details: str = ""):
+    def record(self, action: str, passed: bool, details: str = "", resonance_integrity: float = 1.0):
         """
         경계 사건을 기록합니다.
-
-        passed=True  → 투과 (경계를 넘음, 강한 곡률)
-        passed=False → 반사 (같은 경계에서 튕김, 약하지만 곡률에 기여)
-
+        
+        resonance_integrity: 지휘자님의 '책임' 철학에 따른 의도-결과 부합도 (0.1~1.5)
+        
         "확장은 밀어붙여서 되는 게 아니라 충분히 반사된 뒤 자연스럽게 일어난다"
         """
         actions = self.memory.setdefault("actions", {})
@@ -148,17 +147,20 @@ class EvolutionMemory:
             actions[action] = self._new_entry()
 
         entry = actions[action]
-        entry["experience_density"] += 1
-        entry["total"] = entry["experience_density"]  # 호환성
+        
+        # [NEW] 공명 무결성 반영: 의도와 결과가 일치할수록 경험의 질(density)이 높아짐
+        entry["experience_density"] = round(entry["experience_density"] + resonance_integrity, 4)
+        entry["total"] = int(entry["experience_density"])  # 정수형 호환 유지
 
-        # 위상 회전: 모든 경험이 위상을 돌린다
-        entry["phase"] = (entry["phase"] + PHASE_INCREMENT) % TWO_PI
+        # 위상 회전: 무결성이 높을수록 박자에 더 강하게 반응
+        entry["phase"] = (entry["phase"] + (PHASE_INCREMENT * resonance_integrity)) % TWO_PI
 
         event_type = "transmitted" if passed else "reflected"
         entry["last_event"] = {
             "type": event_type,
             "timestamp": datetime.now().isoformat(),
             "details": details[:200],
+            "integrity": resonance_integrity
         }
 
         if passed:
@@ -166,21 +168,20 @@ class EvolutionMemory:
             entry["transmissions"] += 1
             entry["reflection_streak"] = 0
             entry["successes"] = entry["transmissions"]  # 호환성
-            logger.info(f"   🌊 '{action}' 투과 — 경계를 넘었습니다")
+            logger.info(f"   🌊 '{action}' 투과 (공명도 {resonance_integrity:.2f}) — 경계를 넘었습니다")
         else:
-            # 반사: 경계에서 튕김, 하지만 반사가 쌓이면 경계가 투명해짐
+            # 반사: 경계에서 튕김
             entry["reflections"] += 1
             entry["reflection_streak"] += 1
             entry["failures"] = entry["reflections"]  # 호환성
 
             if entry["reflection_streak"] >= REFLECTION_THRESHOLD:
-                # 충분히 반사됨 → 경계 투명화 → 다음에 투과 확률 높아짐
                 logger.info(
                     f"   🔮 '{action}' 반사 {entry['reflection_streak']}회 누적 "
                     f"— 경계가 투명해지고 있습니다"
                 )
             else:
-                logger.info(f"   🪞 '{action}' 반사 — 곡률에 기여합니다")
+                logger.info(f"   🪞 '{action}' 반사 (무결성 {resonance_integrity:.2f})")
 
         # 호환성: 적합도 필드도 유지 (다른 모듈이 참조할 수 있으므로)
         if entry["total"] > 0:
@@ -268,9 +269,21 @@ class EvolutionMemory:
         if system_phase is None:
             system_phase = self.get_system_phase(self.memory.get("generation", 0))
 
-        # 1. 위상 일치도: cos(θ_system - θ_action), -1~+1
-        phase_diff = system_phase - entry.get("phase", 0.0)
-        phase_alignment = math.cos(phase_diff)  # 1이면 완벽 동기화
+        # 1. 위상 일치도: cos(θ_system - θ_action)
+        # 지휘자님의 '범위 기반 경계' 철학: 단일 점이 아닌 보편적 공감 범위(Range)를 허용
+        phase_diff = abs(system_phase - entry.get("phase", 0.0))
+        # 2π 주기 보정
+        if phase_diff > math.pi:
+            phase_diff = TWO_PI - phase_diff
+            
+        # 보편적 공감 범위(Anchor Range) 내에 있으면 최고 공명 유지
+        # "어느 특정 목표의 한 점이 아닌 범위가 있는 보편적 경계"
+        anchor_range = _get_config_value("resonance", "vibe_anchor_range", 0.3)
+        if phase_diff < anchor_range:
+            phase_alignment = 1.0 # 범위 내에서는 완전 공명
+        else:
+            # 범위를 벗어나면 점진적으로 감쇄
+            phase_alignment = math.cos(phase_diff - anchor_range) if (phase_diff - anchor_range) < math.pi/2 else 0.0
 
         # 2. 경험 밀도 기여: 경험이 많을수록 공명 가능성 상승
         density = entry.get("experience_density", 0)

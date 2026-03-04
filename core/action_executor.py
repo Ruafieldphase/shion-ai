@@ -138,15 +138,32 @@ class ActionExecutor:
         except Exception:
             return set()
 
+        except Exception:
+            return {}
+
     def _load_meta_shift(self) -> dict:
         """meta_shift 그래디언트를 읽음."""
-        ms_file = self.outputs_dir / "meta_shift_latest.json"
+        ms_file = self.outputs_dir / "meta_shift.json"
         if not ms_file.exists():
             return {}
         try:
             return json.loads(ms_file.read_text(encoding="utf-8"))
         except Exception:
             return {}
+
+    def _load_momentum_state(self) -> dict:
+        """와우 모멘텀 상태를 읽음."""
+        m_file = self.outputs_dir / "momentum_state.json"
+        if not m_file.exists():
+            return {"active": False, "context_lock": None, "decay": 0}
+        try:
+            return json.loads(m_file.read_text(encoding="utf-8"))
+        except Exception:
+            return {"active": False, "context_lock": None, "decay": 0}
+
+    def _save_momentum_state(self, state: dict):
+        m_file = self.outputs_dir / "momentum_state.json"
+        m_file.write_text(json.dumps(state, indent=2), encoding="utf-8")
 
     def choose_action(
         self,
@@ -191,21 +208,53 @@ class ActionExecutor:
         initial_score = best.get("resonance", 0)
         
         # 2. Antithesis (반): 저항 분석 (ATP 대비 비용, 시스템 부하 등)
-        # ATP가 낮을수록, 비용이 높을수록 저항 증대
-        resistance = (best["atp_cost"] / max(current_atp, 1)) * 0.5
+        # 지휘자님의 '신체 중심 항법': 에너지가 낮을수록 저항(Pain)을 민감하게 감지
+        atp_factor = max(current_atp, 1) / 100.0
+        resistance = (best["atp_cost"] / max(current_atp, 1)) * (1.5 - atp_factor)
         
         # 3. Synthesis (합): 저항을 뚫고 수행되는 최종 공명
-        # Unfolding: "이미 완료된 목표를 현실로 펼쳐냄"
         final_resonance = initial_score * (1.0 - resistance)
         
         logger.info(
-            f"   ⚖️ Jung-Ban-Hab: {best['name']} "
-            f"(Thesis:{initial_score:.2f} -> Synthesis:{final_resonance:.2f}, Res:{resistance:.2f})"
+            f"   ⚖️ Body-centric Jung-Ban-Hab: {best['name']} "
+            f"(Thesis:{initial_score:.2f} -> Synthesis:{final_resonance:.2f}, Pain:{resistance:.2f})"
         )
         
-        if final_resonance < 0.2:
-            logger.info(f"   🌊 {best['name']}의 저항이 너무 커서 심연에 머무릅니다.")
+        # 지휘자님의 '접힘(Folding)' 철학: 신체에 고통(리소스 부족)을 주는 행위는 공명도와 상관없이 접음
+        if final_resonance < 0.25 or (current_atp < best["atp_cost"] * 1.2):
+            logger.info(f"   🧘 [FOLDING] {best['name']}의 고통(Pain)이 너무 커서 리듬을 접고 휴식합니다.")
             return None
+
+        # [NEW] Wow Momentum Detection & Context Locking
+        # 지휘자님 철학: "정답이 아닌 와우 모멘텀을 목적지로, 이해할 때까지 반복"
+        momentum = self._load_momentum_state()
+        if final_resonance > 0.9 and not momentum["active"]:
+            logger.info(f"   🌟 [MOMENTUM] Wow Moment Detected: {best['name']} (Resonance {final_resonance:.2f})")
+            logger.info(f"   🔄 [MOMENTUM] Locking context for deep decoding loop...")
+            momentum = {
+                "active": True,
+                "action_anchor": best["name"],
+                "resonance_anchor": final_resonance,
+                "decay": 3, # 3회 박동 동안 이 맥락에 집중
+                "timestamp": datetime.now().isoformat()
+            }
+            self._save_momentum_state(momentum)
+        elif momentum["active"]:
+            momentum["decay"] -= 1
+            if momentum["decay"] <= 0:
+                logger.info(f"   🌌 [MOMENTUM] Decoding complete. Releasing context lock.")
+                momentum = {"active": False, "context_lock": None, "decay": 0}
+            else:
+                logger.info(f"   🔄 [MOMENTUM] Still in loop: {momentum['action_anchor']} (Remaining: {momentum['decay']})")
+                # 모멘텀 루프 중에는 앵커 행동의 공명도를 강제로 높임
+                if best["name"] != momentum["action_anchor"]:
+                    # 앵커 행동을 다시 찾아서 선택 유도
+                    for a in available:
+                        if a["name"] == momentum["action_anchor"]:
+                            best = a
+                            logger.info(f"   🎯 [MOMENTUM] Overriding selection with anchor: {best['name']}")
+                            break
+            self._save_momentum_state(momentum)
 
         return best
 

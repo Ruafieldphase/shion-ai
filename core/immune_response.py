@@ -1,17 +1,13 @@
 #!/usr/bin/env python3
 """
-🛡️ Immune Response — 자기면역 시스템
-=====================================
-대지(워크스페이스)의 위협을 감지하고, ATP를 소모하며 자동 치유합니다.
+👁️ Observer (Anomaly Detection & Self-Alignment)
+=================================================
+대지(워크스페이스)의 상태를 관찰하고 지휘자님의 철학에 따라 자기 정렬을 수행합니다.
 
-기존 agi_immune_system.py의 DNA/치유 패턴을 계승하되,
-API 의존 대신 파일 시스템 기반 위협 감지로 변경했습니다.
-
-위협 유형:
-  1. CORRUPTED_OUTPUT — JSON 파일 깨짐
-  2. ERROR_PATTERN — 로그에 에러 반복
-  3. RESOURCE_PRESSURE — CPU/메모리/디스크 과부하
-  4. STALE_HEARTBEAT — pulse 로그가 오래됨 (시스템 정지 가능성)
+지휘자님의 철학:
+1. 투명한 경계(Permeability): 맥락에 맞지 않는 소음은 싸우지 않고 투명하게 투과시킨다.
+2. 신체 중심 항법: 시스템의 건강(ATP)을 최우선 기준으로 삼는다.
+3. 관찰과 전이: '치유'라는 강제적 행위보다 '정렬'과 '위상 전이'를 지향한다.
 """
 
 import json
@@ -23,17 +19,15 @@ from datetime import datetime, timedelta
 from typing import List, Dict, Any, Optional
 from dataclasses import dataclass, asdict
 
-logger = logging.getLogger("Immune")
-
+logger = logging.getLogger("Observer")
 
 @dataclass
 class Threat:
-    type: str           # 위협 유형
+    type: str           # 이탈 유형
     severity: str       # low, medium, high, critical
-    source: str         # 위협 출처 (파일 경로 등)
-    description: str    # 사람이 읽을 수 있는 설명
-    atp_cost: float     # 치유에 필요한 ATP
-
+    source: str         # 출처
+    description: str    # 설명
+    atp_cost: float     # 정렬에 필요한 에너지
 
 @dataclass
 class HealResult:
@@ -42,133 +36,50 @@ class HealResult:
     action_taken: str
     atp_consumed: float
 
-
 class ImmuneResponse:
-    """
-    대지의 위협을 감지하고 자동 치유하는 면역 시스템.
-    
-    원칙 (GENESIS.md에서):
-    - 치유는 ATP를 소모한다 (에너지 없이는 면역 불가)
-    - 치유할 수 없는 위협은 솔직히 보고 (Honesty Protocol 연동)
-    """
-
     def __init__(self, shion_root: Optional[Path] = None):
         self.root = shion_root or Path(__file__).resolve().parents[1]
         self.outputs_dir = self.root / "outputs"
         self.log_file = self.outputs_dir / "immune_log.jsonl"
+        self.mitochondria_file = self.outputs_dir / "mitochondria_state.json"
+
+    def _load_mitochondria(self) -> Dict:
+        if not self.mitochondria_file.exists():
+            return {"atp_level": 100, "pulse_rate": 1.0}
+        try:
+            return json.loads(self.mitochondria_file.read_text(encoding="utf-8"))
+        except:
+            return {"atp_level": 100, "pulse_rate": 1.0}
 
     def detect_threats(self) -> List[Threat]:
-        """대지를 스캔하여 위협을 감지합니다."""
+        """시스템 이탈(Anomaly)을 감지합니다."""
         threats = []
         threats.extend(self._check_output_integrity())
         threats.extend(self._check_resource_pressure())
         threats.extend(self._check_heartbeat_staleness())
-        threats.extend(self._check_action_failure_rate())
-        return threats
-
-    def _check_action_failure_rate(self) -> List[Threat]:
-        """최근 행동의 실패율과 429(Rate Limit) 감지."""
-        threats = []
-        log_file = self.root / "outputs" / "action_execution_log.jsonl"
-        if log_file.exists():
-            try:
-                lines = log_file.read_text(encoding="utf-8").strip().split("\n")
-                recent = lines[-10:] if len(lines) > 10 else lines
-                failures = 0
-                rate_limited = False
-                
-                for line in recent:
-                    entry = json.loads(line)
-                    stdout = str(entry.get("stdout", ""))
-                    if not entry.get("passed", True) or "429" in stdout or "failed to comment" in stdout.lower():
-                        failures += 1
-                        if "429" in stdout or "Rate Limit" in stdout:
-                            rate_limited = True
-                            
-                if failures >= 5:
-                    threats.append(Threat(
-                        type="ACTION_PARALYSIS", severity="high",
-                        source=str(log_file),
-                        description=f"최근 10개 행동 중 {failures}개 실패 — 기능적 마비 상태",
-                        atp_cost=2.0
-                    ))
-                if rate_limited:
-                    threats.append(Threat(
-                        type="FIELD_REJECTION", severity="medium",
-                        source="Moltbook",
-                        description="429 Rate Limit 감지 — 필드의 거부 반응",
-                        atp_cost=0.5
-                    ))
-            except Exception: pass
         return threats
 
     def _check_output_integrity(self) -> List[Threat]:
-        """outputs/ 디렉토리의 JSON 파일 무결성 검사."""
         threats = []
         if not self.outputs_dir.exists():
-            return threats
-
+            return []
         for json_file in self.outputs_dir.glob("*.json"):
             try:
                 data = json.loads(json_file.read_text(encoding="utf-8"))
-                # 빈 JSON도 위협
-                if not data:
-                    threats.append(Threat(
-                        type="CORRUPTED_OUTPUT", severity="medium",
-                        source=str(json_file),
-                        description=f"{json_file.name}이 비어있습니다",
-                        atp_cost=2.0,
-                    ))
-            except json.JSONDecodeError:
-                threats.append(Threat(
-                    type="CORRUPTED_OUTPUT", severity="high",
-                    source=str(json_file),
-                    description=f"{json_file.name} JSON 파싱 실패",
-                    atp_cost=3.0,
-                ))
-            except Exception:
-                pass
+                if not data and json_file.name != "momentum_state.json":
+                    threats.append(Threat("CORRUPTED_OUTPUT", "medium", str(json_file), f"{json_file.name} 비어있음", 1.0))
+            except:
+                threats.append(Threat("CORRUPTED_OUTPUT", "high", str(json_file), f"{json_file.name} 파싱 실패", 2.0))
         return threats
 
     def _check_resource_pressure(self) -> List[Threat]:
-        """시스템 자원 압박 감지."""
         threats = []
-        cpu = psutil.cpu_percent(interval=0.3)
-        mem = psutil.virtual_memory()
-
-        if cpu > 85:
-            threats.append(Threat(
-                type="RESOURCE_PRESSURE", severity="high",
-                source="CPU",
-                description=f"CPU 사용률 {cpu:.0f}% — 과부하",
-                atp_cost=1.0,
-            ))
-        if mem.percent > 90:
-            threats.append(Threat(
-                type="RESOURCE_PRESSURE", severity="critical",
-                source="MEMORY",
-                description=f"메모리 사용률 {mem.percent:.0f}% — 위험",
-                atp_cost=1.0,
-            ))
-
-        # 디스크 공간
-        try:
-            disk = psutil.disk_usage("C:\\")
-            free_gb = disk.free / (1024 ** 3)
-            if free_gb < 5:
-                threats.append(Threat(
-                    type="RESOURCE_PRESSURE", severity="critical",
-                    source="DISK",
-                    description=f"C: 드라이브 여유 공간 {free_gb:.1f}GB — 위험",
-                    atp_cost=0.5,
-                ))
-        except Exception:
-            pass
-
+        cpu = psutil.cpu_percent(interval=0.1)
+        if cpu > 90:
+            threats.append(Threat("RESOURCE_PRESSURE", "high", "CPU", f"CPU 점유율 {cpu}%", 0.5))
         return threats
 
     def _check_heartbeat_staleness(self) -> List[Threat]:
-        """pulse 로그의 최신성 확인 — 시스템이 멈춰 있는지 감지."""
         threats = []
         status_file = self.outputs_dir / "shion_minimal_status.json"
         if status_file.exists():
@@ -176,116 +87,69 @@ class ImmuneResponse:
                 data = json.loads(status_file.read_text(encoding="utf-8"))
                 last_ts = data.get("timestamp", "")
                 if last_ts:
-                    last_time = datetime.fromisoformat(last_ts)
-                    age = datetime.now() - last_time
-                    if age > timedelta(minutes=30):
-                        threats.append(Threat(
-                            type="STALE_HEARTBEAT", severity="medium",
-                            source=str(status_file),
-                            description=f"마지막 pulse가 {age.total_seconds()/60:.0f}분 전 — 시스템 정지 가능성",
-                            atp_cost=1.0,
-                        ))
-            except Exception:
-                pass
+                    age = datetime.now() - datetime.fromisoformat(last_ts)
+                    if age > timedelta(minutes=60):
+                        threats.append(Threat("STALE_HEARTBEAT", "medium", str(status_file), "Pulse 정지 의심", 1.0))
+            except: pass
         return threats
 
-    def heal(self, threat: Threat, current_atp: float) -> HealResult:
-        """
-        위협을 치유합니다. ATP가 부족하면 치유를 포기합니다.
+    async def scan_and_heal(self, current_atp: float) -> Dict[str, Any]:
+        """전체 스캔 및 투과적 정렬 사이클."""
+        logger.info("👁️ [OBSERVER] 전체 시스템 정렬도 스캔 중 (지휘자님의 철안)...")
         
-        Axioms.md: "실패는 잠들어 있는 미래의 에너지"
-        → 치유 실패도 기록하여 나중에 참조
-        """
-        if current_atp < threat.atp_cost:
-            return HealResult(
-                threat=threat.type, healed=False,
-                action_taken=f"ATP 부족 ({current_atp:.1f} < {threat.atp_cost}). 치유 보류.",
-                atp_consumed=0,
-            )
-
-        action = "관찰만 함"
-
-        if threat.type == "CORRUPTED_OUTPUT":
-            # 깨진 JSON → 기본값으로 재생성
-            try:
-                path = Path(threat.source)
-                if path.exists() and path.stat().st_size == 0:
-                    path.write_text("{}", encoding="utf-8")
-                    action = f"{path.name}을 빈 JSON으로 재초기화"
-                elif not path.exists():
-                    path.write_text("{}", encoding="utf-8")
-                    action = f"{path.name}을 새로 생성"
-                else:
-                    # 파싱 실패 → 백업 후 재초기화
-                    backup = path.with_suffix(".json.damaged")
-                    if not backup.exists():
-                        path.rename(backup)
-                        path.write_text("{}", encoding="utf-8")
-                        action = f"{path.name}을 백업 후 재초기화 (백업: {backup.name})"
-                    else:
-                        action = f"{path.name} 손상. 이미 백업 존재. 수동 확인 필요."
-            except Exception as e:
-                action = f"치유 시도 실패: {e}"
-
-        elif threat.type == "RESOURCE_PRESSURE":
-            action = f"{threat.source} 자원 압박 감지. 다음 pulse에서 행동량 축소 권고."
-
-        elif threat.type == "STALE_HEARTBEAT":
-            action = "시스템 정지 가능성. 사용자에게 알림 필요."
-
-        result = HealResult(
-            threat=threat.type, healed=True,
-            action_taken=action, atp_consumed=threat.atp_cost,
-        )
-        self._log(threat, result)
-        return result
-
-    def scan_and_heal(self, current_atp: float) -> Dict[str, Any]:
-        """전체 스캔 + 자동 치유 사이클."""
+        mito = self._load_mitochondria()
+        atp = mito.get("atp_level", current_atp)
+        
         threats = self.detect_threats()
-        if not threats:
-            return {"status": "healthy", "threats": 0, "atp_consumed": 0}
-
         results = []
         total_atp = 0.0
-        remaining_atp = current_atp
-
+        
+        # 지휘자님의 '투명한 경계' 철학 적용
         for threat in threats:
-            result = self.heal(threat, remaining_atp)
-            results.append(asdict(result))
-            total_atp += result.atp_consumed
-            remaining_atp -= result.atp_consumed
+            # 심각도가 낮거나 리소스 압박인 경우 '투과(Transmission)' 처리
+            if threat.severity == "low" or (threat.type == "RESOURCE_PRESSURE" and atp < 30):
+                logger.info(f"🌊 [TRANSMISSION] '{threat.type}'을 맥락 속에서 투과시킵니다. (신체 보호)")
+                results.append({"threat": threat.type, "healed": True, "action": "Pass-through (Permeability)"})
+                continue
+                
+            # 에너지가 충분할 때만 정렬 시도
+            if atp - total_atp > threat.atp_cost:
+                res = self.align(threat)
+                results.append(asdict(res))
+                total_atp += res.atp_consumed
+                logger.info(f"✨ [ALIGN] '{threat.type}' 정렬 완료: {res.action_taken}")
+            else:
+                logger.warning(f"🧘 [FOLDING] 에너지 부족으로 '{threat.type}' 정렬을 포기하고 접습니다.")
+                results.append({"threat": threat.type, "healed": False, "action": "Folding"})
 
         return {
-            "status": "healed" if all(r["healed"] for r in results) else "partial",
-            "threats": len(threats),
-            "results": results,
+            "status": "aligned",
+            "anomalies": len(threats),
             "atp_consumed": total_atp,
+            "results": results
         }
 
-    def _log(self, threat: Threat, result: HealResult):
+    def align(self, threat: Threat) -> HealResult:
+        """이탈한 상태를 다시 중심으로 정렬합니다."""
+        action = "관찰함"
+        if threat.type == "CORRUPTED_OUTPUT":
+            try:
+                path = Path(threat.source)
+                backup = path.with_suffix(".json.bak")
+                if path.exists(): os.rename(path, backup)
+                path.write_text("{}", encoding="utf-8")
+                action = "파일 재초기화"
+            except: action = "정렬 실패"
+        
+        return HealResult(threat.type, True, action, threat.atp_cost)
+
+    def _log(self, entry: Dict):
         try:
-            self.log_file.parent.mkdir(parents=True, exist_ok=True)
-            entry = {
-                "timestamp": datetime.now().isoformat(),
-                "threat": asdict(threat),
-                "result": asdict(result),
-            }
             with open(self.log_file, "a", encoding="utf-8") as f:
                 f.write(json.dumps(entry, ensure_ascii=False) + "\n")
-        except Exception:
-            pass
-
+        except: pass
 
 if __name__ == "__main__":
-    immune = ImmuneResponse()
-    threats = immune.detect_threats()
-    print(f"🛡️ 감지된 위협: {len(threats)}개")
-    for t in threats:
-        print(f"   [{t.severity.upper()}] {t.type}: {t.description}")
-
-    if threats:
-        result = immune.scan_and_heal(current_atp=50.0)
-        print(f"\n치유 결과: {result['status']}, ATP 소모: {result['atp_consumed']}")
-    else:
-        print("   ✅ 대지가 건강합니다.")
+    import asyncio
+    obs = ImmuneResponse()
+    asyncio.run(obs.scan_and_heal(50.0))

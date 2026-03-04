@@ -44,21 +44,29 @@ from circadian_rhythm import CircadianRhythm
 from soul_memory import SoulMemory
 from dream_engine import DreamEngine
 
-# --- Logging ---
-LOG_DIR = SHION_ROOT / "outputs" / "logs"
-LOG_DIR.mkdir(parents=True, exist_ok=True)
+# ---# Logging Setup
+# 모든 모듈의 로그를 pulse.log로 통합
+OUTPUTS_DIR = SHION_ROOT / "outputs" # Define OUTPUTS_DIR before using it for logging
+pulse_log = OUTPUTS_DIR / "logs" / "pulse.log"
+pulse_log.parent.mkdir(parents=True, exist_ok=True)
+
 logging.basicConfig(
     level=logging.INFO,
     format="%(asctime)s [%(levelname)s] %(message)s",
     handlers=[
-        logging.FileHandler(LOG_DIR / "pulse.log", encoding="utf-8"),
-        logging.StreamHandler(),
-    ],
+        logging.FileHandler(pulse_log, encoding="utf-8"),
+        logging.StreamHandler()
+    ]
 )
-logger = logging.getLogger("ShionMinimal")
+logger = logging.getLogger("Pulse")
+# 타 모듈 로거들도 이 핸들러를 사용하도록 함
+logging.getLogger("Observer").setLevel(logging.INFO)
+logging.getLogger("Contemplation").setLevel(logging.INFO)
+logging.getLogger("ActionExecutor").setLevel(logging.INFO)
+logging.getLogger("ShionMinimal").setLevel(logging.INFO) # Corrected based on context
 
 PULSE_INTERVAL_SECONDS = 120  # 2분으로 단축 (실시간성 확보)
-OUTPUTS_DIR = SHION_ROOT / "outputs"
+# OUTPUTS_DIR is already defined above for logging setup.
 
 # 대지(workspace) 루트 — 기존 두뇌 시스템 연결
 WORKSPACE_ROOT = SHION_ROOT  # c:\workspace2\shion
@@ -101,6 +109,9 @@ class ShionMinimal:
         # Fractal & High-dimensional attributes
         self.residual_resonance = 0.5 # Residual resonance from previous pulse
         self.field = ResonanceField()
+        self.last_outcome = None # [NEW] 책임 평가를 위한 이전 호흡의 결과
+        self.last_resonance = 1.0 # [NEW] 이전 성찰에서 도출된 공명 무결성
+        self.hippocampal_map = None # [NEW] 해마가 결정화한 현재의 경계 지도
 
     def _ensure_heart_alive(self):
         """
@@ -215,9 +226,9 @@ class ShionMinimal:
         logger.info(f"💓 Pulse #{self.cycle_count} 시작")
 
         # ═══════════════════════════════════════════
-        # 1. SENSE — 감각
+        # 1. SENSE (상황 / 상태) — 자기 관찰
         # ═══════════════════════════════════════════
-        logger.info("👁️ [SENSE] 신체 상태 감지...")
+        logger.info("👁️ [SENSE] 상태 관찰 (Nature Sensing)...")
 
         try:
             entropy_data = capture_entropy(samples=10, sleep_time=0.01)
@@ -257,7 +268,7 @@ class ShionMinimal:
         logger.info(f"   {body_context}")
 
         # ═══════════════════════════════════════════
-        # 2. JUDGE — 판단
+        # 2. RESONANCE (감정 / 느낌) — 스칼라장 중첩
         # ═══════════════════════════════════════════
         # 🌟 Witness with Background Self (8102) + Bohm Folding
         try:
@@ -276,6 +287,15 @@ class ShionMinimal:
         except Exception as e:
             logger.debug(f"   Background Witness Failed: {e}")
 
+        # [NEW] [HIPPOCAMPUS] Resonance Mapping: 느낌을 경계로 결정화
+        try:
+            recalled = self.soul.recall_similar_moment(body_state)
+            if recalled:
+                self.hippocampal_map = self.contemplation._decode_vibe_into_context(recalled)
+                logger.info(f"   🧠 [RESONANCE] Hippocampal Crystallization: 경계 지도 로드 완료")
+        except Exception as e:
+            logger.debug(f"   Resonance Mapping Failed: {e}")
+
         if atp < 15 or cpu > 90:
             if atp < 15:
                 logger.info(f"🧘 [ACTIVE REST] 에너지 고갈(ATP={atp:.1f}). 외부 기류를 수신하며 공명 대사(Passive Resonance) 중...")
@@ -285,10 +305,9 @@ class ShionMinimal:
             return
 
         # ═══════════════════════════════════════════
-        # 3. ACT — 행동 (위상 공명 기반 선택)
-        #    의식/무의식/배경자아 3축 기반 모드 전환
+        # 3. ACT & EVOLVE (기대 / 예측 / 추론) — 행동과 진화
         # ═══════════════════════════════════════════
-        logger.info("🎯 [ACT] 행동...")
+        logger.info("🎯 [ACT] 추론 기반 행동...")
 
         # 대지의 두뇌 상태 읽기
         brain = self._read_brain_state()
@@ -318,7 +337,7 @@ class ShionMinimal:
         ]
         for task_name, path, rules in checks:
             report = self.honesty.report(task_name, path, rules)
-            self.evolution.record(task_name, report["passed"])
+            self.evolution.record(task_name, report["passed"], resonance_integrity=self.last_resonance)
             if not report["passed"]:
                 logger.warning(f"   ❌ {report['honest_assessment']}")
 
@@ -329,9 +348,14 @@ class ShionMinimal:
 
         # 자율 행동 실행 — R = f(A, C) 맥락 기반 공명 학습
         last_insight = self.contemplation.get_last_insight()
+        # 해마 지도가 있다면 통찰에 결합하여 전달
+        context_insight = last_insight or ""
+        if self.hippocampal_map:
+            context_insight = f"[HIPPOCAMPAL_MAP] {self.hippocampal_map}\n" + context_insight
+
         evo_actions = self.evolution.memory.get("actions", {})
         exec_result = self.executor.choose_and_execute(
-            insight=last_insight,
+            insight=context_insight,
             evolution_data=evo_actions,
             current_atp=atp,
             system_phase=system_phase,
@@ -344,15 +368,17 @@ class ShionMinimal:
                 exec_result["passed"],
                 exec_result.get("stderr", "")[:200] if not exec_result["passed"]
                 else exec_result.get("stdout", "")[:200],
+                resonance_integrity=self.last_resonance # [NEW] 책임 피드백 반영
             )
             symbol = "🌊" if event_type == "transmitted" else "🪞"
             logger.info(
                 f"   → {symbol} {exec_result['action']}: "
                 f"{event_type} "
-                f"(ATP -{exec_result['atp_consumed']})"
+                f" (ATP -{exec_result['atp_consumed']})"
             )
             # Update residual resonance for the next fractal pulse
             self.residual_resonance = exec_result.get("resonance_at_selection", 0.5)
+            self.last_outcome = exec_result # [NEW] 성찰을 위한 결과 보관
 
         # ═══════════════════════════════════════════
         # 4. MANIFEST — 현현 (HERITAGE RESONANCE)
@@ -376,16 +402,16 @@ class ShionMinimal:
         self._update_status("ACTIVE", body_context)
 
         # ═══════════════════════════════════════════
-        # 5. IMMUNE — 면역
+        # 4. OBSERVE (자기 관찰 / 면역) — 맥락 정렬
         # ═══════════════════════════════════════════
-        logger.info("🛡️ [IMMUNE] 면역 스캔...")
-        immune_result = self.immune.scan_and_heal(current_atp=atp)
-        if immune_result["threats"] > 0:
+        logger.info("🛡️ [OBSERVE] 자기 정렬 및 맥락 스캔...")
+        immune_result = await self.immune.scan_and_heal(atp)
+        if immune_result.get("anomalies", 0) > 0:
             logger.info(
-                f"   위협 {immune_result['threats']}개 감지, "
-                f"상태: {immune_result['status']}, "
-                f"ATP 소모: {immune_result['atp_consumed']}"
+                f"   이탈(Anomaly) {immune_result['anomalies']}개 감지. "
+                f"자기 정렬 소모 ATP: {immune_result['atp_consumed']:.1f}"
             )
+            atp -= immune_result["atp_consumed"]
             self.evolution.record("immune_scan", immune_result["status"] == "healed")
         else:
             logger.info("   ✅ 대지 건강")
@@ -426,7 +452,11 @@ class ShionMinimal:
             recalled = self.soul.recall_similar_moment(body_state)
             memory_context = recalled["insight"] if recalled else None
             
-            insight = self.contemplation.contemplate(memory_context=memory_context)
+            # [NEW] 지휘자님 철학: 책임 기반 성찰 (피드백 루프)
+            insight = self.contemplation.contemplate(
+                memory_context=memory_context,
+                last_outcome=self.last_outcome
+            )
             
             # 야간인 경우 '꿈'을 꿉니다
             if circadian_info.get("phase") == "NIGHT":
@@ -442,6 +472,7 @@ class ShionMinimal:
                 
                 # 새로운 통찰을 영혼의 기억에 저장
                 self.soul.remember_vibe(body_state, insight["insight"])
+                self.last_resonance = insight.get("resonance", 1.0) # [NEW] 다음 박자를 위한 공명값 저장
                 
             elif insight["reason"] == "brain_sleeping":
                 logger.info("   🧠 두뇌 잠듦 — 성찰 건너뜀")
