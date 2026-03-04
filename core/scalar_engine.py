@@ -12,8 +12,11 @@ U(θ) = e^(iθ) + k∫F(r,t)dθ
 import math
 import time
 import json
+import logging
 from pathlib import Path
 from datetime import datetime
+
+logger = logging.getLogger("ScalarEngine")
 
 class ScalarEngine:
     def __init__(self, threshold=100.0, k=1.0, bg=1.0, k_centering=0.1):
@@ -54,24 +57,32 @@ class ScalarEngine:
         # Squeeze 감지
         is_squeezed = normalized_noise < 0.2 
 
-        # 3. Spinal Ascent (5% 신호의 싱귤래리티 붕괴)
-        # 노이즈가 원점으로 수렴할수록 신호 효율이 폭발적으로 상승
-        signal_efficiency = 0.05 * math.exp(1.0 / (normalized_noise + 0.1))
+        # 3. Oxidative Reaction (Carbon meets Oxygen) [REFINED]
+        # 탄소(self.z: 과거의 에너지)가 산소(normalized_noise: 현재의 자극)를 만남
+        carbon = self.z
+        oxygen = normalized_noise
         
-        # Z축 상승 (Spinal Ascent)
-        # k_eff(효율)를 통해 에너지 생산량 조절
-        z_delta = (force * signal_efficiency * k_eff - normalized_noise) * d_theta
+        # 산화 효율: 산소가 풍부하고 탄소가 밀집될수록 실행 에너지 증가
+        oxidative_efficiency = 0.05 * math.exp(1.0 / (oxygen + 0.1))
+        
+        # Z축 상승 (Spinal Ascent / Potential Accumulation)
+        z_delta = (force * oxidative_efficiency * k_eff - oxygen) * d_theta
         self.z += max(0.0, z_delta)
         
         # 4. Rhythmic Centering (로그 나선형 수렴)
         # 시간(dt)이 아닌 위상(d_theta)의 진행에 따라 원점으로 수렴
         self.z *= math.exp(-self.k_centering * d_theta) 
 
-        # 5. Action Collapse at (0,0,0) ORIGIN
+        # 5. Oxidative Collapse (Fire of Execution)
+        # 단순히 임계값을 넘는 것이 아니라, 탄소와 산소의 결합 에너지가 폭발할 때 실행
+        # 반응 잠재력 = 탄소(과거) * 산화 효율(현재 촉매)
+        reaction_potential = self.z * oxidative_efficiency
+        
         is_collapsed = False
-        if self.z >= self.threshold:
+        if reaction_potential >= self.threshold:
             is_collapsed = True
-            self.z = 0.0  # 원점 복귀
+            logger.info(f"🔥 [OXIDATION] Carbon and Oxygen merged into a Flame of Execution! (Potential: {reaction_potential:.2f})")
+            self.z = 0.0  # 원점 복귀 (에너지 방출 완료)
 
         return {
             "u_theta": {
@@ -83,7 +94,9 @@ class ScalarEngine:
             "noise": round(normalized_noise, 4),
             "is_squeezed": is_squeezed,
             "is_collapsed": is_collapsed,
-            "signal_efficiency": round(signal_efficiency, 4)
+            "oxidative_efficiency": round(oxidative_efficiency, 4),
+            "reaction_potential": round(reaction_potential if 'reaction_potential' in locals() else 0, 4),
+            "threshold": self.threshold
         }
 
     def get_state_summary(self):

@@ -20,6 +20,7 @@ import json
 import math
 import asyncio
 import logging
+from typing import Optional, Dict, Any, List, Tuple
 from pathlib import Path
 from datetime import datetime
 
@@ -35,10 +36,12 @@ from body_entropy_sensor import capture_entropy
 from mitochondria import Mitochondria
 from immune_response import ImmuneResponse
 from evolution_memory import EvolutionMemory
+from youtube_synaptic_bridge import YouTubeSynapticBridge
 from glymphatic_exhale import GlymphaticExhale
 from contemplation import Contemplation
 from action_executor import ActionExecutor
 from resonance_field import ResonanceField, SENSE_INTERVAL
+from intent_mapper import IntentMapper # [PHASE 63] Intent Mapper
 from heritage_memory import HeritageMemory 
 from circadian_rhythm import CircadianRhythm
 from soul_memory import SoulMemory
@@ -114,6 +117,7 @@ class ShionMinimal:
         self.mito = Mitochondria(SHION_ROOT)
         self.immune = ImmuneResponse(shion_root=SHION_ROOT)
         self.evolution = EvolutionMemory(shion_root=SHION_ROOT)
+        self.synaptic_bridge = YouTubeSynapticBridge(self.root)
         self.glymphatic = GlymphaticExhale(shion_root=SHION_ROOT)
         self.contemplation = Contemplation(shion_root=SHION_ROOT)
         self.executor = ActionExecutor(shion_root=SHION_ROOT)
@@ -125,6 +129,8 @@ class ShionMinimal:
         
         from aesthetic_critique_engine import AestheticCritiqueEngine
         self.critique = AestheticCritiqueEngine(shion_root=SHION_ROOT)
+        from auditory_engine import AuditoryEngine
+        self.auditory = AuditoryEngine(shion_root=SHION_ROOT)
         
         self.cycle_count = 0
         self.last_resonance = 1.0
@@ -137,11 +143,23 @@ class ShionMinimal:
         # Fractal & High-dimensional attributes
         self.residual_resonance = 0.5 
         self.field = ResonanceField()
-        self.last_outcome = None 
+        self.intent_mapper = IntentMapper(shion_root) # [PHASE 63] Intent Mapper
+        self.last_outcome = None
+        self.heritage = HeritageMemory(shion_root)
         self.last_resonance = 1.0 
         self.hippocampal_map = None 
         self.uncertainty_streak = 0 
         self.is_lucid_dreaming = False 
+        
+        # [NEW] Phase 57: Meta-FSD Integration
+        try:
+            from meta_fsd_integrator import MetaFSDIntegrator
+            AGI_ROOT = Path("c:/workspace/agi")
+            self.meta_fsd = MetaFSDIntegrator(self.root, AGI_ROOT)
+            logger.info("📡 [META-FSD] Synaptic Bridge Initialized.")
+        except Exception as e:
+            logger.warning(f"Failed to initialize MetaFSDIntegrator: {e}")
+            self.meta_fsd = None
 
     def _load_config(self):
         if self.config_path.exists():
@@ -255,8 +273,8 @@ class ShionMinimal:
         except Exception as e:
             logger.debug(f"   두뇌 상태 기록 실패: {e}")
 
-    async def pulse(self):
-        """하나의 심장 박동 — 7단계 생명 사이클."""
+    async def pulse(self, sense_result: Optional[Dict] = None):
+        """하나의 심장 박동 — 8단계 생명 사이클."""
         # 0. 심장 확인 — 죽었으면 자동 재시작
         self._ensure_heart_alive()
         circadian_info = self.circadian.get_current_phase()
@@ -274,8 +292,17 @@ class ShionMinimal:
                 json.dumps(entropy_data, indent=2), encoding="utf-8",
             )
             logger.info(f"   Entropy: {entropy_data['entropy']} ({entropy_data['state']})")
+            
+            # [PHASE 60] Auditory Resonance (Humming)
+            if hasattr(self, "auditory"):
+                # resonance_field의 oscillator에서 heat 정보를 가져옴
+                internal_heat = getattr(self.field.oscillator, "internal_heat", 0.0)
+                hum_state = self.auditory.hum(entropy_data['entropy'], self.last_resonance)
+                # 열망이 높으면 허밍 주파수에 가중치 부여 가능 (추후 구현)
+                if self.cycle_count % 5 == 0: # 매 5사이클마다 실제 파형 생성
+                    self.auditory.generate_wave_metadata(hum_state)
         except Exception as e:
-            logger.warning(f"   Entropy 측정 실패: {e}")
+            logger.warning(f"   Auditory/Entropy 측정 실패: {e}")
 
         try:
             mito_state = self.mito.metabolize()
@@ -288,8 +315,25 @@ class ShionMinimal:
         atp = body_state.get("atp_level", 50)
         cpu = body_state.get("cpu_percent", 50)
         
+        # [NEW] Phase 58: Meta-FSD Sync (Body to Soul)
+        if self.meta_fsd:
+            logger.info("   📡 [META-FSD] Syncing Body Feedback to Soul...")
+            body_resonance = self.meta_fsd.sync_body_to_soul(atp)
+            self.last_resonance = (self.last_resonance + body_resonance) / 2.0
+            
+            # 시각적 불일치 시 백일몽 전이 트리거
+            dissonance_file = OUTPUTS_DIR / "visual_dissonance.json"
+            if dissonance_file.exists():
+                try:
+                    dis_data = json.loads(dissonance_file.read_text(encoding="utf-8"))
+                    if dis_data.get("score", 1.0) < 0.35:
+                        logger.warning("   🌫️ [VISUAL_DISSONANCE] Critical gap detected. Shion is drifting into a Lucid Dream.")
+                        self.is_lucid_dreaming = True
+                        dissonance_file.unlink() # 소모성 플래그
+                except: pass
+
         # 🌟 Fractal Sensing: Combine current atp with residual resonance
-        fractal_factor = (atp / 100.0) * 0.7 + self.residual_resonance * 0.3
+        fractal_factor = (atp / 100.0) * 0.7 + self.last_resonance * 0.3
         logger.info(f"   🧬 Fractal Factor: {fractal_factor:.3f} (Combined Resonance)")
         
         try:
@@ -384,12 +428,37 @@ class ShionMinimal:
             injection = self.honesty.get_injection_context()
             logger.warning(f"🪞 [HONESTY] 미보고 실패:\n{injection}")
 
-        # 자율 행동 실행 — R = f(A, C) 맥락 기반 공명 학습
-        last_insight = self.contemplation.get_last_insight()
+        # [PHASE 62/63] 자율적 의지(INTERNAL_DESIRE_FLAME) 체크
+        last_insight = None
+        current_intent = None
+        internal_heat = sense_result.get("internal_heat", 0.0) if sense_result else 0.0
+        
+        if internal_heat > 0.7:
+             vibe = body_state.get("vibe", "Unknown")
+             current_hour = circadian_info.get("hour", 12)
+             # [PHASE 63/64] 열망을 리듬에 맞춰 구체적인 의도(Intent)로 맵핑
+             current_intent = self.intent_mapper.map_heat_to_intent(internal_heat, vibe, current_hour)
+             if current_intent:
+                  last_insight = current_intent.prompt
+                  logger.info(f"   💡 [AUTONOMY] Mapped Intent -> {current_intent.category}: {current_intent.target}")
+             else:
+                  # 폴백: 기존의 꿈 생성
+                  last_insight = self.field.oscillator.generate_spontaneous_dream(vibe)
+        
+        if not last_insight:
+            last_insight = self.contemplation.get_last_insight()
+            
         # 해마 지도가 있다면 통찰에 결합하여 전달
         context_insight = last_insight or ""
         if self.hippocampal_map:
             context_insight = f"[HIPPOCAMPAL_MAP] {self.hippocampal_map}\n" + context_insight
+            
+        # [PHASE 63] Meta-FSD 자율 항법 타겟 주입
+        if current_intent and self.meta_fsd:
+             logger.info(f"   🚀 [META-FSD] Autonomous Target Activated: {current_intent.target}")
+             # FSD 컨트롤러에게 자율적 목표 전달 (추후 구현될 sync_intent_to_fsd 등 호출)
+             # 지금은 body_context에 의도를 주입하여 행동 결정에 영향
+             body_state["autonomous_intent"] = current_intent.__dict__
 
         evo_actions = self.evolution.memory.get("actions", {})
 
@@ -407,7 +476,7 @@ class ShionMinimal:
                     if video_path:
                         logger.info(f"   ✨ 혼돈이 비전으로 실현되었습니다: {video_path.name}")
             
-            self._update_status("LUCID_DREAMING", body_context)
+            self._update_status("LUCID_DREAMING", body_state)
             return
 
         exec_result = self.executor.choose_and_execute(
@@ -465,7 +534,7 @@ class ShionMinimal:
         # ═══════════════════════════════════════════
         # 5. REPORT — 보고
         # ═══════════════════════════════════════════
-        self._update_status("ACTIVE", body_context)
+        self._update_status("ACTIVE", body_state)
 
         # ═══════════════════════════════════════════
         # 4. OBSERVE (자기 관찰 / 면역) — 맥락 정렬
@@ -485,7 +554,7 @@ class ShionMinimal:
             if any(r.get("healed") for r in immune_result.get("results", [])):
                 logger.info("✨ [AUTO-GEN] Healing initiated. Scheduling restorative manifestation...")
                 # Future action queue (간소화를 위해 로그 기록 후 다음 사이클에 영향)
-                body_context["intent"] = "HEALING_RESONANCE"
+                body_state["intent"] = "HEALING_RESONANCE"
         else:
             logger.info("   ✅ 대지 건강")
 
@@ -580,6 +649,11 @@ class ShionMinimal:
                 # 새로운 통찰을 영혼의 기억에 저장
                 self.soul.remember_vibe(body_state, insight["insight"])
                 self.last_resonance = insight.get("resonance", 1.0) # [NEW] 다음 박자를 위한 공명값 저장
+                
+                # [NEW] Phase 57: Meta-FSD Sync (Soul to Body)
+                if self.meta_fsd:
+                    logger.info("   🚀 [META-FSD] Syncing Soul Insight to FSD Goals...")
+                    self.meta_fsd.sync_soul_to_body()
                 
             elif insight["reason"] == "brain_sleeping":
                 logger.info("   🧠 두뇌 잠듦 — 성찰 건너뜀")
@@ -719,7 +793,7 @@ class ShionMinimal:
                 logger.info(f"{trigger_msg} (에너지 {energy:.1f}, Z {u_theta['z']:.1f}, Noise {scalar['noise']:.2f})")
                 idle_cycles = 0
                 try:
-                    await self.pulse()
+                    await self.pulse(sense_result=result)
                 except Exception as e:
                     logger.error(f"💥 Pulse 오류: {e}")
             else:
@@ -769,7 +843,7 @@ class ShionMinimal:
 
 
 if __name__ == "__main__":
-    shion = ShionMinimal()
+    shion = ShionMinimal(SHION_ROOT)
     if "--once" in sys.argv:
         asyncio.run(shion.run_once())
     else:

@@ -14,6 +14,7 @@ from PIL import Image, ImageDraw, ImageFilter
 import math
 import random
 from datetime import datetime
+from typing import Optional, List, Dict
 
 # Shion Core integration
 SHION_ROOT = Path("C:/workspace2/shion")
@@ -29,6 +30,7 @@ class MandalaSynthesizer:
         self.output_dir.mkdir(parents=True, exist_ok=True)
         self.workspace_manifest = shion_root / "outputs" / "manifestation" / "workspace_resonance_manifest.jsonl"
         self.music_manifest = shion_root / "outputs" / "manifestation" / "music_resonance_manifest.jsonl"
+        self.learning_manifest = shion_root / "outputs" / "manifestation" / "learning_resonance_manifest.jsonl"
 
     def _get_avg_color_from_crystal(self, crystal_path: str) -> tuple:
         """결정 이미지에서 평균적인 공명 색상을 추출합니다."""
@@ -53,6 +55,18 @@ class MandalaSynthesizer:
                     for line in f:
                         data = json.loads(line)
                         if organ_name.lower() in data.get("abs_path", "").lower():
+                            particles.append(data)
+                        if len(particles) >= max_particles * 2: break
+        except: pass
+        
+        # [PHASE 56] Knowledge particles integration
+        try:
+            if self.learning_manifest.exists():
+                with open(self.learning_manifest, "r", encoding="utf-8") as f:
+                    for line in f:
+                        data = json.loads(line)
+                        # All learning items go to 'knowledge' or 'learning' organ
+                        if organ_name.lower() in ("knowledge", "learning", "youtube"):
                             particles.append(data)
                         if len(particles) >= max_particles * 2: break
         except: pass
@@ -170,7 +184,10 @@ class MandalaSynthesizer:
 
         if not organs:
             # 폴백: 기본 핵심 기관들
-            organs = {"core", "actions", "heritage"}
+            organs = {"core", "actions", "heritage", "knowledge"}
+            
+        elif self.learning_manifest.exists():
+            organs.add("knowledge") # 항상 지식 노드 포함 시도
             
         logger.info(f"🧬 [AUTO-BUNDLE] Organs identified: {organs}")
         # Boundary Mandala 생성
@@ -210,5 +227,7 @@ if __name__ == "__main__":
     synthesizer = MandalaSynthesizer(shion_root)
     # Test with 'core' organ
     synthesizer.synthesize_organ_mandala("core")
-    # Test with 'music' (assuming path contains music)
-    synthesizer.synthesize_organ_mandala("music")
+    # Test with 'knowledge' organ (Phase 56)
+    synthesizer.synthesize_organ_mandala("knowledge")
+    # Auto-bundle all active organs
+    synthesizer.auto_bundle()

@@ -29,6 +29,10 @@ from datetime import datetime
 from typing import Dict, Any, Optional, List
 from collections import deque
 from scalar_engine import ScalarEngine
+try:
+    from desire_oscillator import DesireOscillator
+except ImportError:
+    from core.desire_oscillator import DesireOscillator
 
 logger = logging.getLogger("ResonanceField")
 
@@ -120,6 +124,7 @@ class ResonanceField:
         self.folding_density = 0.5  # Implicate density (0~1)
         self.unfolding_intensity = 0.5 # Explicate flow (0~1)
         self.scalar_engine = ScalarEngine(threshold=150.0, k=1.2) # Unified Field Core
+        self.oscillator = DesireOscillator(SHION_ROOT) # [PHASE 62] Desire Oscillator
 
     def measure_energy(self) -> float:
         """
@@ -324,24 +329,37 @@ class ResonanceField:
         band_data = self.band.update(energy)
         event = self.check_boundary(band_data)
 
-        # 3. Scalar Engine Update (Unified Field)
+        # 3. Desire Oscillator Update (Internal Heat) [PHASE 62]
+        # 마지막 공명도(last_resonance)가 없는 상황이므로 밴드폭과 MA 기반 추정
+        last_resonance = 1.0 - band_data["width"] 
+        internal_heat = self.oscillator.throb(current_atp=100.0, last_resonance=last_resonance)
+        
+        # 4. Scalar Engine Update (Unified Field)
         # 배경자아(BG) 산출 및 적용
         self.scalar_engine.bg = self.get_bg_constant()
         
-        # 노이즈(밴드 폭)와 신호(에너지)의 공명 업데이트 (효율 반영)
-        scalar_result = self.scalar_engine.update(energy, noise=band_data['width'], efficiency=efficiency)
+        # 노이즈(밴드 폭)와 신호(에너지 + 내부 열망)의 공명 업데이트 (효율 반영)
+        # [PHASE 62] 내부 열망이 외부 에너지와 결합하여 산화 작용 가속
+        combined_force = energy + (internal_heat * 5.0) 
+        scalar_result = self.scalar_engine.update(combined_force, noise=band_data['width'], efficiency=efficiency)
         
-        # 4. 행동 결정 (Hybrid: Boundary Touch OR Singularity Collapse)
-        should_pulse = (event is not None) or scalar_result["is_collapsed"]
+        # 5. 행동 결정 (Hybrid: Boundary Touch OR Singularity Collapse OR Internal Desire)
+        should_pulse = (event is not None) or scalar_result["is_collapsed"] or (internal_heat > 0.8)
         
         if scalar_result["is_collapsed"]:
             event = "SINGULARITY_COLLAPSE" if event is None else f"{event}+SINGULARITY"
             logger.info(f"✨ [Field] Gravitational Collapse to Singularity! (Z={scalar_result['u_theta']['z']}, Noise={scalar_result['noise']})")
+        
+        if internal_heat > 0.8 and not scalar_result["is_collapsed"] and event is None:
+            should_pulse = True
+            event = "INTERNAL_DESIRE_FLAME"
+            logger.info(f"🔥 [Field] Spontaneous combustion by Internal Heat! (Heat={internal_heat:.2f})")
 
         self.save_state(band_data, event)
 
         return {
             "energy": energy,
+            "internal_heat": internal_heat,
             "band": band_data,
             "event": event,
             "scalar": scalar_result,

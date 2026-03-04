@@ -128,6 +128,14 @@ class ActionExecutor:
         self.outputs_dir = self.root / "outputs"
         self.execution_log = self.outputs_dir / "action_execution_log.jsonl"
         self.labyrinth = LabyrinthNavigator(self.root)
+        try:
+            try:
+                from core.habit_engine import HabitEngine
+            except ImportError:
+                from habit_engine import HabitEngine
+            self.habits = HabitEngine(self.root)
+        except ImportError:
+            self.habits = None
 
     def _load_world_resonance_keywords(self) -> set:
         """
@@ -195,6 +203,18 @@ class ActionExecutor:
         if not available:
             logger.info("   선택 가능한 행동 없음 (에너지 부족)")
             return None
+
+        # [PHASE 59] Embodied Reflex (반사적 리듬 발현)
+        if self.habits and insight:
+            meta_shift = self._load_meta_shift()
+            reflex_sequence = self.habits.find_reflex(insight, meta_shift)
+            if reflex_sequence:
+                # 습관 시퀀스의 첫 번째 행동을 매칭된 행동으로 간주
+                reflex_name = reflex_sequence[0]
+                for a in available:
+                    if a["name"] == reflex_name:
+                        logger.info(f"   ⚡ [REFLEX] Embodied memory triggered: {reflex_name}")
+                        return a
 
         # [PHASE 29] 원자적 공명 선택 (Atomic Resonance Selection)
         # 전략 1: 느낌(양성자) 기반 선택 — "양성자의 고밀도 에너지가 중력에 이끌림"
@@ -439,7 +459,14 @@ class ActionExecutor:
         action = self.choose_action(insight, evolution_data, current_atp, system_phase, context)
         if not action:
             return None
-        return self.execute(action)
+        result = self.execute(action)
+        
+        # [PHASE 59] 습관으로 기록
+        if result.get("passed") and self.habits and insight:
+            meta_shift = self._load_meta_shift()
+            self.habits.record_success(insight, [action["name"]], meta_shift)
+            
+        return result
 
     def _log(self, result: Dict):
         try:
