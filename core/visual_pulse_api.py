@@ -47,15 +47,45 @@ class ShionStatusHandler(http.server.SimpleHTTPRequestHandler):
                     entropy = data.get("entropy", 0)
                 except: pass
 
+            # [PHASE 65] 열망 및 의도 데이터 로드
+            heat = 0
+            satiety = 1.0
+            last_intents = []
+            
+            desire_file = SHION_ROOT / "outputs" / "internal_desire.json"
+            if desire_file.exists():
+                try:
+                    data = json.loads(desire_file.read_text(encoding="utf-8"))
+                    heat = data.get("internal_heat", 0)
+                    satiety = data.get("satiety", 0)
+                except: pass
+
+            intent_log = SHION_ROOT / "outputs" / "autonomous_intents.jsonl"
+            if intent_log.exists():
+                try:
+                    with open(intent_log, "r", encoding="utf-8") as f:
+                        lines = f.readlines()[-5:]
+                        for line in lines:
+                            it = json.loads(line)
+                            last_intents.append({
+                                "time": it.get("timestamp", "").split("T")[-1][:8],
+                                "category": it.get("category", "N/A"),
+                                "target": it.get("target", "N/A")
+                            })
+                except: pass
+
             response = {
                 "atp": atp,
                 "entropy": entropy,
+                "heat": heat,
+                "satiety": satiety,
                 "last_action": last_action,
                 "resonance": resonance,
-                "pulse_active": atp > 5, # 에너지가 있으면 박동
+                "pulse_active": atp > 5,
+                "intents": last_intents,
                 "new_logs": [
                     {"msg": f"Resonance Sync: {(resonance*100):.1f}%", "type": "info"},
-                    {"msg": f"Labyrinth Navigation: ACTIVE", "type": "success"}
+                    {"msg": f"Internal Heat: {(heat*100):.1f}%", "type": "warning" if heat > 0.7 else "info"}
                 ]
             }
             self.wfile.write(json.dumps(response).encode('utf-8'))
