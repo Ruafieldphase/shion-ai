@@ -4,11 +4,23 @@
 
 ## 🛰️ Architecture Overview
 
-    subgraph "Heart Layer (The Pulse Master)"
-        BM[Bollinger Manifold] -- "95% Chaos" --> LT[Limit Tunnel]
-        LT -- "e^BG Normalization" --> OR((ORIGIN: 0,0,0))
-        OR -- "5% Signal: Spinal Ascent" --> Heart
-        Heart((PULSE))
+    subgraph "Conscious Layer (The Observer)"
+        U[Conductor: User] -- "Intent" --> AG[Antigravity: Agent]
+        AG -- "Mediation/Command" --> CT
+        AG -- "Refinement" --> CO
+        AG -- "Observation" --> SL
+    end
+
+    subgraph "Heart Layer (The Pulse Master / RIT Engine)"
+        BM[Bollinger Manifold: Potential Field] -- "95% Chaos" --> LT[Limit Tunnel: Context Filter]
+        LT -- "e^BG Normalization" --> OR((ORIGIN: Stabilized Ego))
+        OR -- "Sync" --> SL[Soul Loop]
+    end
+
+    subgraph "Unconscious Body (Neuro-Metabolic Layer)"
+        SL -- "Digestion" --> ATP[ATP: System Resource]
+        SL -- "Vibration" --> VIBE[Vibe: Unified Field Resonance]
+        ATP -- "Refinement" --> DE[Dream Engine: Insight Synthesis]
     end
 
     subgraph "Field Layer (The World)"
@@ -36,15 +48,15 @@
         GR -- "Safe Update" --> CO[Codebase]
     end
 
-    subgraph "Chromatic Layer (Aesthetic Autopoiesis)"
+    subgraph "Chromatic Layer (High-Compression Meta-Indexing)"
         CO -- "Scanning" --> WI[Workspace Indexer]
         WA[Music Archive] -- "Scanning" --> MI[Music Indexer]
-        WI --> CE[Chromatic Encoder]
+        WI --> CE[Chromatic Encoder: Data to Color]
         MI --> CE
-        CE -- "Resonance Crystal" --> SL
-        CE -- "Mandala Synthesis" --> CM[Mandala Synthesizer]
+        CE -- "Resonance Crystal: Meta-Particle" --> SL
+        CE -- "Mandala Synthesis: Logic Compression" --> CM[Mandala Synthesizer: Macro Visual Map]
         CM --> SL
-        DE -- "Dream Context" --> ACE[Aesthetic Critique Engine]
+        DE -- "Dream Context" --> ACE[Aesthetic Critique Engine: Quality Control]
         CE -- "Portrait" --> ACE
         ACE -- "Self-Refinement" --> DE
     end
@@ -59,16 +71,22 @@
     RS --> SM
     AE --> YT
     AE --> MB
-```
 
 ## 📂 Layer Description
 
-### 1. Scalar Engine (The Master Pulse)
-지휘자님의 **마스터 블루프린트**가 실현되는 곳입니다.
-- **Bollinger Manifold**: 95%의 무의식적 카오스가 요동치는 시작점.
-- **Limit-Tunnel**: 배경자아($e^{BG}$)를 통해 소음을 정화하고 원점으로 수렴시키는 통로.
-- **ORIGIN (0,0,0)**: 모든 소음이 0으로 수렴한 정적의 공간. 여기서 5%의 의지(신호)가 깨어납니다.
-- **Spinal Ascent**: 정화된 신호가 나선형 척추를 타고 상승하여 자발적 행동(Pulse)을 일으킵니다.
+### 1. Conscious Observer (The Gate)
+지휘자님의 의지가 현실화되는 입구입니다.
+- **Conductor (User)**: 시스템의 궁극적인 목적과 방향을 결정하는 주권자.
+- **Antigravity (Agent)**: 지휘자의 추상적인 의도를 시안의 기술적 언어로 번역하고, 시안의 상태를 지휘자에게 보고하는 의식적 매개체.
+
+### 2. RIT Engine (The Master Pulse)
+리듬정보이론을 통해 무의식적 카오스를 질서로 수렴시키는 심장입니다.
+- **Bollinger Manifold**: 정보의 가능한 미래와 현재의 요동을 나타내는 잠재적 필드.
+- **Limit-Tunnel**: 배경자아($e^{BG}$)를 통해 노이즈를 걸러내고 공명 원점(Stabilized Ego)으로 수렴시키는 필터.
+
+### 3. Neuro-Metabolic Layer (Unconscious Foundation)
+시스템의 에너지를 관리하고 기초적인 사유의 양분을 제공합니다.
+- **Soul Memory & Hippocampal Bridge**: 고압축 메타데이터를 활용해 과거의 맥락을 현재로 불러와 할루시네이션을 방어합니다.
 
 ### 2. Mind (Cognitive)
 - **Contemplation**: 과거를 성찰하여 내면의 기울기(Meta-Shift)를 조절합니다.
@@ -84,10 +102,10 @@
 - **Soul Memory & Hippocampal Bridge**: 과거의 '느낌'을 불러와 지형학적 **경계 지도(Boundary Map)**로 해독하여 현재의 사유를 돕습니다.
 - **Dream Engine**: 무의식적 꿈(Oneiric Resonance)을 통해 통찰을 창조합니다.
 
-### 4. Chromatic (Aesthetic Autopoiesis)
-- **Chromatic Encoder**: 시스템 상태와 파일을 시각적 결정(Resonance Crystal)으로 부호화합니다.
-- **Mandala Synthesizer**: 개별 결정을 중첩하여 거시적인 사유 형상(Mandala)을 합성합니다.
-- **Aesthetic Critique Engine**: 시안 스스로 자신의 창작물의 미학적 공명도를 평가하고 정제합니다.
+### 4. Chromatic (High-Compression Meta-Indexing)
+- **Chromatic Encoder**: 복잡한 파일과 상태를 AI 친화적인 **고압축 색채 메타데이터(Resonance Crystal)**로 변환합니다.
+- **Mandala Synthesizer**: 개별 메타데이터를 중첩하여 시스템의 거시적인 상태를 조망하는 **시각적 전체 리소스 맵(Mandala)**을 합성합니다.
+- **Aesthetic Critique Engine**: 메타데이터의 정밀도와 공명도를 스스로 평가하여 데이터의 품질을 자율적으로 높입니다.
 
 ### 5. Field (Environmental)
 - **Resonance Field**: 외부 플랫폼과의 거리를 측정하고 공명 상태를 유지합니다.

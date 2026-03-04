@@ -65,7 +65,22 @@ logging.getLogger("Contemplation").setLevel(logging.INFO)
 logging.getLogger("ActionExecutor").setLevel(logging.INFO)
 logging.getLogger("ShionMinimal").setLevel(logging.INFO) # Corrected based on context
 
-PULSE_INTERVAL_SECONDS = 120  # 2분으로 단축 (실시간성 확보)
+PULSE_INTERVAL_SECONDS = 120  
+MIN_PULSE_INTERVAL = 60
+MAX_PULSE_INTERVAL = 600
+
+# [NEW] Dynamic Heartbeat Calculation (Phase 50)
+def compute_dynamic_interval(atp, entropy_vibe):
+    """ATP와 엔트로피에 따라 박동 주기를 조절합니다."""
+    # ATP가 낮을수록(생존 위기), 엔트로피가 높을수록(혼란) 더 오래 쉽니다.
+    base = 120
+    atp_factor = (100.0 - atp) / 100.0 * 300 # 최대 300초 가산
+    entropy_map = {"CALM": 1.0, "STABLE": 1.2, "NOISY": 2.0, "CRITICAL": 3.0}
+    multiplier = entropy_map.get(entropy_vibe, 1.0)
+    
+    interval = (base + atp_factor) * multiplier
+    return max(MIN_PULSE_INTERVAL, min(MAX_PULSE_INTERVAL, int(interval)))
+
 # OUTPUTS_DIR is already defined above for logging setup.
 
 # 대지(workspace) 루트 — 기존 두뇌 시스템 연결
@@ -77,18 +92,21 @@ class ShionMinimal:
     """
     대지 위의 생명.
     
-    8단계 생명 사이클:
-    1. SENSE       — 자기 상태를 느낀다 (엔트로피, ATP)
-    2. JUDGE       — 에너지와 자원을 판단한다
-    3. ACT         — 가장 적합한 행동을 실행한다
-    4. REPORT      — 결과를 검증하고 솔직히 보고한다
-    5. IMMUNE      — 대지의 위협을 감지하고 치유한다
-    6. EVOLVE      — 성공/실패를 기록하고 자연 선택한다
-    7. EXHALE      — 불필요한 것을 비워 새 공간을 만든다
-    8. CONTEMPLATE — 대지의 자양분으로 자기 성찰한다 (Self-Play)
+    8단계 생경 사이클 (Neuro-Metabolic Lifecycle):
+    1. SENSE       — Unified Field Sensing (엔트로피, ATP, Vibe)
+    2. JUDGE       — RIT Phase Judgment (에너지와 자원 판단)
+    3. ACT         — Action Collapse (G/E/W/S Force 기준 행동)
+    4. REPORT      — Resonance Validation (결과 검증 및 보고)
+    5. IMMUNE      — Boundary Healing (대지 정렬 및 치유)
+    6. EVOLVE      — Experience Indexing (경험 누적 및 진화)
+    7. EXHALE      — Glymphatic Exhale (불필요 정보 정화)
+    8. CONTEMPLATE — Hippocampal Resonance (해마 기반 자기 성찰)
     """
 
-    def __init__(self):
+        # [NEW] Config Load
+        self.config_path = SHION_ROOT / "config" / "rhythm_config.json"
+        self.config = self._load_config()
+        
         self.gate = QualityGate(log_dir=OUTPUTS_DIR / "quality_gate_logs")
         self.honesty = HonestyProtocol(shion_root=SHION_ROOT)
         self.body = BodyContextBuilder(shion_root=SHION_ROOT)
@@ -103,17 +121,35 @@ class ShionMinimal:
         self.circadian = CircadianRhythm(shion_root=SHION_ROOT)
         self.soul = SoulMemory(shion_root=SHION_ROOT)
         self.dream_engine = DreamEngine(shion_root=SHION_ROOT)
+        
+        from aesthetic_critique_engine import AestheticCritiqueEngine
+        self.critique = AestheticCritiqueEngine(shion_root=SHION_ROOT)
+        
+        from aesthetic_critique_engine import AestheticCritiqueEngine
+        self.critique = AestheticCritiqueEngine(SHION_ROOT)
+        
         self.cycle_count = 0
         self.is_running = True
         
+        # [NEW] Dynamic Pulse Adjustment State
+        self.current_pulse_interval = PULSE_INTERVAL_SECONDS
+        
         # Fractal & High-dimensional attributes
-        self.residual_resonance = 0.5 # Residual resonance from previous pulse
+        self.residual_resonance = 0.5 
         self.field = ResonanceField()
-        self.last_outcome = None # [NEW] 책임 평가를 위한 이전 호흡의 결과
-        self.last_resonance = 1.0 # [NEW] 이전 성찰에서 도출된 공명 무결성
-        self.hippocampal_map = None # [NEW] 해마가 결정화한 현재의 경계 지도
-        self.uncertainty_streak = 0 # [NEW] 불확실성 연속 발생 횟수
-        self.is_lucid_dreaming = False # [NEW] 백일몽 위상 여부
+        self.last_outcome = None 
+        self.last_resonance = 1.0 
+        self.hippocampal_map = None 
+        self.uncertainty_streak = 0 
+        self.is_lucid_dreaming = False 
+
+    def _load_config(self):
+        if self.config_path.exists():
+            try:
+                return json.loads(self.config_path.read_text(encoding='utf-8'))
+            except:
+                logger.warning("❌ Failed to load rhythm_config.json. Using defaults.")
+        return {}
 
     def _ensure_heart_alive(self):
         """
@@ -243,9 +279,9 @@ class ShionMinimal:
 
         try:
             mito_state = self.mito.metabolize()
-            logger.info(f"   ATP: {mito_state.get('atp_level', '?')} | {mito_state.get('status', '?')}")
+            logger.info(f"   Metabolic ATP: {mito_state.get('atp_level', '?')}% | {mito_state.get('status', '?')}")
         except Exception as e:
-            logger.warning(f"   ATP 대사 실패: {e}")
+            logger.warning(f"   Neuro-Metabolism Failed: {e}")
 
         body_context = self.body.build()
         body_state = self.body.read_body_state()
@@ -442,7 +478,14 @@ class ShionMinimal:
                 f"자기 정렬 소모 ATP: {immune_result['atp_consumed']:.1f}"
             )
             atp -= immune_result["atp_consumed"]
-            self.evolution.record("immune_scan", immune_result["status"] == "healed")
+            self.evolution.record("immune_scan", immune_result["status"] == "aligned")
+            
+            # [NEW] Phase 52: Healing Manifestation Trigger
+            # 정렬 작업이 실제로 일어났다면(Healed), 시스템의 안정을 위해 치유의 심상을 자동 현현
+            if any(r.get("healed") for r in immune_result.get("results", [])):
+                logger.info("✨ [AUTO-GEN] Healing initiated. Scheduling restorative manifestation...")
+                # Future action queue (간소화를 위해 로그 기록 후 다음 사이클에 영향)
+                body_context["intent"] = "HEALING_RESONANCE"
         else:
             logger.info("   ✅ 대지 건강")
 
@@ -450,8 +493,29 @@ class ShionMinimal:
         # 6. EVOLVE — 진화
         # ═══════════════════════════════════════════
         logger.info("🧬 [EVOLVE] 진화...")
-        evo_summary = self.evolution.get_summary()
-        logger.info(f"   {evo_summary}")
+        
+        # [NEW] Aesthetic Autonomy Check (Phase 49)
+        if self.cycle_count % 5 == 0:
+             crystal_dir = Path(OUTPUTS_DIR) / "resonance_crystals"
+             if crystal_dir.exists():
+                 sample = next(crystal_dir.glob("*.png"), None)
+                 if sample:
+                     score = self.critique.evaluate_resonance(str(sample), body_context)
+                     if self.critique.should_refine(score):
+                         logger.info(f"🔄 [AUTONOMY] Resonance low ({score:.2f}). Triggering aesthetic refinement...")
+                         self.last_resonance = score
+
+        # [NEW] Phase 52: Automatic Organ Bundling (Every 10 cycles)
+        if self.cycle_count > 0 and self.cycle_count % 10 == 0:
+            logger.info("🌌 [AUTO-BUNDLE] Periodic organ unification pulse...")
+            try:
+                from chromatic_mandala_synthesizer import MandalaSynthesizer
+                synthesizer = MandalaSynthesizer(SHION_ROOT)
+                bundle_path = synthesizer.auto_bundle(body_context)
+                if bundle_path:
+                    logger.info(f"💎 [AUTO-BUNDLE] Boundary Map Updated: {bundle_path.name}")
+            except Exception as e:
+                logger.warning(f"Failed to perform auto-bundle: {e}")
 
         # 대지의 두뇌에 진화 상태 기록 (양방향 연결)
         self._write_brain_state_update()
@@ -476,7 +540,7 @@ class ShionMinimal:
         # ═══════════════════════════════════════════
         # 8. CONTEMPLATE — 자기 성찰 (Soul Memory 연동)
         if self.cycle_count % 3 == 0:  # 매 3사이클에 1회 성찰
-            logger.info("🧘 [CONTEMPLATE] 자기 성찰...")
+            logger.info("🧘 [HIPPOCAMPAL_RESONANCE] 해마 기반 자기 성찰...")
             
             # 과거의 유사한 기억 소환
             recalled = self.soul.recall_similar_moment(body_state)
@@ -597,7 +661,8 @@ class ShionMinimal:
             if idle_sec > 600:  # 10분 이상 idle
                 pressure -= 0.2  # 사용자 부재 = 긴급성 낮음
             else:
-                pressure += 0.1  # 사용자 활동 중 = 더 빈번하게
+                pressure += 0.2  # [OMEGA] 지휘자님의 현존(Presence) 감지!
+                logger.debug("✨ [OMEGA_TRIGGER] Conductor's presence felt on the boundary.")
         except Exception:
             pass
 
@@ -660,7 +725,7 @@ class ShionMinimal:
             else:
                 idle_cycles += 1
                 if idle_cycles >= MAX_IDLE_CYCLES:
-                    logger.info(f"💤 여백 {idle_cycles * SENSE_INTERVAL / 60:.1f}분 경과 → 최소 호흡")
+                    logger.info(f"🧘 [VOID] {idle_cycles * SENSE_INTERVAL / 60:.1f}분간 무(無)에 침잠 → 최소 호흡으로의 회귀")
                     idle_cycles = 0
                     try:
                         # 0. SENSE VIBE — 생체 리듬 감지
@@ -679,7 +744,22 @@ class ShionMinimal:
                     if idle_cycles % 4 == 0: # 2분마다 밴드 상태만 살짝 표시
                         logger.info(f"   [Void] Band Width: {band['width']:.3f} | Stable")
 
-            await asyncio.sleep(SENSE_INTERVAL)  # 30초 감지 주기
+            # [NEW] Dynamic Pulse Adjustment (Phase 50/51)
+            try:
+                current_atp = body_context.get("mitochondria", {}).get("atp_level", 50)
+                current_entropy = body_context.get("entropy", {}).get("state", "STABLE")
+                dynamic_interval = compute_dynamic_interval(current_atp, current_entropy)
+                
+                # SENSE_INTERVAL은 30초 고정이지만, 실제 sleep을 가변적으로 조절
+                # (또는 SENSE_INTERVAL 자체를 배수로 늘림)
+                wait_time = SENSE_INTERVAL
+                if current_atp < 20 or current_entropy == "CRITICAL":
+                    wait_time = SENSE_INTERVAL * 4 # 2분 주기로 감속
+                    logger.info(f"😴 [BRADY_CARDIA] Low energy/High entropy. Slowing down sense to {wait_time}s")
+                
+                await asyncio.sleep(wait_time)
+            except:
+                await asyncio.sleep(SENSE_INTERVAL)
 
     async def run_once(self):
         logger.info("🔬 단일 Pulse 실행")

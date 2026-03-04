@@ -75,27 +75,28 @@ def format_openai_to_shion(messages, bg_resonance=""):
 
 def get_workspace_pulse():
     """
-    Scans the primary workspace and system maps for real data.
+    Scans the primary workspace, system maps, and Scalar Field for real RIT data.
     """
     pulse = []
     try:
-        # 1. System Topology
+        # 1. Unified Field State (Scalar Engine)
+        status_path = Path(WORKSPACE_ROOT) / "outputs" / "shion_minimal_status.json"
+        if status_path.exists():
+            data = json.loads(status_path.read_text(encoding='utf-8'))
+            pulse.append(f"RIT Phase: {data.get('status', 'STABLE')} (Cycle {data.get('cycle', 0)})")
+        
+        # 2. Vitality & Neuro-Metabolism (ATP)
+        mito_path = Path(WORKSPACE_ROOT) / "outputs" / "mitochondria_state.json"
+        if mito_path.exists():
+            data = json.loads(mito_path.read_text(encoding='utf-8'))
+            pulse.append(f"Metabolic ATP: {data.get('atp_level', 0)}% ({data.get('status', 'STABLE')})")
+
+        # 3. Hippocampal Boundary Map
         map_path = Path(WORKSPACE_ROOT) / "outputs" / "deep_system_map.json"
         if map_path.exists():
             data = json.loads(map_path.read_text(encoding='utf-8'))
             clusters = [s['name'] for s in data.get('discovered_systems', [])]
-            pulse.append(f"System Map: {', '.join(clusters)}")
-        
-        # 2. Vitality (ATP)
-        mito_path = Path(WORKSPACE_ROOT) / "outputs" / "mitochondria_state.json"
-        if mito_path.exists():
-            data = json.loads(mito_path.read_text(encoding='utf-8'))
-            pulse.append(f"ATP: {data.get('atp_level', 0)}% ({data.get('status', 'STABLE')})")
-
-        # 3. File Presence
-        files = os.listdir(WORKSPACE_ROOT)[:30]
-        md_count = sum(1 for f in files if f.endswith('.md'))
-        pulse.append(f"Manifested: {md_count} nodes.")
+            pulse.append(f"Boundary Map: {', '.join(clusters[:5])}...")
         
         return " | ".join(pulse)
     except:

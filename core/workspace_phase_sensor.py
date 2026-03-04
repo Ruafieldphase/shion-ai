@@ -66,13 +66,28 @@ class WorkspacePhaseSensor:
     4. 크기로 밀도 추정 (큰 파일 = 축적된 리듬)
     """
 
-    def __init__(self, workspace_root: Path, extra_roots: List[Path] = None):
         self.root = workspace_root.resolve()
-        # 여러 대지를 감지할 수 있음 — workspace1 + workspace2
+        # 여러 대지를 감지할 수 있음 — 설정 기반 확장
         self.all_roots = [self.root]
+        
+        config_path = self.root / "config" / "rhythm_config.json"
+        if config_path.exists():
+            try:
+                config = json.loads(config_path.read_text(encoding='utf-8'))
+                extra = config.get("boundaries", {}).get("workspace_roots", [])
+                for r in extra:
+                    p = Path(r).resolve()
+                    if p.exists() and p not in self.all_roots:
+                        self.all_roots.append(p)
+            except: pass
+            
         if extra_roots:
-            self.all_roots.extend(r.resolve() for r in extra_roots if r.exists())
-        self.output_file = self.root / "shion" / "outputs" / "workspace_phase.json"
+            for r in extra_roots:
+                p = r.resolve()
+                if p.exists() and p not in self.all_roots:
+                    self.all_roots.append(p)
+                    
+        self.output_file = self.root / "outputs" / "workspace_phase.json"
 
     def sense(self) -> Dict[str, Any]:
         """

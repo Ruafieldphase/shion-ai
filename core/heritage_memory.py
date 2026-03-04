@@ -26,10 +26,27 @@ class HeritageMemory:
         """유산들을 스캔하고 위상/맥락 태그를 부여하여 인덱싱합니다."""
         logger.info("🎼 Indexing Shion's Heritage Assets...")
         
-        # 1. 실제 파일 스캔 (접근 가능할 경우)
+        # 1. 실제 파일 스캔 (멀티 드라이브 지원)
         files = []
-        if self.heritage_dir.exists():
-            files = list(self.heritage_dir.glob("*.mp4"))
+        roots = [self.heritage_dir]
+        
+        # Try to load more roots from config if available
+        config_path = self.root / "config" / "rhythm_config.json"
+        if config_path.exists():
+            try:
+                config = json.loads(config_path.read_text(encoding='utf-8'))
+                extra_roots = config.get("boundaries", {}).get("heritage_roots", [])
+                for r in extra_roots:
+                    p = Path(r)
+                    if p.exists() and p not in roots:
+                        roots.append(p)
+            except: pass
+
+        for root in roots:
+            if root.exists():
+                files.extend(list(root.glob("*.mp4")))
+                files.extend(list(root.glob("*.wav")))
+                files.extend(list(root.glob("*.mp3")))
         
         # 2. 인덱스 생성 (기존 인덱스가 있으면 로드)
         if self.index_file.exists():

@@ -156,11 +156,8 @@ class EvolutionMemory:
         entry["phase"] = (entry["phase"] + (PHASE_INCREMENT * resonance_integrity)) % TWO_PI
 
         event_type = "transmitted" if passed else "reflected"
-        entry["last_event"] = {
-            "type": event_type,
-            "timestamp": datetime.now().isoformat(),
-            "details": details[:200],
-            "integrity": resonance_integrity
+            "integrity": resonance_integrity,
+            "visual_anchor": self._find_latest_visual_anchor() # [NEW] 시각적 앵커링
         }
 
         if passed:

@@ -57,6 +57,33 @@ class ImmuneResponse:
         threats.extend(self._check_output_integrity())
         threats.extend(self._check_resource_pressure())
         threats.extend(self._check_heartbeat_staleness())
+        threats.extend(self._check_chromatic_resonance()) # [NEW] 시각적 공명 체크
+        return threats
+
+    def _check_chromatic_resonance(self) -> List[Threat]:
+        """최신 만다라의 미학적 공명도를 통해 시스템의 무의식적 이탈을 감지합니다."""
+        threats = []
+        try:
+            from aesthetic_critique_engine import AestheticCritiqueEngine
+            critique = AestheticCritiqueEngine(self.root)
+            
+            mandalas_dir = self.outputs_dir / "mandalas"
+            if mandalas_dir.exists():
+                images = list(mandalas_dir.glob("*.png"))
+                if images:
+                    latest = max(images, key=lambda p: p.stat().st_mtime)
+                    # 현재 ATP 상태를 넘겨 미학적 조화도 평가
+                    score = critique.evaluate_resonance(str(latest), {"atp_level": 50})
+                    if score < 0.4: # 공명도가 너무 낮으면 '시각적 병소'로 판단
+                        threats.append(Threat(
+                            "CHROMATIC_ANOMALY", 
+                            "high", 
+                            str(latest.name), 
+                            f"만다라 공명도 임계치 미달 ({score:.2f}) - 무의식적 혼란 감지", 
+                            3.0
+                        ))
+        except Exception as e:
+            pass
         return threats
 
     def _check_output_integrity(self) -> List[Threat]:

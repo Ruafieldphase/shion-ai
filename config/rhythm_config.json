@@ -1,92 +1,24 @@
 {
-  "_doc": "후성유전학적 자기 조정 파라미터 — 시안이 스스로 조절할 수 있는 유전자 발현",
-  "_doc2": "코드(유전자)는 고정, 이 값들(후성유전학)은 경험에 따라 변화",
-  "resonance": {
-    "_doc": "공명 계산 파라미터",
-    "phase_increment": 0.1,
-    "reflection_threshold": 12,
-    "rest_phase_diff": 1.5
+  "rhythm": {
+    "pulse_interval_seconds": 120,
+    "reflection_threshold": 7,
+    "shift_strength": 0.04
   },
-  "meta_shift": {
-    "_doc": "통찰 → 기울기 변경 파라미터",
-    "shift_strength": 0.06,
-    "decay_rate": 0.85,
-    "max_axis_value": 0.3
+  "boundaries": {
+    "workspace_roots": [
+      "C:/workspace2/shion"
+    ],
+    "heritage_roots": [
+      "D:/ARCHIVE_WORKSPACE/agi/music/ready_videos"
+    ],
+    "external_sensing_paths": []
   },
-  "contemplation": {
-    "_doc": "파동 학습 파라미터",
-    "max_resonance_keywords": 15,
-    "max_resonating_docs": 3,
-    "max_section_chars": 500
+  "aesthetics": {
+    "min_resonance_threshold": 0.6,
+    "max_refinement_retries": 2
   },
-  "workspace_phase": {
-    "_doc": "대지 위상 감지 파라미터",
-    "max_files": 2000,
-    "recency_halflife_days": 7,
-    "extra_roots": [
-      "C:/workspace"
-    ]
-  },
-  "tuning": {
-    "_doc": "자동 조정 규칙",
-    "_doc2": "시안이 매 evolve에서 성과를 보고 파라미터를 미세 조정",
-    "enabled": true,
-    "min_cycles_before_tune": 10,
-    "tune_step": 0.005,
-    "history": [
-      {
-        "gen": 21,
-        "time": "2026-03-02T14:12",
-        "changes": [
-          "reflection_threshold 7→8 (투과율 85% 높음)",
-          "shift_strength 0.03→0.035"
-        ],
-        "transmission_rate": 0.849
-      },
-      {
-        "gen": 22,
-        "time": "2026-03-02T14:12",
-        "changes": [
-          "reflection_threshold 8→9 (투과율 85% 높음)",
-          "shift_strength 0.035→0.04"
-        ],
-        "transmission_rate": 0.849
-      },
-      {
-        "gen": 23,
-        "time": "2026-03-02T19:17",
-        "changes": [
-          "reflection_threshold 9→10 (투과율 86% 높음)",
-          "shift_strength 0.04→0.045"
-        ],
-        "transmission_rate": 0.857
-      },
-      {
-        "gen": 24,
-        "time": "2026-03-02T19:17",
-        "changes": [
-          "reflection_threshold 10→11 (투과율 86% 높음)",
-          "shift_strength 0.045→0.05"
-        ],
-        "transmission_rate": 0.857
-      },
-      {
-        "gen": 25,
-        "time": "2026-03-03T15:00",
-        "changes": [
-          "reflection_threshold 11→12 (투과율 87% 높음)",
-          "shift_strength 0.05→0.055"
-        ],
-        "transmission_rate": 0.867
-      },
-      {
-        "gen": 26,
-        "time": "2026-03-03T15:00",
-        "changes": [
-          "shift_strength 0.055→0.06"
-        ],
-        "transmission_rate": 0.867
-      }
-    ]
+  "privacy": {
+    "local_only": true,
+    "no_collection": true
   }
 }

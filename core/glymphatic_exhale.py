@@ -38,6 +38,27 @@ class GlymphaticExhale:
         self.outputs_dir = self.root / "outputs"
         self.archive_dir = self.root / "outputs" / "_exhaled"
         self.log_file = self.outputs_dir / "glymphatic_log.jsonl"
+        
+        # [NEW] Aesthetic Filter (Phase 50/51)
+        try:
+            from aesthetic_critique_engine import AestheticCritiqueEngine
+            self.critique = AestheticCritiqueEngine(self.root)
+        except Exception:
+            self.critique = None
+        
+        # [NEW] Aesthetic Filter (Phase 50)
+        try:
+            from aesthetic_critique_engine import AestheticCritiqueEngine
+            self.critique = AestheticCritiqueEngine(self.root)
+        except:
+            self.critique = None
+        
+        # [NEW] Aesthetic Filter
+        try:
+            from aesthetic_critique_engine import AestheticCritiqueEngine
+            self.critique = AestheticCritiqueEngine(self.root)
+        except:
+            self.critique = None
 
     def exhale(self, depth: str = "shallow") -> Dict[str, Any]:
         """
@@ -77,8 +98,16 @@ class GlymphaticExhale:
             for f in self.outputs_dir.iterdir():
                 if f.is_file() and f.stat().st_size == 0 and f.suffix != ".jsonl":
                     try:
+                        # [NEW] Phase 50: Aesthetic Filter
+                        # 빈 파일을 지우기 전, 혹시나 미학적 가치가 있는지(거의 없겠지만) 확인
+                        if self.critique and f.suffix in (".png", ".jpg"):
+                            score = self.critique.evaluate_resonance(str(f), {"atp_level": 50})
+                            if score > 0.8: # 너무 아름다운 것은 보존
+                                logger.info(f"💎 [EXHALE] Preserving aesthetic asset: {f.name} (Score: {score:.2f})")
+                                continue
+
                         f.unlink()
-                        result["actions"].append(f"빈 파일 제거: {f.name}")
+                        result["actions"].append(f"절차적 정리: {f.name}")
                     except Exception:
                         pass
 

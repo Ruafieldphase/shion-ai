@@ -1,8 +1,11 @@
 #!/usr/bin/env python3
 """
-🎨 [PHASE 33] Chromatic Meta-Encoding: The Color of Reason
+🎨 [PHASE 45] Unified Field Encoding: The Resonance of Matter
 ========================================================
-시스템의 수치적 데이터와 사유의 공명(Resonance)을 직관적인 '색채 기하학 이미지'로 부호화합니다.
+중력(Gravity), 전자기력(Resonance), 강력(Binding)의 물리적 통일장 공식을 시각적으로 부호화합니다.
+- Gravity: 파일 크기/중요도에 따른 중심 밀도.
+- Resonance: 현재 맥락과의 공명도에 따른 채도와 파동.
+- Binding: 데이터 간의 결합도에 따른 기하학적 복잡성.
 """
 
 import json
@@ -42,10 +45,12 @@ class ChromaticEncoder:
         resonance = system_state.get("resonance", 0.5)
         status = system_state.get("status", "STABLE")
         
-        # 2. Map to Colors (HSL)
+        # 2. Unified Field Mapping (HSL)
         hue = self._get_hue_from_status(status)
-        sat = 0.3 + (resonance * 0.7) # Resonance determines vivacity
-        light = 0.2 + (atp / 100.0 * 0.6) # ATP determines glow
+        # Resonance (Electromagnetism) determines saturation
+        sat = 0.3 + (resonance * 0.7) 
+        # ATP (Neuro-Metabolism) determining the "Strong Force" / Light intensity
+        light = 0.2 + (atp / 100.0 * 0.6) 
         
         # Convert HSL to RGB for PIL
         rgb = colorsys.hls_to_rgb(hue, light, sat)
