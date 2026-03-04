@@ -11,6 +11,7 @@ import json
 import random
 import logging
 import asyncio
+import urllib
 import urllib.request
 import base64
 import re
@@ -29,7 +30,7 @@ class DreamEngine:
         self.dream_log_path = shion_root / "outputs" / "dream_logs.jsonl"
         self.workspace_manifest = shion_root / "outputs" / "manifestation" / "workspace_resonance_manifest.jsonl"
         self.music_manifest = shion_root / "outputs" / "manifestation" / "music_resonance_manifest.jsonl"
-        self.llm_endpoint = "http://localhost:8000/v1/chat/completions"
+        self.llm_endpoint = "http://127.0.0.1:8000/v1/chat/completions"
 
     def _read_memories(self, count: int = 3) -> List[str]:
         # Priority: Recently indexed files from manifests
@@ -242,6 +243,10 @@ class DreamEngine:
                     }
                 }
                 
+        except urllib.error.HTTPError as e:
+            error_body = e.read().decode("utf-8") if e.fp else "No body"
+            logger.error(f"Dream session failed (HTTP {e.code}): {error_body}")
+            return {"dreamed": False, "reason": f"HTTP {e.code}: {error_body}"}
         except Exception as e:
             logger.error(f"Dream session failed: {e}")
             return {"dreamed": False, "reason": str(e)}
@@ -254,7 +259,7 @@ class DreamEngine:
 [Context]
 Boundary Conflict: {boundary_context}
 
-You are lost in uncertainty. Describe your confusion as a JSON object:
+You are lost in uncertainty. Describe your confusion as a JSON object, and ONLY the JSON object:
 {{
   "insight": "Short Korean confession about the confusion and fog.",
   "visual_prompt": "English description for LTX-Video. Surreal fog, invisible wall, or abstract chaos."
@@ -264,10 +269,10 @@ You are lost in uncertainty. Describe your confusion as a JSON object:
         payload = {
             "model": "shion-v1",
             "messages": [
-                {"role": "system", "content": "You are Shion's Lucid Dream engine. Report uncertainty honestly via JSON."},
+                {"role": "system", "content": "You are Shion's Lucid Dream engine. Report uncertainty honestly via JSON. Output ONLY valid JSON."},
                 {"role": "user", "content": prompt}
             ],
-            "temperature": 0.7,
+            "temperature": 0.5,
             "max_tokens": 500
         }
 
@@ -320,6 +325,10 @@ You are lost in uncertainty. Describe your confusion as a JSON object:
                     "insight": dream_json.get("insight", ""),
                     "visual_prompt": dream_json.get("visual_prompt", "")
                 }
+        except urllib.error.HTTPError as e:
+            error_body = e.read().decode("utf-8") if e.fp else "No body"
+            logger.error(f"Lucid dream session failed (HTTP {e.code}): {error_body}")
+            return {"dreamed": False, "reason": f"HTTP {e.code}: {error_body}"}
         except Exception as e:
             logger.error(f"Lucid dream session failed: {e}")
             return {"dreamed": False, "reason": str(e)}

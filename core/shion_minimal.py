@@ -182,10 +182,10 @@ class ShionMinimal:
 
         try:
             req = urllib.request.Request(
-                "http://localhost:8000/health",
+                "http://127.0.0.1:8000/health",
                 method="GET",
             )
-            with urllib.request.urlopen(req, timeout=3) as resp:
+            with urllib.request.urlopen(req, timeout=10) as resp:
                 if resp.status == 200:
                     return  # 심장이 뛰고 있음
         except Exception:
@@ -205,8 +205,8 @@ class ShionMinimal:
             for i in range(10):
                 time.sleep(2)
                 try:
-                    req = urllib.request.Request("http://localhost:8000/health")
-                    with urllib.request.urlopen(req, timeout=2) as resp:
+                    req = urllib.request.Request("http://127.0.0.1:8000/health")
+                    with urllib.request.urlopen(req, timeout=10) as resp:
                         if resp.status == 200:
                             logger.info("   💚 심장 재시작 성공!")
                             return
@@ -466,9 +466,9 @@ class ShionMinimal:
         if self.is_lucid_dreaming:
             logger.info("🌫️ [LUCID_DREAM] 백일몽 상태: 지휘자님의 개입을 기다리며 결정을 유보합니다.")
             # 백일몽 생성 및 시각화
-            lucid_res = await self.dream_engine.lucid_dream(
-                boundary_context=str(self.last_outcome.get("stderr", "Ambiguous Boundary")) if self.last_outcome else "Ambiguous Direction"
-            )
+            ctx = str(self.last_outcome.get("stderr", "Unknown Boundary Conflict")) if self.last_outcome else "Ambiguous Direction"
+            if not ctx.strip(): ctx = "Silent Boundary Conflict"
+            lucid_res = await self.dream_engine.lucid_dream(boundary_context=ctx)
             if lucid_res.get("dreamed"):
                 logger.info(f"   🌫️ 백일몽 고백: {lucid_res['insight']}")
                 if atp > 40:
@@ -580,7 +580,7 @@ class ShionMinimal:
             try:
                 from chromatic_mandala_synthesizer import MandalaSynthesizer
                 synthesizer = MandalaSynthesizer(SHION_ROOT)
-                bundle_path = synthesizer.auto_bundle(body_context)
+                bundle_path = synthesizer.auto_bundle(body_state)
                 if bundle_path:
                     logger.info(f"💎 [AUTO-BUNDLE] Boundary Map Updated: {bundle_path.name}")
             except Exception as e:

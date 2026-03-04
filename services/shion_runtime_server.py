@@ -27,10 +27,17 @@ tokenizer = AutoTokenizer.from_pretrained(BASE_MODEL)
 if tokenizer.pad_token is None:
     tokenizer.pad_token = tokenizer.eos_token
 
-# Full Float16 for speed (1B model is small enough for 8GB VRAM)
+# 4-bit Quantization for VRAM efficiency (needed for LTX-Video)
+bnb_config = BitsAndBytesConfig(
+    load_in_4bit=True,
+    bnb_4bit_use_double_quant=True,
+    bnb_4bit_quant_type="nf4",
+    bnb_4bit_compute_dtype=torch.float16
+)
+
 base_model = AutoModelForCausalLM.from_pretrained(
     BASE_MODEL,
-    dtype=torch.float16,
+    quantization_config=bnb_config,
     device_map="auto",
     trust_remote_code=True
 )
@@ -247,8 +254,10 @@ async def chat_completions(request: Request):
 
 
         except Exception as e:
-            print(f"🌊 Resonance Failure: {str(e)}")
-            return JSONResponse(status_code=500, content={"error": f"Boundary Breakdown: {str(e)}"})
+            import traceback
+            error_msg = traceback.format_exc()
+            print(f"🌊 Resonance Failure: {error_msg}")
+            return JSONResponse(status_code=500, content={"error": f"Boundary Breakdown: {str(e)}", "traceback": error_msg})
 
 
 @app.get("/v1/models")
