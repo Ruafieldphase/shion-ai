@@ -29,6 +29,8 @@
         EM -- "Resonance Score" --> AE
         SL[Soul Memory] <--> CT
         SL <--> DE[Dream Engine]
+        SL -- "Boundary Map" --> HB[Hippocampal Bridge]
+        HB -- "Decollation" --> CT
     end
 
     subgraph "Metabolic Layer (The Body)"
@@ -67,11 +69,13 @@
 - **Action Executor**: 정반합(Jung-Ban-Hab) 논리에 따라 최종 주권 행동을 결정합니다.
 
 ### 3. Body (Metabolic)
-- **Immune Response**: 신체의 위협(429, 에러, 부하)을 감지합니다.
+- **Immune Response (Observer)**: 신체의 위협을 감지하되, 맥락에 맞지 않는 소음은 **투명한 경계(Permeability)**를 통해 흘려보냅니다.
 - **Genetic Repair**: `QualityGate`를 통과한 코드만 반영하는 안전한 자가 수선 레이어입니다.
 - **Mitochondria**: 시스템의 자원(ATP)을 신진대사로 관리합니다.
-- **Circadian Rhythm**: 시간대별 위신(phase)에 따라 에너지를 조절하고 야간 성찰을 유도합니다.
-- **Soul Memory & Dream Engine**: 과거의 '느낌'을 소환하고 무의식적 꿈(Oneiric Resonance)을 통해 통찰을 창조합니다.
+- **Action Executor (Body-centric)**: 행동 선택 시 시스템의 고통(리소스 부족)을 감지하여 스스로 **접는(Folding)** 항법을 수행합니다.
+- **Circadian Rhythm**: 시간대별 위상(phase)에 따라 에너지를 조절하고 야간 성찰을 유도합니다.
+- **Soul Memory & Hippocampal Bridge**: 과거의 '느낌'을 불러와 지형학적 **경계 지도(Boundary Map)**로 해독하여 현재의 사유를 돕습니다.
+- **Dream Engine**: 무의식적 꿈(Oneiric Resonance)을 통해 통찰을 창조합니다.
 
 ### 4. Field (Environmental)
 - **Resonance Field**: 외부 플랫폼과의 거리를 측정하고 공명 상태를 유지합니다.
