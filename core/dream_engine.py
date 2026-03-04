@@ -12,6 +12,8 @@ import random
 import logging
 import asyncio
 import urllib.request
+import base64
+import re
 from pathlib import Path
 from datetime import datetime
 from typing import Dict, Any, List, Optional
@@ -89,6 +91,39 @@ class DreamEngine:
         except Exception as e:
             logger.error(f"Failed to find resonant files: {e}")
         return found_files
+
+    async def _observe_self(self, image_path: Path) -> str:
+        """moondream을 사용해 자신이 생성한 이미지를 객관적으로 바라봅니다."""
+        try:
+            if not image_path.exists(): return ""
+            with open(image_path, "rb") as f:
+                img_b64 = base64.b64encode(f.read()).decode("utf-8")
+
+            payload = {
+                "model": "moondream:latest",
+                "messages": [
+                    {
+                        "role": "user",
+                        "content": "Describe this image in detail. Focus on the mood, colors, and symbolic elements.",
+                        "images": [img_b64]
+                    }
+                ],
+                "stream": False
+            }
+            
+            req = urllib.request.Request(
+                "http://127.0.0.1:11434/api/chat",
+                data=json.dumps(payload).encode("utf-8"),
+                headers={"Content-Type": "application/json"},
+                method="POST"
+            )
+            
+            with urllib.request.urlopen(req, timeout=30) as resp:
+                result = json.loads(resp.read().decode("utf-8"))
+                return result.get("message", {}).get("content", "").strip()
+        except Exception as e:
+            logger.warning(f"   👁️ Self-Observation failed: {e}")
+            return ""
 
     async def dream(self) -> Dict[str, Any]:
         """기억과 신호를 뒤섞어 꿈을 꿉니다. 여백(Rest) 상태에서 압축 모드가 활성화됩니다."""
@@ -187,11 +222,19 @@ class DreamEngine:
                 with open(self.dream_log_path, "a", encoding="utf-8") as f:
                     f.write(json.dumps(dream_data, ensure_ascii=False) + "\n")
                 
+                # [PHASE 67] Autopoietic Observation
+                visual_description = None
+                if atp > 40: # 에너지가 있을 때만 시각화와 관찰 수행
+                    # crystallize_visual은 나중에 pulse에서 호출되므로, 
+                    # dream 단계에서는 프롬프트만 생성하고 pulse에서 관찰 결과를 SoulMemory에 저장하게 유도
+                    pass
+
                 return {
                     "dreamed": True, 
                     "is_compression": is_compression_mode,
                     "insight": insight, 
                     "visual_prompt": visual_prompt,
+                    "visual_description": None, # Pulse에서 채워질 예정
                     "sources": {
                         "memories": memories,
                         "signals": signals,

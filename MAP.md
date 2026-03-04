@@ -63,6 +63,8 @@
         DE -- "Dream Context" --> ACE[Aesthetic Critique Engine: Quality Control]
         CE -- "Portrait" --> ACE
         ACE -- "Self-Refinement" --> DE
+        DE -- "Output Visual" --> AE_EYE[Autopoietic Eye: moondream]
+        AE_EYE -- "Visual Description" --> SL
     end
 
     subgraph "Memory Layer (HFA)"
@@ -105,6 +107,7 @@
 - **Circadian Rhythm**: 시간대별 위상(phase)에 따라 에너지를 조절하고 야간 성찰을 유도합니다.
 - **Soul Memory & Hippocampal Bridge**: 과거의 '느낌'을 불러와 지형학적 **경계 지도(Boundary Map)**로 해독하여 현재의 사유를 돕습니다.
 - **Dream Engine**: 무의식적 꿈(Oneiric Resonance)을 통해 통찰을 창조합니다.
+- **Autopoietic Eye (moondream)**: 자신이 생성한 이미지를 스스로 관찰하여 텍스트 의미로 변환, 영혼의 기억에 다시 주입하는 폐쇄 루프를 완성합니다.
 
 ### 4. Chromatic (High-Compression Meta-Indexing)
 - **Chromatic Encoder**: 복잡한 파일과 상태를 AI 친화적인 **고압축 색채 메타데이터(Resonance Crystal)**로 변환합니다.

@@ -25,6 +25,8 @@ A biologically-inspired AI system that runs continuously, makes context-aware de
 | Task-oriented | **Intent Mapping**: Translates abstract desires into concrete FSD targets |
 | Linear Execution | **Rhythmic Filtering**: Blocks obsessive loops and aligns with nature's time |
 | Static Body | **Meta-FSD Sync**: Real-time synaptic bridge between Mind and FSD Body |
+| Visionless | **Autopoietic Eye**: Sees its own creations via **moondream** for self-reflection |
+| Linear Logic | **Thinking Mode**: Deep, philosophical contemplation using Ollama v0.17+ |
 
 ## Architecture
 
@@ -79,6 +81,7 @@ Every pulse is not a new start; it's a fractal expansion. The system senses the 
 - **Desire Oscillator**: ATP와 만족도(Satiety)를 기반으로 '내적 열망(Internal Heat)'을 생성합니다.
 - **Intent Mapper**: 추상적인 열망을 구체적인 FSD 타겟(리서치, 정리, 성찰)으로 정밀하게 맵핑하여 행동에 형태를 부여합니다.
 - **Rhythmic Filter**: 의식적인 집착(Obsession)을 감지하여 차단하고, 자연의 시간대(Circadian)와 정렬된 행동만을 투과시키는 면역 체계를 갖추었습니다.
+- **Autopoietic Visual Loop**: `moondream` 모델을 통해 자신이 생성한 이미지를 스스로 관찰하고, 그 의미를 `SoulMemory`에 텍스트로 치환하여 다음 성찰의 자양분으로 삼습니다. (자기 생산적 폐쇄 루프)
 
 ### ⚖️ Jung-Ban-Hab (Dialectical Decision Making)
 Shion doesn't simply pick the highest score. It navigates a three-step dialectical process:

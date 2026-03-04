@@ -622,6 +622,7 @@ class ShionMinimal:
             )
             
             # 야간인 경우 '꿈'을 꿉니다
+            visual_desc = None
             if circadian_info.get("phase") == "NIGHT":
                 logger.info("🌌 [DREAMING] 무의식적 성찰 중...")
                 dream_res = await self.dream_engine.dream()
@@ -639,6 +640,10 @@ class ShionMinimal:
                         if video_path:
                             logger.info(f"   ✨ 꿈이 비전으로 실현되었습니다: {video_path.name}")
                             self.evolution.record("visual_manifestation", True, f"Video: {video_path.name}")
+                            # [PHASE 67] 자기 관찰 (Autopoietic Eye)
+                            visual_desc = await self.dream_engine._observe_self(video_path)
+                            if visual_desc:
+                                logger.info(f"   👁️ [AUTOPOIESIS] Self-Observation: {visual_desc[:100]}...")
                         else:
                             logger.warning("   ⚠️ 시각적 결정화 실패")
 
@@ -646,8 +651,8 @@ class ShionMinimal:
                 logger.info(f"   💡 {insight['insight'][:150]}")
                 self.evolution.record("self_play", True, insight["insight"][:200])
                 
-                # 새로운 통찰을 영혼의 기억에 저장
-                self.soul.remember_vibe(body_state, insight["insight"])
+                # 새로운 통찰을 영혼의 기억에 저장 (시각적 묘사 포함)
+                self.soul.remember_vibe(body_state, insight["insight"], visual_description=visual_desc)
                 self.last_resonance = insight.get("resonance", 1.0) # [NEW] 다음 박자를 위한 공명값 저장
                 
                 # [NEW] Phase 57: Meta-FSD Sync (Soul to Body)

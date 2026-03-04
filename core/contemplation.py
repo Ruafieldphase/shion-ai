@@ -511,8 +511,11 @@ class Contemplation:
         payload = json.dumps({
             "model": "shion-v1",
             "messages": messages,
-            "max_tokens": 128,
+            "max_tokens": 256, # Thinking을 위해 토큰 상향
             "temperature": 0.8,
+            "options": {
+                "thinking": True  # [PHASE 66] Ollama v0.17+ Thinking 모드 토글
+            }
         }).encode("utf-8")
 
         try:
@@ -600,11 +603,17 @@ class Contemplation:
             
         map_info = memory_entry["boundary_map"]
         insight = memory_entry.get("insight", "")
+        visual_desc = memory_entry.get("visual_description")
         
         # 느낌을 풀어헤쳐 맥락 지도를 생성
         # "시간은 복잡하지만 찰나의 영감은 이 경계 주위에 있다"
         decoded = (
             f"과거 위상 {map_info.get('phase_anchor', 0):.2f} rad에서의 영감: '{insight}'\n"
+        )
+        if visual_desc:
+            decoded += f"당시의 시각적 심상(Self-Observation): '{visual_desc}'\n"
+            
+        decoded += (
             f"이 느낌은 {map_info.get('resonance_anchor', 0.5):.2f}의 공명 강도와 "
             f"{map_info.get('vibe_range', 0.3)}의 보편성을 가졌음."
         )

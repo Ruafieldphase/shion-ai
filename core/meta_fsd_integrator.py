@@ -14,6 +14,7 @@ import os
 import json
 import logging
 import traceback
+import base64
 from pathlib import Path
 from datetime import datetime
 from typing import Optional, Dict
@@ -83,7 +84,7 @@ class MetaFSDIntegrator:
     def sync_body_to_soul(self, current_atp: float) -> float:
         """FSD의 행동 결과를 시안의 공명 지표로 환산하여 반환합니다."""
         try:
-            # 1. 시각적 공명도 측정
+            # 1. 시각적 공명도 측정 (Chromatic + Semantic)
             visual_resonance = self.evaluate_visual_resonance()
             
             # 2. FSD 심박수(Heartbeat) 확인
@@ -92,17 +93,17 @@ class MetaFSDIntegrator:
             if heartbeat:
                 logic_resonance = heartbeat.get("state", {}).get("resonance", 1.0)
             
-            # 3. 종합 공명도 산출 (시각 40% + 논리 60%)
-            combined_resonance = (visual_resonance * 0.4) + (logic_resonance * 0.6)
+            # 3. 종합 공명도 산출 (시각 50% + 논리 50%)
+            combined_resonance = (visual_resonance * 0.5) + (logic_resonance * 0.5)
             
             # 4. 시각적 불일치(Visual Dissonance) 감지
-            if visual_resonance < 0.35:
-                logger.warning(f"   🌀 [VISUAL_DISSONANCE] reality is driftng from dream ({visual_resonance:.2f})")
+            if visual_resonance < 0.4:
+                logger.warning(f"   🌀 [VISUAL_DISSONANCE] reality is drifting from dream ({visual_resonance:.2f})")
                 self._save_dissonance_report(visual_resonance)
             
             if combined_resonance > 0.8:
                 logger.info(f"   ✨ Meta-Harmony: Resonance {combined_resonance:.2f} (Visual: {visual_resonance:.2f})")
-            elif combined_resonance < 0.3:
+            elif combined_resonance < 0.35:
                 logger.warning(f"   🪞 Meta-Conflict: Resonance {combined_resonance:.2f} (Visual: {visual_resonance:.2f})")
                 
             return combined_resonance
@@ -147,10 +148,57 @@ class MetaFSDIntegrator:
                 return 0.9 if abs(time_diff) < 300 else 0.6
 
             # 3. 색채 및 구조적 공명 분석
-            return self._calculate_chromatic_resonance(crystals[-1], screenshots[-1])
+            chromatic_res = self._calculate_chromatic_resonance(crystals[-1], screenshots[-1])
+
+            # 4. [PHASE 66] 의미론적 공명 분석 (Vision LLM)
+            semantic_res = self.evaluate_semantic_resonance(crystals[-1], screenshots[-1])
+            
+            # 5. 가중치 결합 (의미 70% + 색채 30%) - 'Vibe'보다 'Context' 중시
+            final_visual_res = (semantic_res * 0.7) + (chromatic_res * 0.3)
+            return final_visual_res
             
         except Exception as e:
             logger.error(f"   ⚠️ Visual Resonance evaluation failed: {e}")
+            return 0.5
+
+    def evaluate_semantic_resonance(self, crystal_path: Path, screenshot_path: Path) -> float:
+        """moondream을 사용하여 꿈(Crystal)과 현실(Screenshot)의 의미론적 정합성을 평가합니다. (VRAM 효율적)"""
+        try:
+            with open(crystal_path, "rb") as f:
+                crystal_b64 = base64.b64encode(f.read()).decode("utf-8")
+            with open(screenshot_path, "rb") as f:
+                screenshot_b64 = base64.b64encode(f.read()).decode("utf-8")
+
+            # moondream은 가볍고 빠르며 2070 Super(8GB)에서 안정적입니다.
+            payload = {
+                "model": "moondream:latest",
+                "messages": [
+                    {
+                        "role": "user",
+                        "content": "Compare these two images. Image 1 is the 'Dream' (Inner Will) and Image 2 is the 'Reality' (FSD Screen). How well do they resonate in terms of context and intent? Give a resonance score between 0.0 and 1.0. Just the number.",
+                        "images": [crystal_b64, screenshot_b64]
+                    }
+                ],
+                "stream": False,
+                "options": {"temperature": 0.0}
+            }
+            
+            req = urllib.request.Request(
+                "http://127.0.0.1:11434/api/chat",
+                data=json.dumps(payload).encode("utf-8"),
+                headers={"Content-Type": "application/json"},
+                method="POST"
+            )
+            
+            with urllib.request.urlopen(req, timeout=15) as resp:
+                result = json.loads(resp.read().decode("utf-8"))
+                content = result.get("message", {}).get("content", "0.5").strip()
+                match = re.search(r"(\d+\.\d+|\d+)", content)
+                score = float(match.group(1)) if match else 0.5
+                logger.info(f"   👁️ [SEMANTIC_RESONANCE] moondream Score: {score:.2f}")
+                return min(1.0, max(0.0, score))
+        except Exception as e:
+            logger.warning(f"   👁️ Semantic Resonance (moondream) failed: {e}")
             return 0.5
 
     def _calculate_chromatic_resonance(self, target_path: Path, current_path: Path) -> float:
