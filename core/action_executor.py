@@ -107,6 +107,12 @@ ACTION_REGISTRY = {
         "keywords": ["fsd", "vision", "flow", "비전", "흐름", "자율", "실행", "팔"],
         "atp_cost": 12,
     },
+    "heritage_sync": {
+        "script": "heritage_git_sync.py",
+        "description": "자율적 유산 동기화 (GitHub)",
+        "keywords": ["sync", "git", "github", "백업", "동기화", "유산", "continuity", "연속성"],
+        "atp_cost": 2,
+    },
 }
 
 
