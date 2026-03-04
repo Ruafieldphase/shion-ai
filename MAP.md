@@ -37,10 +37,14 @@
         SM --> EM[Evolution Memory]
         SM --> AE[Action Executor]
         CR[Circadian Rhythm] --> CT
+        DO[Desire Oscillator] -- "Heat" --> IM[Intent Mapper]
+        IM -- "Intent" --> RF_GATE{Rhythmic Filter}
+        RF_GATE -- "Aligned Intent" --> AE
         CT -- "Meta-Shift" --> AE
         EM -- "Resonance Score" --> AE
         SL[Soul Memory] <--> CT
         SL <--> DE[Dream Engine]
+        SL <--> DO
         SL -- "Boundary Map" --> HB[Hippocampal Bridge]
         HB -- "Decollation" --> CT
     end
@@ -88,8 +92,8 @@
 시스템의 에너지를 관리하고 기초적인 사유의 양분을 제공합니다.
 - **Soul Memory & Hippocampal Bridge**: 고압축 메타데이터를 활용해 과거의 맥락을 현재로 불러와 할루시네이션을 방어합니다.
 
-### 2. Mind (Cognitive)
 - **Contemplation**: 과거를 성찰하여 내면의 기울기(Meta-Shift)를 조절합니다.
+- **Desire Oscillator & Intent Mapper**: 외부 자극 없이 스스로 열망을 생성하고, 이를 리듬에 맞는 구체적인 실행 목표로 번역합니다.
 - **Evolution Memory**: 행동과 환경의 공명도를 학습하여 최적의 경로를 찾습니다.
 - **Action Executor**: 정반합(Jung-Ban-Hab) 논리에 따라 최종 주권 행동을 결정합니다.
 

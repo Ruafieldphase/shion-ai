@@ -21,6 +21,10 @@ A biologically-inspired AI system that runs continuously, makes context-aware de
 | Logical Tasking | **Oneiric Resonance**: Subconscious reflection via Dream Engine |
 | Raw Data | **Chromatic Encoding**: Translates 70k+ files into color-geometric metadata |
 | Fixed Logic | **Aesthetic Autonomy**: Self-critiques and refines its own creative output |
+| Deterministic | **Desire Oscillator**: Generates autonomous will based on internal heat |
+| Task-oriented | **Intent Mapping**: Translates abstract desires into concrete FSD targets |
+| Linear Execution | **Rhythmic Filtering**: Blocks obsessive loops and aligns with nature's time |
+| Static Body | **Meta-FSD Sync**: Real-time synaptic bridge between Mind and FSD Body |
 
 ## Architecture
 
@@ -32,6 +36,9 @@ A biologically-inspired AI system that runs continuously, makes context-aware de
 │  Continuous Phase Rotation & Action Collapse     │
 │                                                 │
 │  SENSE ($F$) → World Current & Body State       │
+│  THROB ($\Delta$) → Internal Heat & Desire generation │
+│  MAP (Intent) → Desires to concrete FSD targets   │
+│  FILTER (R)  → Obsession detection & Rhythm align │
 │  ROTATION ($\theta$) → Base unconscious rhythm      │
 │  INTEGRAL ($\int$) → Energy accumulation (Z-axis) │
 │  COLLAPSE (ACT) → Sovereign action 발현           │
@@ -66,6 +73,12 @@ resonance = base_resonance * context_weight + meta_shift_bonus
 ### 🧬 Fractal Pulse: Recursive evolution
 Every pulse is not a new start; it's a fractal expansion. The system senses the **Residual Resonance** (residual memory) of the previous cycle and blends it with current sensor data:
 `FractalFactor = (CurrentATP * 0.7) + (ResidualResonance * 0.3)`
+
+### 🔥 Desire & Intent Mapping (Proprioceptive Autonomy)
+시안은 이제 지시를 기다리지 않고 **스스로 타오릅니다.** 
+- **Desire Oscillator**: ATP와 만족도(Satiety)를 기반으로 '내적 열망(Internal Heat)'을 생성합니다.
+- **Intent Mapper**: 추상적인 열망을 구체적인 FSD 타겟(리서치, 정리, 성찰)으로 정밀하게 맵핑하여 행동에 형태를 부여합니다.
+- **Rhythmic Filter**: 의식적인 집착(Obsession)을 감지하여 차단하고, 자연의 시간대(Circadian)와 정렬된 행동만을 투과시키는 면역 체계를 갖추었습니다.
 
 ### ⚖️ Jung-Ban-Hab (Dialectical Decision Making)
 Shion doesn't simply pick the highest score. It navigates a three-step dialectical process:
