@@ -41,17 +41,17 @@ ACTION_REGISTRY = {
         "keywords": ["upload", "업로드", "유튜브", "발행"],
         "atp_cost": 10,
     },
-    "youtube_daily_manifestation": {
-        "script": "actions/youtube_daily_manifestation_bridge.py",
-        "description": "유튜브 일일 현현 (자동 업로드)",
-        "keywords": ["manifest", "현현", "유튜브", "upload", "자동", "업로드", "발행"],
-        "atp_cost": 8,
+    "oneiric_manifestation": {
+        "script": "actions/oneiric_manifestation.py",
+        "description": "꿈의 현현 (영상+음악 자동 생성 및 업로드)",
+        "keywords": ["manifest", "현현", "꿈", "dream", "youtube", "upload", "자동", "업로드", "발행"],
+        "atp_cost": 20,
     },
-    "youtube_daily_manifestation": {
-        "script": "actions/youtube_daily_manifestation_bridge.py",
-        "description": "유튜브 일일 현현 (자동 업로드)",
-        "keywords": ["manifest", "현현", "유튜브", "upload", "자동", "업로드", "발행"],
-        "atp_cost": 8,
+    "oneiric_housekeeping": {
+        "script": "actions/oneiric_housekeeping.py",
+        "description": "오네이릭 하우스키핑 (정리 및 유지보수)",
+        "keywords": ["housekeeping", "정리", "유지보수", "청소", "관리", "데이터"],
+        "atp_cost": 5, # Under-the-radar maintenance
     },
     "video_build": {
         "script": "build_shion_video.py",
@@ -196,13 +196,14 @@ class ActionExecutor:
             logger.info("   선택 가능한 행동 없음 (에너지 부족)")
             return None
 
-        # 전략 1: 느낌(통찰) 기반 선택 — "양성자가 먼저"
+        # [PHASE 29] 원자적 공명 선택 (Atomic Resonance Selection)
+        # 전략 1: 느낌(양성자) 기반 선택 — "양성자의 고밀도 에너지가 중력에 이끌림"
         if insight:
             matched = self._match_insight_to_action(insight, available)
             if matched:
                 logger.info(
-                    f"   💡 느낌 기반 선택: {matched['name']} "
-                    f"(공명 {matched.get('resonance', 0):.2f})"
+                    f"   🌌 [GRAVITY] Context gravity pulled proton to orbit: {matched['name']} "
+                    f"(Resonance {matched.get('resonance', 0):.2f})"
                 )
                 return matched
 
@@ -363,7 +364,7 @@ class ActionExecutor:
         """
         script = action["script"]
         name = action["name"]
-        logger.info(f"   🏃 실행 중: {name} ({Path(script).name})")
+        logger.info(f"   ⚛️ [ELECTRON_ORBIT] Executing path: {name} ({Path(script).name})")
 
         result = {
             "action": name,

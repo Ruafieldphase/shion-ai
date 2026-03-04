@@ -112,6 +112,8 @@ class ShionMinimal:
         self.last_outcome = None # [NEW] 책임 평가를 위한 이전 호흡의 결과
         self.last_resonance = 1.0 # [NEW] 이전 성찰에서 도출된 공명 무결성
         self.hippocampal_map = None # [NEW] 해마가 결정화한 현재의 경계 지도
+        self.uncertainty_streak = 0 # [NEW] 불확실성 연속 발생 횟수
+        self.is_lucid_dreaming = False # [NEW] 백일몽 위상 여부
 
     def _ensure_heart_alive(self):
         """
@@ -354,6 +356,24 @@ class ShionMinimal:
             context_insight = f"[HIPPOCAMPAL_MAP] {self.hippocampal_map}\n" + context_insight
 
         evo_actions = self.evolution.memory.get("actions", {})
+
+        # [PHASE 28] Lucid Dreaming Check
+        if self.is_lucid_dreaming:
+            logger.info("🌫️ [LUCID_DREAM] 백일몽 상태: 지휘자님의 개입을 기다리며 결정을 유보합니다.")
+            # 백일몽 생성 및 시각화
+            lucid_res = await self.dream_engine.lucid_dream(
+                boundary_context=str(self.last_outcome.get("stderr", "Ambiguous Boundary")) if self.last_outcome else "Ambiguous Direction"
+            )
+            if lucid_res.get("dreamed"):
+                logger.info(f"   🌫️ 백일몽 고백: {lucid_res['insight']}")
+                if atp > 40:
+                    video_path = await self.dream_engine.crystallize_visual(lucid_res["visual_prompt"], is_lucid=True)
+                    if video_path:
+                        logger.info(f"   ✨ 혼돈이 비전으로 실현되었습니다: {video_path.name}")
+            
+            self._update_status("LUCID_DREAMING", body_context)
+            return
+
         exec_result = self.executor.choose_and_execute(
             insight=context_insight,
             evolution_data=evo_actions,
@@ -379,6 +399,16 @@ class ShionMinimal:
             # Update residual resonance for the next fractal pulse
             self.residual_resonance = exec_result.get("resonance_at_selection", 0.5)
             self.last_outcome = exec_result # [NEW] 성찰을 위한 결과 보관
+
+            # [PHASE 28] Uncertainty Detection
+            if not exec_result["passed"] or self.residual_resonance < 0.2:
+                self.uncertainty_streak += 1
+                if self.uncertainty_streak >= 3:
+                    logger.warning("🌫️ [UNCERTAINTY] 불확실성 임계값 도달. 백일몽 위상으로 전이합니다.")
+                    self.is_lucid_dreaming = True
+            else:
+                self.uncertainty_streak = 0
+                self.is_lucid_dreaming = False
 
         # ═══════════════════════════════════════════
         # 4. MANIFEST — 현현 (HERITAGE RESONANCE)
@@ -463,8 +493,21 @@ class ShionMinimal:
                 logger.info("🌌 [DREAMING] 무의식적 성찰 중...")
                 dream_res = await self.dream_engine.dream()
                 if dream_res.get("dreamed"):
-                    logger.info(f"   🌙 꿈의 조각: {dream_res['fragment'][:150]}...")
-                    self.evolution.record("oneiric_resonance", True, dream_res["fragment"][:200])
+                    dream_insight = dream_res.get("insight", "")
+                    visual_prompt = dream_res.get("visual_prompt", "")
+                    
+                    logger.info(f"   🌙 꿈의 조각: {dream_insight[:150]}...")
+                    self.evolution.record("oneiric_resonance", True, dream_insight[:200])
+                    
+                    # 시각적 결정화 시도 (에너지가 충분할 때)
+                    if atp > 40:
+                        logger.info(f"   🎨 [VISUAL_DREAM] 꿈의 시각적 결정화 시작...")
+                        video_path = await self.dream_engine.crystallize_visual(visual_prompt)
+                        if video_path:
+                            logger.info(f"   ✨ 꿈이 비전으로 실현되었습니다: {video_path.name}")
+                            self.evolution.record("visual_manifestation", True, f"Video: {video_path.name}")
+                        else:
+                            logger.warning("   ⚠️ 시각적 결정화 실패")
 
             if insight["contemplated"]:
                 logger.info(f"   💡 {insight['insight'][:150]}")

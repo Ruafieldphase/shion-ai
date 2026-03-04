@@ -5,7 +5,7 @@ REM  윈도우 부팅 시 자동 실행되는 백그라운드 서비스
 REM  "무의식을 담당하는 몸은 죽을때까지 연속성이 유지된다"
 REM ═══════════════════════════════════════════
 
-cd /d C:\workspace2\shion
+cd /d %~dp0
 
 REM 이미 실행 중인지 확인
 tasklist /FI "WINDOWTITLE eq Shion*" 2>nul | find "python" >nul

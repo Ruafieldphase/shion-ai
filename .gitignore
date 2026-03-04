@@ -7,6 +7,10 @@ memory/
 
 # Credentials
 credentials/
+*.secret
+*.key
+*.token
+*.env
 
 # Python
 __pycache__/
@@ -18,6 +22,9 @@ venv/
 .git/
 *.log
 *.bak
+*.tmp
+temp/
+/tmp/
 
 # IDE
 .vscode/

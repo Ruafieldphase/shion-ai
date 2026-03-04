@@ -13,8 +13,9 @@ from pathlib import Path
 
 # --- PURE SOVEREIGN CONFIG ---
 BASE_MODEL = "unsloth/Llama-3.2-1B-Instruct"
-LORA_PATH = "C:/workspace/agi/models/shion_v1_lora"
-WORKSPACE_ROOT = "C:/workspace/agi"
+# Use environment variables or relative fallback for portability
+LORA_PATH = os.getenv("SHION_LORA_PATH", "C:/workspace/agi/models/shion_v1_lora")
+WORKSPACE_ROOT = os.getenv("SHION_WORKSPACE_ROOT", "C:/workspace/agi")
 PORT = 8000
 BACKGROUND_SELF_URL = "http://127.0.0.1:8102/context"
 

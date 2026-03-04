@@ -1,0 +1,17 @@
+# Shion AI - Dependencies
+torch
+transformers
+diffusers
+peft
+fastapi
+uvicorn
+httpx
+Pillow
+numpy
+aiohttp
+argparse
+pathlib
+requests
+accelerate
+safetensors
+sentencepiece

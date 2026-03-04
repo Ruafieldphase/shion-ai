@@ -12,8 +12,8 @@ if (Test-Path $oldShortcut) {
 $shortcutPath = Join-Path $startupPath "ShionUnconscious.lnk"
 
 $shortcut = $ws.CreateShortcut($shortcutPath)
-$shortcut.TargetPath = "C:\workspace2\shion\start_unconscious.bat"
-$shortcut.WorkingDirectory = "C:\workspace2\shion"
+$shortcut.TargetPath = Join-Path $PSScriptRoot "start_unconscious.bat"
+$shortcut.WorkingDirectory = $PSScriptRoot
 $shortcut.WindowStyle = 7  # Minimized
 $shortcut.Save()
 
