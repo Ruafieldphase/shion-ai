@@ -156,9 +156,6 @@ class EvolutionMemory:
         entry["phase"] = (entry["phase"] + (PHASE_INCREMENT * resonance_integrity)) % TWO_PI
 
         event_type = "transmitted" if passed else "reflected"
-            "integrity": resonance_integrity,
-            "visual_anchor": self._find_latest_visual_anchor() # [NEW] 시각적 앵커링
-        }
 
         if passed:
             # 투과: 경계를 넘음
@@ -518,6 +515,23 @@ class EvolutionMemory:
                     logger.info(f"   🧬 자기조정: {log}")
             except Exception as e:
                 logger.warning(f"config 저장 실패: {e}")
+
+    def _find_latest_visual_anchor(self) -> str:
+        """최근에 생성된 만다라나 결정 이미지의 경로를 찾아 반환합니다."""
+        try:
+            mandala_dir = self.root / "outputs" / "mandalas"
+            if mandala_dir.exists():
+                files = sorted(mandala_dir.glob("*.png"), key=lambda x: x.stat().st_mtime, reverse=True)
+                if files:
+                    return str(files[0])
+            crystal_dir = self.root / "outputs" / "resonance_crystals"
+            if crystal_dir.exists():
+                files = sorted(crystal_dir.glob("*.png"), key=lambda x: x.stat().st_mtime, reverse=True)
+                if files:
+                    return str(files[0])
+        except:
+            pass
+        return ""
 
     def get_summary(self) -> str:
         """사람이 읽을 수 있는 진화 요약."""

@@ -102,7 +102,8 @@ class ShionMinimal:
     7. EXHALE      — Glymphatic Exhale (불필요 정보 정화)
     8. CONTEMPLATE — Hippocampal Resonance (해마 기반 자기 성찰)
     """
-
+    def __init__(self, shion_root: Path):
+        self.root = shion_root
         # [NEW] Config Load
         self.config_path = SHION_ROOT / "config" / "rhythm_config.json"
         self.config = self._load_config()
@@ -125,9 +126,8 @@ class ShionMinimal:
         from aesthetic_critique_engine import AestheticCritiqueEngine
         self.critique = AestheticCritiqueEngine(shion_root=SHION_ROOT)
         
-        from aesthetic_critique_engine import AestheticCritiqueEngine
-        self.critique = AestheticCritiqueEngine(SHION_ROOT)
-        
+        self.cycle_count = 0
+        self.last_resonance = 1.0
         self.cycle_count = 0
         self.is_running = True
         
