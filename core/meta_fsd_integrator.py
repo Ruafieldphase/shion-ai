@@ -18,6 +18,8 @@ import base64
 from pathlib import Path
 from datetime import datetime
 from typing import Optional, Dict
+import urllib.request
+import re
 
 try:
     from PIL import Image

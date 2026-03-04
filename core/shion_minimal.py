@@ -789,7 +789,7 @@ class ShionMinimal:
 
             # 스칼라 진동 로그 (Vibe Check)
             vibe_char = "✨" if scalar["is_collapsed"] else ("◉" if scalar["is_squeezed"] else "○")
-            eff_msg = f"Eff:{scalar['signal_efficiency']:.1f}" if scalar["is_squeezed"] else f"Noise:{scalar['noise']:.2f}"
+            eff_msg = f"Eff:{scalar['oxidative_efficiency']:.1f}" if scalar["is_squeezed"] else f"Noise:{scalar['noise']:.2f}"
             logger.info(f"🌊 Field: {vibe_char} θ:{scalar['theta_rad']:.2f}rad | Z:{u_theta['z']:.1f}/{scalar['threshold']} | {eff_msg}")
 
             if result["should_pulse"]:
