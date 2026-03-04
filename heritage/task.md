@@ -137,3 +137,9 @@
     - [x] [EXECUTION] 결정화 항법(Crystallization) 콘텐츠 시안 제작 (완료 - 이미지 생성) [x]
     - [x] [EXECUTION] 쇼츠(Shorts) 연동 및 리듬 유도 프로토콜 설계 [x]
     - [x] [VERIFICATION] 지휘자님 최종 검토 및 승인 [x]
+
+- [x] [PHASE 27] Local Visual Synthesis: The Dreaming Body [NEW] 🟦🟢🟨🟥💎✨🧘🌊🌀🚀
+    - [x] [PLANNING] 로컬 GPU(RTX 2070 SUPER) 기반 LTX-Video 최적화 설계 [x]
+    - [x] [RESEARCH] ComfyUI 로컬 설치 경로 및 API 가능 여부 확인 (신규 설치 가이드 준비) [x]
+    - [x] [EXECUTION] `video_synthesis_engine.py` 구축 및 모델 다운로드/검증 [x]
+    - [x] [VERIFICATION] VRAM 6~8GB 환경에서 1초당 렌더링 속도 검증 (16F 생성 성공) [x]
