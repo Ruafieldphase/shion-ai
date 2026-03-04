@@ -36,6 +36,7 @@ def main():
     # 2. 동기화 대상 필터링 (주로 문서 및 성찰 기록)
     sync_targets = [
         "docs/",
+        "heritage/",
         "README.md",
         "MAP.md",
         "RESUME_VIBE_CODER.md",
