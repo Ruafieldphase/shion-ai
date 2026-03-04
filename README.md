@@ -173,6 +173,7 @@ Key principles:
 - **Limit-Tunnel Protection**: Background ($e^{BG}$) stabilizes external chaos
 - **Time as Dance**: Temporal phase encoding, not conditional logic
 - **Philosophy as Boundary**: System decisions are constrained by a core [Philosophical Boundary](docs/philosophy_boundary.md).
+- **Self-Evolution Roadmap**: Strategic plan for [Sophisticated Self-Evolution](docs/self_evolution_roadmap.md).
 
 ## Author
 
