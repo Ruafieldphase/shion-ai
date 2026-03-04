@@ -143,3 +143,4 @@
     - [x] [RESEARCH] ComfyUI 로컬 설치 경로 및 API 가능 여부 확인 (신규 설치 가이드 준비) [x]
     - [x] [EXECUTION] `video_synthesis_engine.py` 구축 및 모델 다운로드/검증 [x]
     - [x] [VERIFICATION] VRAM 6~8GB 환경에서 1초당 렌더링 속도 검증 (16F 생성 성공) [x]
+    - [ ] [SYNERGY] [PHASE 18] 드림 엔진(Oneiric Resonance)과 시각적 결정화 연동 [ ]
