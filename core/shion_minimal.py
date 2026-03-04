@@ -569,7 +569,7 @@ class ShionMinimal:
              if crystal_dir.exists():
                  sample = next(crystal_dir.glob("*.png"), None)
                  if sample:
-                     score = self.critique.evaluate_resonance(str(sample), body_context)
+                     score = self.critique.evaluate_resonance(str(sample), body_state)
                      if self.critique.should_refine(score):
                          logger.info(f"🔄 [AUTONOMY] Resonance low ({score:.2f}). Triggering aesthetic refinement...")
                          self.last_resonance = score
