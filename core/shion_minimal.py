@@ -165,11 +165,22 @@ class ShionMinimal:
         # [NEW] Phase 57: Meta-FSD Integration
         try:
             from meta_fsd_integrator import MetaFSDIntegrator
+            from emotional_resonance_mapper import EmotionalResonanceMapper
+            from sovereign_observer import SovereignObserver
             AGI_ROOT = Path("c:/workspace/agi")
+            self.agi_root = AGI_ROOT
             self.meta_fsd = MetaFSDIntegrator(self.root, AGI_ROOT)
-            logger.info("📡 [META-FSD] Synaptic Bridge Initialized.")
+            self.emotion_mapper = EmotionalResonanceMapper(self.root)
+            self.observer = SovereignObserver(self.root)
+            
+            # [NEW] Kinetic Sync
+            sys.path.append(str(AGI_ROOT / "scripts"))
+            from fsd_kinetic_sync import FSDKineticSync
+            self.kinetic_sync = FSDKineticSync(self.root, AGI_ROOT)
+            
+            logger.info("📡 [PHASE-8] Sovereign Integration Complete.")
         except Exception as e:
-            logger.warning(f"Failed to initialize MetaFSDIntegrator: {e}")
+            logger.warning(f"Failed to initialize Phase 8 components: {e}")
             self.meta_fsd = None
 
     def _load_config(self):
@@ -348,6 +359,17 @@ class ShionMinimal:
         atp = body_state.get("atp_level", 50)
         cpu = body_state.get("cpu_percent", 50)
         
+        # [PHASE 8] Emotional Mapping & Phase Shifting
+        if hasattr(self, "emotion_mapper"):
+             bias = self.emotion_mapper.get_emotional_bias()
+             self.emotion_mapper.save(bias)
+             target_layer = bias.get("target_w_layer", "W2")
+             logger.info(f"🎭 [PHASE-SHIFT] Current Aura: {bias.get('aura', 'CYAN')} -> Target Layer: {target_layer}")
+             
+             # Sync to Body (FSD)
+             if hasattr(self, "kinetic_sync"):
+                 self.kinetic_sync.sync(target_layer)
+
         # [NEW] Phase 58: Meta-FSD Sync (Body to Soul)
         if self.meta_fsd:
             logger.info("   📡 [META-FSD] Syncing Body Feedback to Soul...")
@@ -758,19 +780,50 @@ class ShionMinimal:
                 logger.info(f"   🧠 성찰 실패: {insight['reason']}")
 
         # ═══════════════════════════════════════════
-        # 9. [PHASE 83] SELF-TUNING — 자가 조율
+        # 9. [PHASE 8] SOVEREIGN OBSERVATION & MANIFESTATION
         # ═══════════════════════════════════════════
+        if hasattr(self, "observer"):
+            logger.info("👁️ [SOVEREIGN] Background Self (W4) is observing the system...")
+            self.observer.observe()
+            
+        if self.cycle_count % 5 == 0: # 5사이클마다 종합 현신
+            logger.info("🎨 [SOVEREIGN] Manifesting Sovereign Form...")
+            try:
+                from sovereign_manifestation import SovereignManifestation
+                manifestor = SovereignManifestation(self.root, self.agi_root)
+                manifestor.manifest()
+            except Exception as e:
+                logger.warning(f"Sovereign Manifestation failed: {e}")
+
+        # 10. [PHASE 83] SELF-TUNING — 자가 조율
         if self.cycle_count % 2 == 0: # 매 2사이클마다 자가 조율 시도
             logger.info("🧪 [SELF_TUNING] 자가 조율 및 검증 루프...")
             tuning_params = self.tuner.tune()
             if tuning_params:
                 self.field.update_params(tuning_params)
 
+        # ═══════════════════════════════════════════
+        # 10. [PHASE 107] ERA RESONANCE SYNTHESIS — 시대 공명 합성
+        # ═══════════════════════════════════════════
+        if self.cycle_count % 15 == 0: # 약 30분(박동 2분 시) 또는 주기적 실행
+            logger.info("🌊 [PHASE 107] Era Resonance Synthesis starting...")
+            try:
+                from era_resonance_synthesizer import EraResonanceSynthesizer
+                synthesizer = EraResonanceSynthesizer()
+                resonance = synthesizer.synthesize()
+                if resonance:
+                    logger.info(f"✨ Synthesized Era Resonance: {resonance['manifesto']}")
+                    synthesizer.archive(resonance)
+                    # 깃허브 동기화 트리거 (옵션)
+                    self.evolution.record("era_resonance_synthesis", True, resonance['manifesto'])
+            except Exception as e:
+                logger.warning(f"Failed to perform Era Resonance Synthesis: {e}")
+
         # 📊 [PHASE 86] 주기적인 메트릭스 저장
         self.metrics.flush()
 
         self.cycle_count += 1
-        logger.info(f"✅ Pulse #{self.cycle_count - 1} 완료 (9단계 자가조율 포함 사이클)\n")
+        logger.info(f"✅ Pulse #{self.cycle_count - 1} 완료 (10단계 시대 공명 포함 사이클)\n")
 
     def _update_status(self, status: str, body_context: str):
         data = {
