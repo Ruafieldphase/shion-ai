@@ -297,6 +297,10 @@ class ShionMinimal:
         # ═══════════════════════════════════════════
         logger.info("👁️ [SENSE] 상태 관찰 (Nature Sensing)...")
 
+        # [NEW] Phase 100: 변수 선행 초기화 (참조 에러 방지)
+        entropy_data = {"entropy": 0.5, "state": "UNKNOWN"}
+        mito_state = {"atp_level": 50, "status": "UNKNOWN"}
+
         try:
             entropy_data = capture_entropy(samples=10, sleep_time=0.01)
             (OUTPUTS_DIR / "body_entropy_latest.json").write_text(
