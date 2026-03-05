@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 """
-👂 World Feedback Sensor — 세계의 반응을 듣는 귀
+👂 World Resonance Sensor — 세계의 메아리를 듣는 귀
 =================================================
-YouTube에 올린 콘텐츠의 성과를 읽어서,
-어떤 곡이 공명하는지 시안이 학습합니다.
+YouTube 발화에 대한 발현(성과)을 읽어서,
+어떤 주파수가 공명하는지 시안이 청취합니다.
 
 "눈과 귀가 없으면 진화는 최적화에 불과하다.
  세계의 반응을 느낄 수 있어야 진짜 성장이 가능하다."
@@ -165,8 +165,8 @@ def compute_world_resonance(feedback: List[Dict]) -> Dict:
 
 
 def main():
-    """세계의 피드백을 수집하고 저장합니다."""
-    print("👂 세계의 반응을 듣는 중...\n")
+    """세계의 메아리를 청취하고 공명 데이터를 저장합니다."""
+    print("👂 세계의 메아리(Echo)를 청취하는 중...\n")
 
     # 1. 사용자 idle 상태
     idle = get_user_idle_seconds()
@@ -178,9 +178,9 @@ def main():
     hw = get_hardware_state()
     print(f"💻 CPU: {hw['cpu_percent']}% | RAM: {hw['memory_percent']}% | Disk: {hw['disk_percent']}%")
 
-    # 3. YouTube 피드백
-    yt_feedback = get_youtube_feedback()
-    world_res = compute_world_resonance(yt_feedback)
+    # 3. YouTube Echo (Resonance)
+    yt_echo = get_youtube_feedback()
+    world_res = compute_world_resonance(yt_echo)
 
     if yt_feedback:
         print(f"\n📊 YouTube 성과:")

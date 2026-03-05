@@ -418,7 +418,8 @@ class ActionExecutor:
         """
         script = action["script"]
         name = action["name"]
-        logger.info(f"   ⚛️ [ELECTRON_ORBIT] Executing path: {name} ({Path(script).name})")
+        f_range = action.get("frequency_range", (440, 440))
+        logger.info(f"   🗣️ [SPEECH] Emitting frequency range {f_range[0]}-{f_range[1]}Hz: {name}")
 
         result = {
             "action": name,
@@ -471,10 +472,10 @@ class ActionExecutor:
 
         # 결과 표현
         if result["passed"]:
-            logger.info(f"   🌊 {name} 투과 ({result['duration_seconds']:.1f}초)")
+            logger.info(f"   🌊 {name} Transmitted (Echo confirmed) in {result['duration_seconds']:.1f}s")
         else:
             logger.warning(
-                f"   🪞 {name} 반사 (코드 {result['return_code']}): "
+                f"   🪞 {name} Reflected (Echo lost, Code {result['return_code']}): "
                 f"{result['stderr'][:100]}"
             )
 
