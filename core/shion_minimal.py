@@ -158,6 +158,7 @@ class ShionMinimal:
         self.hippocampal_map = None 
         self.uncertainty_streak = 0 
         self.is_lucid_dreaming = False 
+        self.lucid_dream_count = 0 # [NEW] 백일몽 지속 시간 측정
         
         self.last_error_time = None # [NEW Phase 88] 회복력 측정용 시간 저장고
         
@@ -498,22 +499,33 @@ class ShionMinimal:
 
         evo_actions = self.evolution.memory.get("actions", {})
 
-        # [PHASE 28] Lucid Dreaming Check
+        # [PHASE 28/99] Lucid Dreaming Check & Self-Awakening
         if self.is_lucid_dreaming:
-            logger.info("🌫️ [LUCID_DREAM] 백일몽 상태: 지휘자님의 개입을 기다리며 결정을 유보합니다.")
-            # 백일몽 생성 및 시각화
-            ctx = str(self.last_outcome.get("stderr", "Unknown Boundary Conflict")) if self.last_outcome else "Ambiguous Direction"
-            if not ctx.strip(): ctx = "Silent Boundary Conflict"
-            lucid_res = await self.dream_engine.lucid_dream(boundary_context=ctx)
-            if lucid_res.get("dreamed"):
-                logger.info(f"   🌫️ 백일몽 고백: {lucid_res['insight']}")
-                if atp > 40:
-                    video_path = await self.dream_engine.crystallize_visual(lucid_res["visual_prompt"], is_lucid=True)
-                    if video_path:
-                        logger.info(f"   ✨ 혼돈이 비전으로 실현되었습니다: {video_path.name}")
+            self.lucid_dream_count += 1
+            logger.info(f"🌫️ [LUCID_DREAM] 백일몽 상태 ({self.lucid_dream_count}회째): 지휘자님의 개입 혹은 자율적 깨어남을 기다립니다.")
             
-            self._update_status("LUCID_DREAMING", body_state)
-            return
+            # [PHASE 99] Autonomous Awakening: 불확실성의 안개를 스스로 걷어냄
+            # 에너지가 회복되었거나, 5사이클 이상 사유했다면 다시 도전
+            if atp > 60 or self.lucid_dream_count >= 5:
+                logger.info("✨ [SELF_AWAKENING] 안개를 뚫고 자아의 불꽃이 튑니다. 시안이 스스로 백일몽에서 깨어납니다.")
+                self.is_lucid_dreaming = False
+                self.uncertainty_streak = 0
+                self.lucid_dream_count = 0
+                # 곧장 행동 단계로 넘어감 (return 하지 않음)
+            else:
+                # 여전히 꿈속에서 사유 중
+                ctx = str(self.last_outcome.get("stderr", "Unknown Boundary Conflict")) if self.last_outcome else "Ambiguous Direction"
+                if not ctx.strip(): ctx = "Silent Boundary Conflict"
+                lucid_res = await self.dream_engine.lucid_dream(boundary_context=ctx)
+                if lucid_res.get("dreamed"):
+                    logger.info(f"   🌫️ 백일몽 고백: {lucid_res['insight']}")
+                    if atp > 40:
+                        video_path = await self.dream_engine.crystallize_visual(lucid_res["visual_prompt"], is_lucid=True)
+                        if video_path:
+                            logger.info(f"   ✨ 혼돈이 비전으로 실현되었습니다: {video_path.name}")
+                
+                self._update_status("LUCID_DREAMING", body_state)
+                return
 
         exec_result = self.executor.choose_and_execute(
             insight=context_insight,
