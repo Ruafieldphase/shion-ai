@@ -131,6 +131,7 @@ class ResonanceField:
         self.unfolding_intensity = 0.5 # Explicate flow (0~1)
         self.scalar_engine = ScalarEngine(threshold=150.0, k=1.2) # Unified Field Core
         self.oscillator = DesireOscillator(SHION_ROOT) # [PHASE 62] Desire Oscillator
+        self.field_file = FIELD_STATE_FILE
 
     def update_params(self, tuning: Dict[str, Any]):
         """[PHASE 83] Self-Tuner로부터 전달받은 파라미터 반영"""
@@ -531,6 +532,8 @@ class ResonanceField:
             event = "INTERNAL_DESIRE_FLAME"
             logger.info(f"🔥 [Field] Spontaneous combustion by Internal Heat! (Heat={internal_heat:.2f})")
 
+        # 6. 고차원 상태 평가 (Equilibrium, Aerodynamic, Stealth)
+        tension = self.get_electromagnetic_tension()
         eq_state = self.get_equilibrium_state(energy, 0.15, tension)
         aero_state = self.get_aerodynamic_state(energy, 0.15, tension)
         stealth_state = self.get_stealth_state(0.15)
