@@ -89,10 +89,10 @@ class MetaFSDIntegrator:
         try:
             # 1. API(POST /api/intent)로 FSD가 보내온 최근 리포트 확인
             fsd_report_path = self.shion_root / "outputs" / "fsd_action_report_latest.json"
-            fsd_report = self._load_json(fsd_report_path) or {}
+            fsd_report = self._load_json(fsd_report_path)
             
             # [PHASE 93 & 94] Check if this is an artistic manifestation or pain from Sena
-            is_sena_factory = fsd_report.get("source") == "Sena_YouTube_Factory"
+            is_sena_factory = isinstance(fsd_report, dict) and fsd_report.get("source") == "Sena_YouTube_Factory"
             
             if is_sena_factory:
                 if fsd_report.get("status") == "success":
@@ -100,7 +100,7 @@ class MetaFSDIntegrator:
                     self._generate_artistic_intent(fsd_report)
                     res_score = 0.95 # Artistic creations inherently have high resonance
                 else:
-                    err_msg = fsd_report.get("metadata", {}).get("error", "Unknown pain")
+                    err_msg = fsd_report.get("metadata", {}).get("error", "Unknown pain") if isinstance(fsd_report.get("metadata"), dict) else "Unknown pain"
                     logger.warning(f"   🩸 [SENSORY_PAIN] Creative process failed: {err_msg}")
                     self._generate_dissonance_intent_from_pain(fsd_report)
                     res_score = 0.1 # Very low resonance due to pain
@@ -116,8 +116,10 @@ class MetaFSDIntegrator:
             # 2. FSD 심박수(Heartbeat) 확인
             heartbeat = self._load_json(self.unconscious_heartbeat)
             logic_resonance = 1.0
-            if heartbeat:
-                logic_resonance = heartbeat.get("state", {}).get("resonance", 1.0)
+            if isinstance(heartbeat, dict):
+                heart_state = heartbeat.get("state", {})
+                if isinstance(heart_state, dict):
+                    logic_resonance = heart_state.get("resonance", 1.0)
             
             # 3. 종합 공명도 산출 (시각 50% + 논리 50%)
             combined_resonance = (visual_resonance * 0.5) + (logic_resonance * 0.5)
@@ -382,11 +384,12 @@ class MetaFSDIntegrator:
         candidates.sort(key=lambda x: x["priority"], reverse=True)
         return candidates[0]["data"]
 
-    def _load_json(self, path: Path) -> Optional[Dict]:
-        if not path.exists(): return None
+    def _load_json(self, path: Path) -> Dict:
+        if not path.exists(): return {}
         try:
-            return json.loads(path.read_text(encoding="utf-8"))
-        except: return None
+            data = json.loads(path.read_text(encoding="utf-8"))
+            return data if isinstance(data, dict) else {}
+        except: return {}
 
 if __name__ == "__main__":
     logging.basicConfig(level=logging.INFO)

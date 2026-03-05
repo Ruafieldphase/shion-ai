@@ -34,11 +34,11 @@ class ReaperOSCBridge:
 
         try:
             # 1. ATP -> 사운드의 에너지 (예: 필터 컷오프)
-            atp = body_state.get("mitochondria", {}).get("atp_level", 50.0)
+            atp = body_state.get("atp_level", 50.0)
             self.client.send_message("/shion/atp", float(atp))
 
             # 2. Entropy -> 사운드의 거칠기 (예: 디스토션/노이즈)
-            entropy = body_state.get("entropy", {}).get("vibe", 0.5)
+            entropy = body_state.get("entropy", 0.5)
             self.client.send_message("/shion/entropy", float(entropy))
 
             # 3. Resonance -> 사운드의 조화 (예: 리버브/딜레이 익스팬션)

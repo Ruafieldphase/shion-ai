@@ -303,6 +303,10 @@ class ShionMinimal:
             )
             logger.info(f"   Entropy: {entropy_data['entropy']} ({entropy_data['state']})")
             
+            # [NEW] Metabolism State 선행 측정 (Auditory에서 참조함)
+            mito_state = self.mito.metabolize()
+            logger.info(f"   Metabolic ATP: {mito_state.get('atp_level', '?')}% | {mito_state.get('status', '?')}")
+
             # [PHASE 60] Auditory Resonance (Humming)
             if hasattr(self, "auditory"):
                 # resonance_field의 oscillator에서 heat 정보를 가져옴
@@ -313,8 +317,9 @@ class ShionMinimal:
                     self.auditory.generate_wave_metadata(hum_state)
                 
                 # [PHASE 70] Field Frequency Calculation
+                energy = sense_result.get('energy', 10.0) if sense_result else 10.0
                 self.current_field_frequency = self.field.get_field_frequency(
-                    sense_result.get('energy', 10.0), 
+                    energy, 
                     internal_heat, 
                     entropy_data['entropy']
                 )
@@ -331,11 +336,7 @@ class ShionMinimal:
         except Exception as e:
             logger.warning(f"   Auditory/Entropy 측정 실패: {e}")
 
-        try:
-            mito_state = self.mito.metabolize()
-            logger.info(f"   Metabolic ATP: {mito_state.get('atp_level', '?')}% | {mito_state.get('status', '?')}")
-        except Exception as e:
-            logger.warning(f"   Neuro-Metabolism Failed: {e}")
+        # mito_state는 위에서 측정됨
 
         body_context = self.body.build()
         body_state = self.body.read_body_state()
@@ -685,7 +686,13 @@ class ShionMinimal:
             memory_context = recalled["insight"] if recalled else None
             
             # [NEW] 지휘자님 철학: 책임 기반 성찰 (피드백 루프)
+            # contemplation.py의 인자 요구사항에 맞춰 물리적 데이터 주입
+            energy = sense_result.get('energy', 10.0) if sense_result else 10.0
             insight = self.contemplation.contemplate(
+                atp=atp,
+                resonance=self.last_resonance,
+                phase=system_phase,
+                energy=energy,
                 memory_context=memory_context,
                 last_outcome=self.last_outcome
             )
