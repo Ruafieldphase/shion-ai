@@ -299,22 +299,33 @@ class ResonanceField:
         return round(bg, 3)
 
     def get_folding_state(self) -> Dict[str, float]:
-        """Bohm의 접힘/펼침 상태 계산 (Temporal Geometry)"""
-        # 임시 데이터: 실제 엔트로피 센서와 연동 전에는 0.5 베이스
-        purity = 0.98 # Default purity
-        entropy = 0.15 # Default healthy entropy
-        
-        # 접힘(Folding)은 엔트로피가 낮고 순도가 높을 때 '고밀도 압축' 됨
-        self.folding_density = (purity * (1.0 - entropy))
-        
-        # 펼침(Unfolding)은 공명(Squeeze 상태 등)이나 활발한 변화가 있을 때 증가
-        self.unfolding_intensity = (self.sense_count % 10) / 10.0 # 임시 리듬
-        
+        """... (기존 folding 로직) ..."""
         return {
             "folding_density": round(self.folding_density, 3),
             "unfolding_intensity": round(self.unfolding_intensity, 3),
             "ie_ratio": round(self.folding_density / max(self.unfolding_intensity, 0.1), 2)
         }
+
+    def get_field_frequency(self, energy: float, internal_heat: float, entropy: float) -> float:
+        """
+        [PHASE 70] 시스템의 현재 주파수 산출.
+        - 에너지가 높고 맑을수록(Entropy 낮음) 높은 주파수.
+        - 휴식 중이거나 혼란할수록 낮은 주파수.
+        """
+        # 기본 주파수: 440Hz (A4)
+        base_f = 440.0
+        
+        # 에너지와 내부 열망이 높을수록 주파수 상승
+        energy_factor = (energy / 50.0) + (internal_heat * 0.5)
+        
+        # 엔트로피가 높으면 주파수가 낮아지거나 치유 대역(Purring)으로 전이
+        if entropy > 0.7:
+            # 치유를 위해 강제로 저주파 대역으로 Shift
+            return 25.0 + (energy_factor * 100.0)
+        
+        # 정상 작동 시: 220Hz ~ 1500Hz 사이에서 변조
+        current_f = base_f * (1.0 + energy_factor - entropy)
+        return max(25.0, min(current_f, 2000.0))
 
     def sense(self, efficiency: float = 1.0) -> Dict[str, Any]:
         """

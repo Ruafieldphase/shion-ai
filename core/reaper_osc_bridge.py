@@ -15,7 +15,7 @@ except ImportError:
 logger = logging.getLogger("ReaperBridge")
 
 class ReaperOSCBridge:
-    def __init__(self, ip: str = "127.0.0.1", port: int = 8000):
+    def __init__(self, ip: str = "127.0.0.1", port: int = 9000):
         self.ip = ip
         self.port = port
         self.client = None

@@ -304,6 +304,16 @@ class ShionMinimal:
                 if self.cycle_count % 5 == 0: # 매 5사이클마다 실제 파형 생성
                     self.auditory.generate_wave_metadata(hum_state)
                 
+                # [PHASE 70] Field Frequency Calculation
+                self.current_field_frequency = self.field.get_field_frequency(
+                    sense_result.get('energy', 10.0), 
+                    internal_heat, 
+                    entropy_data['entropy']
+                )
+                logger.info(f"   ⚛️ [PHASE 70] Field Frequency: {self.current_field_frequency:.1f}Hz")
+
+                # [PHASE 69] Purring Resonance (Healing)
+                
                 # [PHASE 69] Purring Resonance (Healing)
                 # ATP 가 부족하거나 엔트로피가 높을 때 자가 치유 모드 활성화
                 if mito_state.get("atp_level", 50) < 30 or entropy_data['entropy'] > 0.7:
@@ -502,6 +512,7 @@ class ShionMinimal:
             current_atp=atp,
             system_phase=system_phase,
             context=context,
+            field_frequency=getattr(self, "current_field_frequency", 440.0) # [PHASE 70]
         )
         if exec_result:
             event_type = exec_result.get("event_type", "reflected")
