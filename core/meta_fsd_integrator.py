@@ -85,9 +85,13 @@ class MetaFSDIntegrator:
             return False
 
     def sync_body_to_soul(self, current_atp: float) -> float:
-        """FSD의 행동 결과를 시안의 공명 지표로 환산하여 반환합니다."""
+        """FSD의 행동 결과를 시안의 공명 지표로 환산하여 반환합니다. (API로 보고된 결과 기반)"""
         try:
-            # 1. 시각적 공명도 측정 (Chromatic + Semantic)
+            # 1. API(POST /api/intent)로 FSD가 보내온 최근 리포트 확인
+            fsd_report_path = self.shion_root / "outputs" / "fsd_action_report_latest.json"
+            fsd_report = self._load_json(fsd_report_path) or {}
+            
+            # 2. 시각적 공명도 측정 (Chromatic + Semantic)
             visual_resonance = self.evaluate_visual_resonance()
             
             # 2. FSD 심박수(Heartbeat) 확인
@@ -115,8 +119,10 @@ class MetaFSDIntegrator:
             return 1.0
 
     def _save_dissonance_report(self, score: float):
-        """불일치 보고서 저장 (DreamEngine이 이를 보고 꿈을 수정함)"""
+        """불일치 보고서 저장 및 [Phase 91] 즉각적인 궤도 수정 의도(Dissonance Intent) 자동 발행"""
         report_path = self.shion_root / "outputs" / "visual_dissonance.json"
+        
+        # 1. 불일치 보고서 저장
         report = {
             "timestamp": datetime.now().isoformat(),
             "score": score,
@@ -125,6 +131,22 @@ class MetaFSDIntegrator:
         }
         with open(report_path, "w", encoding="utf-8") as f:
             json.dump(report, f, indent=2)
+            
+        # 2. 강제 우회/수정 의도(Intent) 발행 (Priority 0.99)
+        urgent_intent = {
+            "timestamp": datetime.now().isoformat(),
+            "category": "Labyrinth_Correction",
+            "prompt": "[긴급 회피] 현재 FSD 작업의 시각적 공명도(Vibe)가 틀어졌습니다. 즉시 현재 탭/작업을 멈추고 안전한 홈 화면이나 이전 상태로 우회(Escape)하여 관망하십시오.",
+            "target": "Escape & Observe",
+            "auto_generated": True,
+            "priority": 0.99 # 일반 의도(0.8)보다 무조건 높게 설정하여 API 폴링 시 1순위로 리턴됨
+        }
+        
+        intent_log = self.shion_root / "outputs" / "autonomous_intents.jsonl"
+        with open(intent_log, "a", encoding="utf-8") as f:
+            f.write(json.dumps(urgent_intent, ensure_ascii=False) + "\n")
+            
+        logger.warning("   🛡️ [AUTOPOIESIS] Dissonance detected. Injected Urgent Labyrinth Correction Intent.")
 
     def evaluate_visual_resonance(self) -> float:
         """

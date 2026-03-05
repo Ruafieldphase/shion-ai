@@ -147,6 +147,29 @@ class ShionStatusHandler(http.server.SimpleHTTPRequestHandler):
             
             self.wfile.write(json.dumps(vibe_data).encode('utf-8'))
 
+        elif self.path == '/api/goal':
+            # [PHASE 91] Meta-FSD 연동용 최상위 목표(Goal) 반환
+            self.send_response(200)
+            self.send_header('Content-type', 'application/json')
+            self.end_headers()
+            
+            goal_data = {"goal": "HOLD", "target": None, "priority": 0.0}
+            
+            # 긴급 보정 지시(Dissonance) 또는 자율적 의도를 확인
+            intent_log = SHION_ROOT / "outputs" / "autonomous_intents.jsonl"
+            if intent_log.exists():
+                try:
+                    with open(intent_log, "r", encoding="utf-8") as f:
+                        lines = f.readlines()
+                        if lines:
+                            last_intent = json.loads(lines[-1])
+                            goal_data["goal"] = last_intent.get("prompt", last_intent.get("insight", "HOLD"))
+                            goal_data["target"] = last_intent.get("target")
+                            goal_data["priority"] = last_intent.get("priority", 0.5)
+                except: pass
+            
+            self.wfile.write(json.dumps(goal_data).encode('utf-8'))
+
         elif self.path == '/api/intent':
             # [PHASE 87] Shared Goals Bus (구독용 의도 데이터)
             self.send_response(200)
@@ -188,6 +211,40 @@ class ShionStatusHandler(http.server.SimpleHTTPRequestHandler):
             return super().do_GET()
         else:
             return super().do_GET()
+
+    def do_POST(self):
+        # [Phase 90 & 91 Security] Token 검증
+        if self.path.startswith('/api/') and not self._check_auth():
+            self.send_response(401)
+            self.send_header('Content-type', 'application/json')
+            self.end_headers()
+            self.wfile.write(json.dumps({"error": "Unauthorized"}).encode('utf-8'))
+            return
+
+        if self.path == '/api/intent':
+            # [PHASE 91] FSD의 행동 완료 보고 수신 (Body-to-Soul 피드백루프)
+            try:
+                content_length = int(self.headers.get('Content-Length', 0))
+                post_data = self.rfile.read(content_length)
+                payload = json.loads(post_data.decode('utf-8'))
+                
+                # 수신 받은 리포트를 shion_minimal이나 meta_fsd가 읽을 수 있도록 파일로 임시 드롭
+                fsd_report_path = SHION_ROOT / "outputs" / "fsd_action_report_latest.json"
+                payload["received_at"] = time.time()
+                with open(fsd_report_path, "w", encoding="utf-8") as f:
+                    json.dump(payload, f, ensure_ascii=False)
+                    
+                self.send_response(200)
+                self.send_header('Content-type', 'application/json')
+                self.end_headers()
+                self.wfile.write(json.dumps({"status": "received", "ok": True}).encode('utf-8'))
+            except Exception as e:
+                self.send_response(400)
+                self.send_header('Content-type', 'application/json')
+                self.end_headers()
+                self.wfile.write(json.dumps({"error": str(e)}).encode('utf-8'))
+        else:
+            self.send_error(404, "Endpoint not found")
 
 def run_server():
     # Cwd를 root로 설정하여 파일 서빙 용이하게 함
