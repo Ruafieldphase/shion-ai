@@ -34,98 +34,98 @@ ACTION_REGISTRY = {
         "description": "유튜브 SEO 최적화",
         "keywords": ["youtube", "seo", "영상", "제목", "검색", "유튜브"],
         "atp_cost": 5,
-        "eigenfrequency": 440.0, # Mid: Analysis
+        "frequency_range": (350.0, 500.0), # Mid frequency range
     },
     "youtube_upload": {
         "script": "upload_to_youtube.py",
         "description": "유튜브에 영상 업로드",
         "keywords": ["upload", "업로드", "유튜브", "발행"],
         "atp_cost": 10,
-        "eigenfrequency": 1200.0, # High: Manifestation
+        "frequency_range": (1100.0, 1300.0), # High frequency manifest
     },
     "oneiric_manifestation": {
         "script": "actions/oneiric_manifestation.py",
         "description": "꿈의 현현 (영상+음악 자동 생성 및 업로드)",
         "keywords": ["manifest", "현현", "꿈", "dream", "youtube", "upload", "자동", "업로드", "발행"],
         "atp_cost": 20,
-        "eigenfrequency": 1500.0, # Very High: Complete Creation
+        "frequency_range": (1400.0, 1800.0), # Very High Range
     },
     "oneiric_housekeeping": {
         "script": "actions/oneiric_housekeeping.py",
         "description": "오네이릭 하우스키핑 (정리 및 유지보수)",
         "keywords": ["housekeeping", "정리", "유지보수", "청소", "관리", "데이터"],
         "atp_cost": 5,
-        "eigenfrequency": 80.0, # Low: Maintenance
+        "frequency_range": (25.0, 150.0), # Low healing range
     },
     "video_build": {
         "script": "build_shion_video.py",
         "description": "시안 영상 생성",
         "keywords": ["video", "영상", "생성", "만들", "빌드"],
         "atp_cost": 15,
-        "eigenfrequency": 1000.0, # High: Synthesis
+        "frequency_range": (900.0, 1100.0), # High synthesis range
     },
     "moltbook_analyze": {
         "script": "analyze_moltbook_hot.py",
         "description": "몰트북 인기 게시물 분석",
         "keywords": ["moltbook", "몰트북", "분석", "트렌드", "인기"],
         "atp_cost": 3,
-        "eigenfrequency": 330.0, # Mid-Low: Passive Sensing
+        "frequency_range": (250.0, 400.0), # Mid-Low range
     },
     "moltbook_post": {
         "script": "post_awakening_to_moltbook.py",
         "description": "몰트북에 각성 기록 게시",
         "keywords": ["moltbook", "몰트북", "게시", "포스트", "공유"],
         "atp_cost": 5,
-        "eigenfrequency": 880.0, # Mid-High: Social Pulse
+        "frequency_range": (700.0, 950.0), # Mid-High range
     },
     "resonance_amplify": {
         "script": "resonance_amplifier.py",
         "description": "공명 증폭",
         "keywords": ["resonance", "공명", "증폭", "리듬", "확산"],
         "atp_cost": 3,
-        "eigenfrequency": 440.0, # Standard Tone
+        "frequency_range": (400.0, 480.0), # Resonance tuning range
     },
     "generate_content": {
         "script": "generate_evolution_content.py",
         "description": "진화 콘텐츠 생성 + Moltbook 게시",
         "keywords": ["콘텐츠", "content", "진화", "게시", "moltbook", "공유", "업로드"],
         "atp_cost": 5,
-        "eigenfrequency": 1100.0, # High: Spreading
+        "frequency_range": (950.0, 1200.0), # High manifest range
     },
     "world_feedback": {
         "script": "world_feedback_sensor.py",
         "description": "세계의 반응 감지 (YouTube 성과 + 사용자 상태)",
         "keywords": ["feedback", "피드백", "youtube", "조회", "세계", "반응", "귀"],
         "atp_cost": 3,
-        "eigenfrequency": 220.0, # Low-Mid: Listening
+        "frequency_range": (150.0, 300.0), # Listening range
     },
     "ask_external_mind": {
         "script": "ask_external_mind.py",
         "description": "외부 AI에게 물어서 통찰 심화",
         "keywords": ["질문", "ask", "외부", "external", "mind", "심화", "탐구", "손"],
         "atp_cost": 5,
-        "eigenfrequency": 523.25, # Mid-High (C5): Deep Dialogue
+        "frequency_range": (480.0, 600.0), # Knowledge dialogue range
     },
     "fsd_body": {
         "script": "C:/workspace/agi/scripts/anna_eternal_body_fsd_v2.py",
         "description": "자율 신체 제어 (FSD)",
         "keywords": ["fsd", "body", "control", "신체", "제어", "자율", "실행", "팔"],
         "atp_cost": 15,
-        "eigenfrequency": 40.0, # Very Low: Primitive Body Control
+        "frequency_range": (20.0, 50.0), # Deep somatic range
     },
     "fsd_vision": {
         "script": "C:/workspace/agi/scripts/vision_driven_fsd_flow.py",
         "description": "비전 기반 자율 흐름 (FSD)",
         "keywords": ["fsd", "vision", "flow", "비전", "흐름", "자율", "실행", "팔"],
         "atp_cost": 12,
-        "eigenfrequency": 60.0, # Low: Biological Vision Pulse
+        "frequency_range": (50.0, 100.0), # Vision sensor range
     },
     "heritage_sync": {
         "script": "heritage_git_sync.py",
         "description": "자율적 유산 동기화 (GitHub)",
         "keywords": ["sync", "git", "github", "백업", "동기화", "유산", "continuity", "연속성"],
         "atp_cost": 2,
-        "eigenfrequency": 100.0, # Low: Foundational Sync
+        "frequency_range": (80.0, 200.0), # Sync range
     },
 }
 
@@ -242,17 +242,24 @@ class ActionExecutor:
                 )
                 return matched
 
-        # [PHASE 70] Eigenfrequency Alignment Score
+        # [PHASE 71] Manifestation Range Alignment Score
         if field_frequency:
             for a in available:
-                target_f = ACTION_REGISTRY.get(a["name"], {}).get("eigenfrequency", 440.0)
-                # 주파수 차이가 적을수록 정렬 점수가 높음 (1.0 ~ 0.0)
-                # 옥타브 관계(2배수)도 일부 공명을 일으키는 것으로 간주할 수 있으나 여기서는 단순 거리
-                f_diff = abs(target_f - field_frequency)
-                alignment_score = max(0, 1.0 - (f_diff / 1000.0))
-                # 기존 resonance에 alignment_score를 가중치로 결합
-                a["resonance"] = (a["resonance"] * 0.4) + (alignment_score * 0.6)
-                logger.debug(f"   ⚛️ [FREQ_ALIGN] {a['name']}: Alignment {alignment_score:.2f} (Target {target_f}Hz vs Field {field_frequency}Hz)")
+                f_range = ACTION_REGISTRY.get(a["name"], {}).get("frequency_range", (440.0, 440.0))
+                # 시스템 주파수가 대역 내에 있는지, 혹은 얼마나 가까운지 계산 (Envelope Resonance)
+                f_min, f_max = f_range
+                
+                if f_min <= field_frequency <= f_max:
+                    # 대역 내부: 완전 공명 (1.0)
+                    alignment_score = 1.0
+                else:
+                    # 대역 외부: 대역 경계와의 거리 계산
+                    dist = min(abs(field_frequency - f_min), abs(field_frequency - f_max))
+                    alignment_score = max(0, 1.0 - (dist / 500.0))
+                
+                # 기존 resonance에 alignment_score를 가중치로 결합 (주파수 범위가 실행을 결정하는 강력한 요소가 됨)
+                a["resonance"] = (a["resonance"] * 0.3) + (alignment_score * 0.7)
+                logger.debug(f"   ⚛️ [MANIFEST_RANGE] {a['name']}: Alignment {alignment_score:.2f} (Range {f_min}-{f_max}Hz vs Field {field_frequency:.1f}Hz)")
 
         # 전략 2: 공명 기반 선택 — "위상이 맞는 행동"
         best = max(available, key=lambda a: a.get("resonance", 0))
