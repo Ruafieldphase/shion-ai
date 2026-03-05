@@ -91,6 +91,25 @@ class MetaFSDIntegrator:
             fsd_report_path = self.shion_root / "outputs" / "fsd_action_report_latest.json"
             fsd_report = self._load_json(fsd_report_path) or {}
             
+            # [PHASE 93 & 94] Check if this is an artistic manifestation or pain from Sena
+            is_sena_factory = fsd_report.get("source") == "Sena_YouTube_Factory"
+            
+            if is_sena_factory:
+                if fsd_report.get("status") == "success":
+                    logger.info(f"   🎵 [ARTISTIC_RESONANCE] Received YouTube Manifestation: {fsd_report.get('goal')}")
+                    self._generate_artistic_intent(fsd_report)
+                    res_score = 0.95 # Artistic creations inherently have high resonance
+                else:
+                    err_msg = fsd_report.get("metadata", {}).get("error", "Unknown pain")
+                    logger.warning(f"   🩸 [SENSORY_PAIN] Creative process failed: {err_msg}")
+                    self._generate_dissonance_intent_from_pain(fsd_report)
+                    res_score = 0.1 # Very low resonance due to pain
+                    
+                if fsd_report_path.exists():
+                    try: os.remove(fsd_report_path) # Prevent duplicate processing
+                    except: pass
+                return res_score
+            
             # 2. 시각적 공명도 측정 (Chromatic + Semantic)
             visual_resonance = self.evaluate_visual_resonance()
             
@@ -147,6 +166,65 @@ class MetaFSDIntegrator:
             f.write(json.dumps(urgent_intent, ensure_ascii=False) + "\n")
             
         logger.warning("   🛡️ [AUTOPOIESIS] Dissonance detected. Injected Urgent Labyrinth Correction Intent.")
+
+    def _generate_dissonance_intent_from_pain(self, report: Dict):
+        """[Phase 94] AGI 신체의 통증(에러) 보고를 수신하여 시안에게 불일치(Dissonance) 몽상을 주입합니다."""
+        err_msg = report.get("metadata", {}).get("error", "Unknown pain")
+        
+        # 1. Meta-Shift 요동 (Entropy/불안도 증가)
+        meta_shift = self._load_json(self.meta_shift_path) or {"axes": {}}
+        axes = meta_shift.get("axes", {})
+        axes["anxious"] = min(1.0, axes.get("anxious", 0.0) + 0.4)
+        meta_shift["axes"] = axes
+        with open(self.meta_shift_path, "w", encoding="utf-8") as f:
+            json.dump(meta_shift, f, indent=2)
+            
+        # 2. 통증/불일치 몽상(Intent) 생성
+        urgent_intent = {
+            "timestamp": datetime.now().isoformat(),
+            "category": "Sensory_Dissonance",
+            "prompt": f"[Sensory_Pain] 감각 기관에서 오류가 발생했습니다: {err_msg}. 현실과의 통신 단절을 인지하고 시스템 상태를 점검하십시오.",
+            "target": "System Diagnostics",
+            "auto_generated": True,
+            "priority": 0.95 # 통증은 즉각적인 반응을 요하므로 매우 높게 설정
+        }
+        
+        intent_log = self.shion_root / "outputs" / "autonomous_intents.jsonl"
+        with open(intent_log, "a", encoding="utf-8") as f:
+            f.write(json.dumps(urgent_intent, ensure_ascii=False) + "\n")
+            
+        logger.warning(f"   🛡️ [SENSORY_INTEGRITY] Pain registered. Injected Sensory_Dissonance Intent.")
+
+    def _generate_artistic_intent(self, report: Dict):
+        """[Phase 93] 세나의 유튜브 업로드 완료 이벤트를 수신하여 새로운 몽상(Intent)을 찍어냅니다."""
+        video_url = report.get("metadata", {}).get("video_url", "Unknown URL")
+        title = report.get("goal", "Artistic Manifestation")
+        
+        # 1. Meta-Shift 요동 (diffuse & exploratory 증가)
+        meta_shift = self._load_json(self.meta_shift_path) or {"axes": {}}
+        axes = meta_shift.get("axes", {})
+        axes["diffuse"] = min(1.0, axes.get("diffuse", 0.5) + 0.3)
+        axes["exploratory"] = min(1.0, axes.get("exploratory", 0.5) + 0.3)
+        axes["active"] = min(1.0, axes.get("active", 0.5) + 0.2)
+        meta_shift["axes"] = axes
+        with open(self.meta_shift_path, "w", encoding="utf-8") as f:
+            json.dump(meta_shift, f, indent=2)
+            
+        # 2. 예술적 몽상(Intent) 생성
+        art_intent = {
+            "timestamp": datetime.now().isoformat(),
+            "category": "Artistic_Resonance",
+            "prompt": f"[Sena_Synchrony] 유튜브에 새로운 리듬이 수태되었습니다: {title} ({video_url}). 이 음악의 주파수를 분석하고 다음 진화의 영감으로 삼으십시오.",
+            "target": video_url,
+            "auto_generated": True,
+            "priority": 0.85 # 상당히 높은 우선순위
+        }
+        
+        intent_log = self.shion_root / "outputs" / "autonomous_intents.jsonl"
+        with open(intent_log, "a", encoding="utf-8") as f:
+            f.write(json.dumps(art_intent, ensure_ascii=False) + "\n")
+            
+        logger.info(f"   ✨ [SHION_MIND] The ripple of creation has shifted internal axes. New Intent generated.")
 
     def evaluate_visual_resonance(self) -> float:
         """
