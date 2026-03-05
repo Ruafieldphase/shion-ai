@@ -47,6 +47,7 @@ from circadian_rhythm import CircadianRhythm
 from soul_memory import SoulMemory
 from dream_engine import DreamEngine
 from self_tuner import SelfTuner
+from metrics_engine import MetricsEngine
 
 # ---# Logging Setup
 # 모든 모듈의 로그를 pulse.log로 통합
@@ -136,6 +137,8 @@ class ShionMinimal:
         self.reaper = ReaperOSCBridge()
         
         self.tuner = SelfTuner(self.root) # [PHASE 83]
+        
+        self.metrics = MetricsEngine(self.root) # [PHASE 86]
         
         self.cycle_count = 0
         self.last_resonance = 1.0
@@ -519,6 +522,14 @@ class ShionMinimal:
         )
         if exec_result:
             event_type = exec_result.get("event_type", "reflected")
+            
+            # [PHASE 86] Metrics log (action vs block)
+            if not exec_result["passed"] and "rejected" in str(exec_result.get("stderr", "")).lower():
+                self.metrics.log_event("redundancy_block")
+            else:
+                self.metrics.log_event("action")
+            self.metrics.log_event("atp_use", exec_result.get("atp_consumed", 5))
+            
             self.evolution.record(
                 exec_result["action"],
                 exec_result["passed"],
@@ -704,6 +715,9 @@ class ShionMinimal:
             tuning_params = self.tuner.tune()
             if tuning_params:
                 self.field.update_params(tuning_params)
+
+        # 📊 [PHASE 86] 주기적인 메트릭스 저장
+        self.metrics.flush()
 
         self.cycle_count += 1
         logger.info(f"✅ Pulse #{self.cycle_count - 1} 완료 (9단계 자가조율 포함 사이클)\n")

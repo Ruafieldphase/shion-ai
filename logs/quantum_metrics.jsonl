@@ -1,0 +1,4 @@
+{"timestamp": "2026-03-05T13:26:04.439991", "atp_consumed": 50, "actions_performed": 7, "redundant_actions_prevented": 3, "unity_events": 10, "efficiency_score": 0.44, "token_estimate": 0}
+{"timestamp": "2026-03-05T13:26:05.445099", "atp_consumed": 80, "actions_performed": 10, "redundant_actions_prevented": 0, "unity_events": 0, "efficiency_score": 0.125, "token_estimate": 0}
+{"timestamp": "2026-03-05T13:31:28.634415", "atp_consumed": 50, "actions_performed": 7, "redundant_actions_prevented": 3, "unity_events": 10, "efficiency_score": 0.44, "token_estimate": 0}
+{"timestamp": "2026-03-05T13:31:29.639550", "atp_consumed": 80, "actions_performed": 10, "redundant_actions_prevented": 0, "unity_events": 0, "efficiency_score": 0.125, "token_estimate": 0}

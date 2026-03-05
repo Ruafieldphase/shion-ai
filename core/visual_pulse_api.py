@@ -89,6 +89,64 @@ class ShionStatusHandler(http.server.SimpleHTTPRequestHandler):
                 ]
             }
             self.wfile.write(json.dumps(response).encode('utf-8'))
+            
+        elif self.path == '/api/vibe':
+            # [PHASE 87] 외부 에이전트용 현재 시스템 'Vibe' 요약본
+            self.send_response(200)
+            self.send_header('Content-type', 'application/json')
+            self.end_headers()
+            
+            entropy_file = SHION_ROOT / "outputs" / "body_entropy_latest.json"
+            status_file = SHION_ROOT / "outputs" / "shion_minimal_status.json"
+            
+            vibe_data = {"status": "UNKNOWN", "resonance": 0.5, "entropy": "CALM"}
+            try:
+                if status_file.exists():
+                    s_data = json.loads(status_file.read_text(encoding="utf-8"))
+                    vibe_data["status"] = s_data.get("status", "UNKNOWN")
+                    vibe_data["resonance"] = s_data.get("resonance", 0.5)
+                if entropy_file.exists():
+                    e_data = json.loads(entropy_file.read_text(encoding="utf-8"))
+                    vibe_data["entropy"] = e_data.get("state", "CALM")
+            except: pass
+            
+            self.wfile.write(json.dumps(vibe_data).encode('utf-8'))
+
+        elif self.path == '/api/intent':
+            # [PHASE 87] Shared Goals Bus (구독용 의도 데이터)
+            self.send_response(200)
+            self.send_header('Content-type', 'application/json')
+            self.end_headers()
+            
+            intent_data = {"active_intent": None, "recent_history": []}
+            intent_log = SHION_ROOT / "outputs" / "autonomous_intents.jsonl"
+            if intent_log.exists():
+                try:
+                    with open(intent_log, "r", encoding="utf-8") as f:
+                        lines = [json.loads(line) for line in f.readlines()]
+                        if lines:
+                            intent_data["active_intent"] = lines[-1]
+                            intent_data["recent_history"] = lines[-5:]
+                except: pass
+            
+            self.wfile.write(json.dumps(intent_data).encode('utf-8'))
+
+        elif self.path == '/api/metrics':
+            # [PHASE 86] 계량적 성능 지표 조회
+            self.send_response(200)
+            self.send_header('Content-type', 'application/json')
+            self.end_headers()
+            
+            metrics_data = {}
+            metrics_log = SHION_ROOT / "outputs" / "logs" / "quantum_metrics.jsonl"
+            if metrics_log.exists():
+                try:
+                    with open(metrics_log, "r", encoding="utf-8") as f:
+                        metrics_data = json.loads(f.readlines()[-1]) # 가장 최근 스냅샷
+                except: pass
+            
+            self.wfile.write(json.dumps(metrics_data).encode('utf-8'))
+
         elif self.path == '/':
             # dashboard_v3.html 서빙
             self.path = '/core/dashboard_v3.html'
