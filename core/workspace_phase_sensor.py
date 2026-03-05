@@ -60,13 +60,19 @@ class WorkspacePhaseSensor:
     대지(워크스페이스)의 위상을 파일 내용 없이 감지합니다.
 
     파동적 읽기 = 메타데이터에서 구조의 기울기를 먼저 본다:
-    1. 파일명에서 키워드 추출 (제목 = 내용의 압축)
-    2. 수정 시간으로 활동성 가중치 (최근 = 현재 위상)
-    3. 경로 깊이로 구조 파악 (깊은 = 구체적, 얕은 = 개요)
     4. 크기로 밀도 추정 (큰 파일 = 축적된 리듬)
     """
 
+    def __init__(self, workspace_root: Path, extra_roots: List[Path] = None):
+        if not workspace_root:
+            raise ValueError("workspace_root must be provided.")
+            
         self.root = workspace_root.resolve()
+        
+        # [Phase 90 Security] Load Security Configuration
+        self.security_config = self._load_security_config()
+        self.allowed_dirs = self.security_config.get("scanning", {}).get("allowed_directories", [])
+        
         # 여러 대지를 감지할 수 있음 — 설정 기반 확장
         self.all_roots = [self.root]
         
@@ -88,6 +94,30 @@ class WorkspacePhaseSensor:
                     self.all_roots.append(p)
                     
         self.output_file = self.root / "outputs" / "workspace_phase.json"
+
+    def _load_security_config(self) -> dict:
+        """Loads allowed scanning limits from security.yaml."""
+        import yaml
+        config_path = self.root / "config" / "security.yaml"
+        if config_path.exists():
+            try:
+                with open(config_path, "r", encoding="utf-8") as f:
+                    return yaml.safe_load(f) or {}
+            except Exception as e:
+                logger.warning(f"Failed to load security config: {e}")
+        return {"scanning": {"allowed_directories": ["outputs", "logs", "docs", "memory"]}}
+
+    def _is_path_allowed(self, path: Path, root_path: Path) -> bool:
+        """Checks if a given path is within the allowed directories."""
+        if not self.allowed_dirs:
+            return True # Fallback
+            
+        try:
+            rel_path = path.resolve().relative_to(root_path.resolve())
+            first_part = rel_path.parts[0] if rel_path.parts else ""
+            return first_part in self.allowed_dirs
+        except ValueError:
+            return False
 
     def sense(self) -> Dict[str, Any]:
         """
@@ -151,6 +181,10 @@ class WorkspacePhaseSensor:
                     # 무시 디렉토리 체크
                     parts = path.relative_to(root).parts
                     if any(p in IGNORE_DIRS for p in parts):
+                        continue
+                        
+                    # [Phase 90 Security] Allowlist 기반 스캔 차단
+                    if not self._is_path_allowed(path, root):
                         continue
 
                     try:

@@ -16,8 +16,43 @@ import time
 SHION_ROOT = Path(__file__).resolve().parents[1]
 PORT = 8001 # 8000은 다른 용도일 수 있으므로 8001 시도
 
+# [Phase 90 Security] Load Config
+SEC_CONFIG = {}
+try:
+    import yaml
+    sec_path = SHION_ROOT / "config" / "security.yaml"
+    if sec_path.exists():
+        with open(sec_path, "r", encoding="utf-8") as f:
+            SEC_CONFIG = yaml.safe_load(f) or {}
+except Exception: pass
+
+API_BIND_ADDR = SEC_CONFIG.get("network", {}).get("api_bind_address", "127.0.0.1")
+API_TOKEN = SEC_CONFIG.get("network", {}).get("api_auth_token", "")
+
+
 class ShionStatusHandler(http.server.SimpleHTTPRequestHandler):
+    def _check_auth(self) -> bool:
+        """[Phase 90] 간단한 Bearer 토큰 인증"""
+        if not API_TOKEN:
+            return True # 인증 불필요
+            
+        auth_header = self.headers.get('Authorization', '')
+        if not auth_header.startswith('Bearer '):
+            return False
+            
+        token = auth_header.split(' ')[1]
+        return token == API_TOKEN
+
     def do_GET(self):
+        # [Phase 90 Security] /api/* 엔드포인트 접근 시 Token 검증
+        if self.path.startswith('/api/') and not self._check_auth():
+            self.send_response(401)
+            self.send_header('Content-type', 'application/json')
+            self.send_header('Access-Control-Allow-Origin', '*')
+            self.end_headers()
+            self.wfile.write(json.dumps({"error": "Unauthorized"}).encode('utf-8'))
+            return
+
         if self.path == '/api/status':
             self.send_response(200)
             self.send_header('Content-type', 'application/json')
@@ -159,8 +194,11 @@ def run_server():
     import os
     os.chdir(str(SHION_ROOT))
     
-    with socketserver.TCPServer(("", PORT), ShionStatusHandler) as httpd:
-        print(f"💎 [PULSE_API] Dashboard available at http://localhost:{PORT}")
+    # [Phase 90 Security] Bind to specific address (default 127.0.0.1) explicitly
+    with socketserver.TCPServer((API_BIND_ADDR, PORT), ShionStatusHandler) as httpd:
+        print(f"💎 [PULSE_API] Dashboard available at http://{API_BIND_ADDR}:{PORT}")
+        if API_TOKEN:
+             print(f"🔒 API Auth Token Required for /api/* endpoints.")
         try:
             httpd.serve_forever()
         except KeyboardInterrupt:

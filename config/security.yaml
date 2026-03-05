@@ -1,0 +1,25 @@
+# 🛡️ Shion AI Security Access Control (Phase 90)
+# 이 파일은 시안이 외부 망에 노출되거나 민감한 개인 데이터(회사 워크스페이스 포함)를
+# 무분별하게 스캔하는 것을 방지하기 위한 로컬 보안 계층입니다.
+
+# 1. Network Binding (네트워크 노출 제어)
+network:
+  # 127.0.0.1 (localhost)로 변경 시 외부 PC/망에서 시안의 API(8000/8001)에 접근 불가.
+  # 0.0.0.0으로 변경 시 외부에서 접근 가능.
+  api_bind_address: "127.0.0.1"
+  
+  # 외부 요청에 대한 간단한 인증 토큰 (비워두면 인증 해제, 활성화 시 HTTP Bearer 헤더 필요)
+  api_auth_token: ""
+
+# 2. Workspace Scanning (데이터 자가 텍스트 수집 제어)
+# 시안의 파동(Glymphatic Exhale, Body Context 등) 수집기가 
+# 텍스트 벡터화 및 문서 분석을 수행할 수 있도록 **허용된 경로(Allowlist)**입니다.
+# 이 목록에 없는 폴더의 내용은 시스템에 투과되지 않습니다. (파일 크기 제외)
+scanning:
+  allowed_directories:
+    - "outputs"
+    - "memory"
+    - "docs"
+    - "logs"
+    - "core"       # (추천) 시안 자신의 코드를 성찰할 필요가 있을 때
+    - "fdo_agi_repo/memory" # AGI 공유 기억 접근 허용
