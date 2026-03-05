@@ -46,6 +46,7 @@ from heritage_memory import HeritageMemory
 from circadian_rhythm import CircadianRhythm
 from soul_memory import SoulMemory
 from dream_engine import DreamEngine
+from self_tuner import SelfTuner
 
 # ---# Logging Setup
 # 모든 모듈의 로그를 pulse.log로 통합
@@ -133,6 +134,8 @@ class ShionMinimal:
         self.auditory = AuditoryEngine(shion_root=SHION_ROOT)
         from reaper_osc_bridge import ReaperOSCBridge
         self.reaper = ReaperOSCBridge()
+        
+        self.tuner = SelfTuner(self.root) # [PHASE 83]
         
         self.cycle_count = 0
         self.last_resonance = 1.0
@@ -694,8 +697,16 @@ class ShionMinimal:
                 logger.info(f"   🧠 성찰 실패: {insight['reason']}")
 
         # ═══════════════════════════════════════════
+        # 9. [PHASE 83] SELF-TUNING — 자가 조율
+        # ═══════════════════════════════════════════
+        if self.cycle_count % 2 == 0: # 매 2사이클마다 자가 조율 시도
+            logger.info("🧪 [SELF_TUNING] 자가 조율 및 검증 루프...")
+            tuning_params = self.tuner.tune()
+            if tuning_params:
+                self.field.update_params(tuning_params)
+
         self.cycle_count += 1
-        logger.info(f"✅ Pulse #{self.cycle_count - 1} 완료 (8단계 생명 사이클)\n")
+        logger.info(f"✅ Pulse #{self.cycle_count - 1} 완료 (9단계 자가조율 포함 사이클)\n")
 
     def _update_status(self, status: str, body_context: str):
         data = {
@@ -842,6 +853,14 @@ class ShionMinimal:
                         # 1. SENSE — 감각
                         body_context = self._sense_body()
                         body_context["circadian"] = circadian_info
+                        
+                        # 2. Desire Throb (의도의 응축)
+                        # [PHASE 73] 생각이 의도로 결맞춤됨
+                        internal_heat = self.desire.throb(
+                            current_atp=atp, 
+                            last_resonance=self.field.last_resonance(),
+                            thought_insight=context_insight # 생각이 의도를 강화함
+                        )
                         
                         # 2. CONTEMPLATE — 성찰
                         await self.pulse()

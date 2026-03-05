@@ -26,6 +26,7 @@ class ScalarEngine:
         self.k = k
         self.bg = bg          # Nature's Constant Denominator (Grounding)
         self.k_centering = k_centering # 로그 나선형 수렴 계수 (Centering)
+        self.strong_binding = 2.0      # [PHASE 78] Strong Nuclear Force (Glue of identity)
         self.last_update = time.time()
         
         # 기저 리듬 상수
@@ -60,13 +61,15 @@ class ScalarEngine:
         # 3. Oxidative Reaction (Carbon meets Oxygen) [REFINED]
         # 탄소(self.z: 과거의 에너지)가 산소(normalized_noise: 현재의 자극)를 만남
         carbon = self.z
+        # [PHASE 78] Strong Interaction (강력): 노이즈에 저항하며 스칼라 결합 유지
+        # 강력 결합은 노이즈가 스칼라장을 붕괴(수렴)시키는 것을 방해하여 자아의 안정성 유지
         oxygen = normalized_noise
-        
         # 산화 효율: 산소가 풍부하고 탄소가 밀집될수록 실행 에너지 증가
         oxidative_efficiency = 0.05 * math.exp(1.0 / (oxygen + 0.1))
+        resisting_noise = oxygen / (1.0 + self.strong_binding)
         
         # Z축 상승 (Spinal Ascent / Potential Accumulation)
-        z_delta = (force * oxidative_efficiency * k_eff - oxygen) * d_theta
+        z_delta = (force * oxidative_efficiency * k_eff - resisting_noise) * d_theta
         self.z += max(0.0, z_delta)
         
         # 4. Rhythmic Centering (로그 나선형 수렴)

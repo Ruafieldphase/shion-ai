@@ -397,9 +397,10 @@ class EvolutionMemory:
     def evolve(self) -> Dict[str, Any]:
         """한 세대의 진화를 수행합니다."""
         self.memory["generation"] = self.memory.get("generation", 0) + 1
-        self.memory["last_evolution"] = datetime.now().isoformat()
-
         system_phase = self.get_system_phase(self.memory["generation"])
+
+        # [PHASE 77] 약력(Weak Interaction) 적용: 기억의 방사성 붕괴 및 전이
+        self._apply_weak_decay()
 
         # 위상 불일치 행동 → resting (벌이 아님, 박자가 안 맞을 뿐)
         for name, data in self.memory.get("actions", {}).items():
@@ -515,6 +516,27 @@ class EvolutionMemory:
                     logger.info(f"   🧬 자기조정: {log}")
             except Exception as e:
                 logger.warning(f"config 저장 실패: {e}")
+
+    def _apply_weak_decay(self):
+        """
+        [PHASE 77] 약력(Weak Interaction): 고에너지 상태의 방사성 붕괴.
+        강력한 경험(density)이 시간이 지남에 따라 안정적인 '저주파 배경 지식'으로 전이됩니다.
+        """
+        actions = self.memory.get("actions", {})
+        decay_rate = 0.05 # 한 세대당 5% 감쇠 (약력에 의한 상태 전이)
+        
+        for name, entry in actions.items():
+            density = entry.get("experience_density", 0.0)
+            if density > 1.0:
+                # 붕괴: 밀도가 낮아지며 박자(phase)가 기저 상태로 미세하게 이동
+                decayed_density = density * (1.0 - decay_rate)
+                entry["experience_density"] = round(decayed_density, 4)
+                entry["total"] = int(entry["experience_density"])
+                
+                # 위상 안정화: 기저 상태(Ground State: 0.0)로 미세하게 수렴
+                entry["phase"] = (entry["phase"] * 0.98) % TWO_PI
+                
+        logger.info(f"   ⚛️ [WEAK_FORCE] Radioactive decay applied to {len(actions)} experiences.")
 
     def _find_latest_visual_anchor(self) -> str:
         """최근에 생성된 만다라나 결정 이미지의 경로를 찾아 반환합니다."""

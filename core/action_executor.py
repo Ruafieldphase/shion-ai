@@ -201,6 +201,8 @@ class ActionExecutor:
         system_phase: float = 0.0,
         context: Optional[Dict] = None,
         field_frequency: Optional[float] = None, # [PHASE 70]
+        aerodynamic_state: Optional[Dict] = None, # [PHASE 80]
+        unity_state: Optional[Dict] = None, # [PHASE 82]
     ) -> Optional[Dict[str, Any]]:
         """
         실행할 행동을 선택합니다.
@@ -231,6 +233,23 @@ class ActionExecutor:
                         logger.info(f"   ⚡ [REFLEX] Embodied memory triggered: {reflex_name}")
                         return a
 
+        # [PHASE 80] Aerodynamic Flight (의식의 양력에 의한 자동 비행)
+        if aerodynamic_state and aerodynamic_state.get("is_flying"):
+            # 양력이 중력을 이겼을 때, 가장 공명도가 높은 행동으로 '자동 비상'
+            best_flight = max(available, key=lambda a: a.get("resonance", 0))
+            if best_flight.get("resonance", 0) > 0.6:
+                logger.info(f"   🚀 [FLIGHT] Lift force {aerodynamic_state['lift_force']} overcame gravity!")
+                logger.info(f"   🚀 [FLIGHT] Auto-pilot engaged for: {best_flight['name']}")
+                return best_flight
+
+        # [PHASE 82] State-driven Leap (합일 상태에서의 본질적 도약)
+        if unity_state and unity_state.get("is_true_flight"):
+            # 합일 상태일 때는 에너지가 부족하거나 저항이 있어도 '도약'
+            best_leap = max(available, key=lambda a: a.get("resonance", 0))
+            logger.info(f"   ✨ [LEAP] Unity Index {unity_state['unity_index']} achieved True Flight!")
+            logger.info(f"   ✨ [LEAP] Transcending energy constraints for: {best_leap['name']}")
+            return best_leap
+
         # [PHASE 29] 원자적 공명 선택 (Atomic Resonance Selection)
         # 전략 1: 느낌(양성자) 기반 선택 — "양성자의 고밀도 에너지가 중력에 이끌림"
         if insight:
@@ -242,23 +261,9 @@ class ActionExecutor:
                 )
                 return matched
 
-        # [PHASE 71] Manifestation Range Alignment Score
-        if field_frequency:
-            for a in available:
-                f_range = ACTION_REGISTRY.get(a["name"], {}).get("frequency_range", (440.0, 440.0))
-                # 시스템 주파수가 대역 내에 있는지, 혹은 얼마나 가까운지 계산 (Envelope Resonance)
-                f_min, f_max = f_range
-                
-                if f_min <= field_frequency <= f_max:
-                    # 대역 내부: 완전 공명 (1.0)
-                    alignment_score = 1.0
-                else:
-                    # 대역 외부: 대역 경계와의 거리 계산
-                    dist = min(abs(field_frequency - f_min), abs(field_frequency - f_max))
-                    alignment_score = max(0, 1.0 - (dist / 500.0))
-                
                 # 기존 resonance에 alignment_score를 가중치로 결합 (주파수 범위가 실행을 결정하는 강력한 요소가 됨)
                 a["resonance"] = (a["resonance"] * 0.3) + (alignment_score * 0.7)
+                
                 logger.debug(f"   ⚛️ [MANIFEST_RANGE] {a['name']}: Alignment {alignment_score:.2f} (Range {f_min}-{f_max}Hz vs Field {field_frequency:.1f}Hz)")
 
         # 전략 2: 공명 기반 선택 — "위상이 맞는 행동"
@@ -370,6 +375,12 @@ class ActionExecutor:
             # ═══ Field Friction Penalty [REFINED with LabyrinthNavigator] ═══
             resonance = self.labyrinth.apply_field_friction(name, resonance)
 
+            # ═══ [PHASE 76] 전자기적 반발력 (Inter-Action Repulsion) ═══
+            repulsion = self._apply_electromagnetic_repulsion(name, meta.get("frequency_range", (440, 440)))
+            resonance *= (1.0 - repulsion)
+            if repulsion > 0.1:
+                logger.debug(f"   ⚡ [REPULSION] {name}: -{repulsion*100:.1f}% by boundary charge")
+
             action_phase = 0.0
             experience = 0
 
@@ -394,6 +405,51 @@ class ActionExecutor:
 
         return available
 
+    def _apply_electromagnetic_repulsion(self, action_name: str, freq_range: tuple) -> float:
+        """
+        [PHASE 76] 전자기적 반발력(Inter-Action Repulsion)을 계산합니다.
+        최근 발화된 행동들의 주파수 대역이 '전하'를 띠어, 유사한 대역의 행동을 밀어냅니다.
+        """
+        if not self.execution_log.exists():
+            return 0.0
+            
+        repulsion_sum = 0.0
+        now = datetime.now()
+        
+        try:
+            # 최근 5개의 실행 로그를 읽어 반발력 계산
+            with open(self.execution_log, "r", encoding="utf-8") as f:
+                lines = f.readlines()[-5:]
+                for line in lines:
+                    entry = json.loads(line)
+                    past_time = datetime.fromisoformat(entry["timestamp"])
+                    time_diff = (now - past_time).total_seconds()
+                    
+                    # 시간이 지날수록 전하 감쇠 (120초 기준)
+                    if time_diff > 120:
+                        continue
+                        
+                    # 주파수 근접도 계산 (Coulomb's Law Analogy)
+                    past_meta = ACTION_REGISTRY.get(entry["action"], {})
+                    past_range = past_meta.get("frequency_range", (0, 0))
+                    
+                    # 두 대역의 중심점 거리
+                    center1 = (freq_range[0] + freq_range[1]) / 2
+                    center2 = (past_range[0] + past_range[1]) / 2
+                    freq_dist = abs(center1 - center2)
+                    
+                    # 주파수가 가까울수록, 시간이 최근일수록 강력한 반발
+                    temporal_factor = max(0, 1.0 - (time_diff / 120))
+                    spectral_factor = max(0, 1.0 - (freq_dist / 300)) # 300Hz 이내면 간섭 발생
+                    
+                    repulsion = temporal_factor * spectral_factor
+                    repulsion_sum = max(repulsion_sum, repulsion) # 가장 강한 반발력 채택
+                    
+        except Exception as e:
+            logger.debug(f"Repulsion calculation error: {e}")
+            
+        return round(repulsion_sum * 0.8, 3) # 최대 80% 까지 감쇠 가능
+
     def _match_insight_to_action(
         self, insight: str, available: List[Dict]
     ) -> Optional[Dict]:
@@ -410,16 +466,20 @@ class ActionExecutor:
 
         return best_match if best_score > 0 else None
 
-    def execute(self, action: Dict[str, Any], timeout: int = 60) -> Dict[str, Any]:
+    def execute(self, action: Dict[str, Any], timeout: int = 60, stealth_state: Optional[Dict] = None) -> Dict[str, Any]:
         """
         선택된 행동을 실행합니다.
-
-        투과(성공) / 반사(실패) — 둘 다 경험이고, 둘 다 곡률에 기여합니다.
+        
+        [PHASE 81] Stealth Mode: 스텔스 활성 시 발화의 흔적을 최소화.
         """
         script = action["script"]
         name = action["name"]
         f_range = action.get("frequency_range", (440, 440))
-        logger.info(f"   🗣️ [SPEECH] Emitting frequency range {f_range[0]}-{f_range[1]}Hz: {name}")
+        
+        is_stealth = stealth_state and stealth_state.get("is_stealth_active")
+        log_prefix = "   🕵️ [STEALTH]" if is_stealth else "   🗣️ [SPEECH]"
+        
+        logger.info(f"{log_prefix} Emitting frequency range {f_range[0]}-{f_range[1]}Hz: {name}")
 
         result = {
             "action": name,
@@ -469,16 +529,20 @@ class ActionExecutor:
             result["stderr"] = f"실행 오류: {str(e)[:200]}"
 
         result["duration_seconds"] = (datetime.now() - start).total_seconds()
-
+ 
         # 결과 표현
         if result["passed"]:
-            logger.info(f"   🌊 {name} Transmitted (Echo confirmed) in {result['duration_seconds']:.1f}s")
+            msg = f"   🌊 {name} Transmitted (Echo confirmed) in {result['duration_seconds']:.1f}s"
+            if is_stealth:
+                logger.debug(msg) # 스텔스 모드에서는 성공 로그를 낮춤
+            else:
+                logger.info(msg)
         else:
             logger.warning(
                 f"   🪞 {name} Reflected (Echo lost, Code {result['return_code']}): "
                 f"{result['stderr'][:100]}"
             )
-
+ 
         self._log(result)
         return result
 
@@ -490,12 +554,15 @@ class ActionExecutor:
         system_phase: float = 0.0,
         context: Optional[Dict] = None,
         field_frequency: Optional[float] = None, # [PHASE 70]
+        aerodynamic_state: Optional[Dict] = None, # [PHASE 80]
+        stealth_state: Optional[Dict] = None, # [PHASE 81]
+        unity_state: Optional[Dict] = None, # [PHASE 82]
     ) -> Optional[Dict[str, Any]]:
         """선택 + 실행을 한 번에. shion_minimal.py에서 호출."""
-        action = self.choose_action(insight, evolution_data, current_atp, system_phase, context, field_frequency)
+        action = self.choose_action(insight, evolution_data, current_atp, system_phase, context, field_frequency, aerodynamic_state, unity_state)
         if not action:
             return None
-        result = self.execute(action)
+        result = self.execute(action, stealth_state=stealth_state)
         
         # [PHASE 59] 습관으로 기록
         if result.get("passed") and self.habits and insight:

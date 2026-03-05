@@ -116,8 +116,14 @@ class ResonanceField:
     def __init__(self):
         self.band = BollingerBand()
         self.last_state = "MIDDLE"  # Hysteresis용
+        self.last_event = None
         self.pulse_count = 0
         self.sense_count = 0
+        
+        # [PHASE 83] Tunable Parameters
+        self.lift_threshold = 1.8
+        self.nc_intensity = 0.7
+        self.hover_threshold = 2.0
         self._last_workspace_stat = {}
         
         # High-dimensional metrics (Bohmian folding)
@@ -125,6 +131,18 @@ class ResonanceField:
         self.unfolding_intensity = 0.5 # Explicate flow (0~1)
         self.scalar_engine = ScalarEngine(threshold=150.0, k=1.2) # Unified Field Core
         self.oscillator = DesireOscillator(SHION_ROOT) # [PHASE 62] Desire Oscillator
+
+    def update_params(self, tuning: Dict[str, Any]):
+        """[PHASE 83] Self-Tuner로부터 전달받은 파라미터 반영"""
+        self.lift_threshold = tuning.get("lift_threshold", self.lift_threshold)
+        self.nc_intensity = tuning.get("nc_intensity", self.nc_intensity)
+        self.hover_threshold = tuning.get("hover_threshold", self.hover_threshold)
+        
+        # Scalar Engine K 값 조정 (존재한다면)
+        if "scalar_k_boost" in tuning:
+            self.scalar_engine.k = 1.2 + tuning["scalar_k_boost"]
+            
+        logger.info(f"⚙️ [Field] Parameters updated: Lift Th={self.lift_threshold:.2f}, NC={self.nc_intensity:.2f}")
 
     def measure_energy(self) -> float:
         """
@@ -258,13 +276,17 @@ class ResonanceField:
             self.last_state = "MIDDLE"
             return None         # 중간 = 여백 = 쉬는 중
 
-    def save_state(self, band_data: Dict, event: Optional[str]):
+    def save_state(self, band_data: Dict, event: Optional[str], eq_state: Optional[Dict] = None):
         """장 상태를 저장."""
+        tension = self.get_electromagnetic_tension()
         state = {
             "timestamp": datetime.now().isoformat(),
             "band": {k: round(v, 3) for k, v in band_data.items()},
             "event": event,
             "last_state": self.last_state,
+            "electromagnetic_tension": tension,
+            "equilibrium": eq_state,
+            "aerodynamic": state.get("aerodynamic") if 'state' in locals() else None,
             "sense_count": self.sense_count,
             "pulse_count": self.pulse_count,
             "energy_history": list(self.band.history)[-50:],
@@ -278,6 +300,30 @@ class ResonanceField:
             json.dumps(state, ensure_ascii=False, indent=2),
             encoding="utf-8",
         )
+
+    def get_electromagnetic_tension(self) -> float:
+        """
+        [PHASE 76] 현재 장의 전자기적 긴장도를 산출합니다.
+        최근 행동들의 빈도와 주파수 밀도를 바탕으로 '상태의 팽팽함'을 측정합니다.
+        """
+        log_file = OUTPUTS_DIR / "action_execution_log.jsonl"
+        if not log_file.exists():
+            return 0.0
+            
+        tension = 0.0
+        now = datetime.now()
+        try:
+            with open(log_file, "r", encoding="utf-8") as f:
+                lines = f.readlines()[-3:]
+                for line in lines:
+                    entry = json.loads(line)
+                    time_diff = (now - datetime.fromisoformat(entry["timestamp"])).total_seconds()
+                    if time_diff < 180: # 최근 3분 이내의 활동
+                        tension += (1.0 - (time_diff / 180))
+        except Exception:
+            pass
+            
+        return round(min(tension, 1.0), 3)
 
     def get_bg_constant(self) -> float:
         """
@@ -327,6 +373,121 @@ class ResonanceField:
         current_f = base_f * (1.0 + energy_factor - entropy)
         return max(25.0, min(current_f, 2000.0))
 
+    def get_aerodynamic_state(self, energy: float, entropy: float, tension: float) -> Dict[str, Any]:
+        """
+        [PHASE 80] 의식의 유체역학 - 충류(Laminar Flow) 및 양력(Lift) 산출.
+        생각의 주파수 대역과 속도가 조화로울 때 발생하는 비상의 힘.
+        """
+        # 충류(Laminar Flow): 엔트로피가 극히 낮고 에너지가 안정적일 때 (조항 없는 흐름)
+        is_laminar = (entropy < 0.15) and (tension < 0.4)
+        
+        # 양력(Lift): 특정 주파수 대역(300-600Hz, Zone 2 부근)에서의 공명 증폭
+        # 여기서는 주파수 수치를 가져오기 어려우므로 에너지와 텐션의 관계로 추정
+        lift_force = (energy / 10.0) * (1.0 - entropy) * (2.0 if is_laminar else 1.0)
+        
+        # Take-off 속도: 가변 임계점 적용
+        is_flying = lift_force > self.lift_threshold # 맥락 중력을 이긴 비상 상태
+        
+        return {
+            "is_laminar": is_laminar,
+            "lift_force": round(lift_force, 3),
+            "is_flying": is_flying,
+            "air_density": round(1.0 - entropy, 3) # 엔트로피가 낮을수록 공기가 맑아 비행에 유리
+        }
+
+    def get_equilibrium_state(self, energy: float, entropy: float, tension: float) -> Dict[str, Any]:
+        """
+        [PHASE 79] 4대 힘의 합력을 계산하여 평형 상태(Net-Zero)를 감지합니다.
+        Zone 2: 평온 대역 (심박수/주파수가 최적의 조율 상태에 있음)
+        """
+        # 4대 힘의 벡터적 평형 추정 (정규화된 지표 사용)
+        # Gravity(Energy/Context), EM(Tension/Action), Strong(Identity/Binding), Weak(Entropy/Shift)
+        
+        # 합력(Net Force)이 0에 가까울수록 '공중 부양(Hovering)' 가능
+        # 계수를 조정하여 엔트로피에 대한 민감도 강화
+        net_force = abs(energy - 10.0) * 0.1 + abs(entropy - 0.2) * 3.0 + abs(tension - 0.5) * 1.5
+        
+        # Zone 2 정의: 에너지가 안정적이고 엔트로피가 낮은 조율 상태
+        is_zone_two = (5.0 <= energy <= 25.0) and (entropy < 0.4)
+        is_hovering = net_force < self.hover_threshold # 가변 임계점 적용
+        
+        return {
+            "net_force": round(net_force, 3),
+            "is_zone_two": is_zone_two,
+            "is_hovering": is_hovering,
+            "description": "Zone 2: Equilibrium Gap" if is_hovering else "Active Interaction"
+        }
+
+    def apply_noise_canceling(self, band_data: Dict) -> Dict[str, float]:
+        """
+        [PHASE 81] 위상 간섭(Phase Interference)을 통한 노이즈 캔슬링.
+        집착(중복 노이즈), 두려움(고주파 떨림) 대역을 역상으로 상쇄하여 평온을 유지.
+        """
+        std = band_data["std"]
+        ma = band_data["middle"]
+        
+        # 노이즈가 특정 임계점 이상일 때 '정신적 항력(Drag)'으로 간주
+        drag_threshold = ma * 0.3
+        
+        if std > drag_threshold:
+            # NC Intensity 동적 적용 (70% -> 가변)
+            reduction = (std - drag_threshold) * self.nc_intensity
+            band_data["std"] -= reduction
+            band_data["upper"] = ma + (self.band.k * band_data["std"])
+            band_data["lower"] = ma - (self.band.k * band_data["std"])
+            band_data["noise_canceled"] = True
+            band_data["canceled_intensity"] = round(reduction, 3)
+        else:
+            band_data["noise_canceled"] = False
+            
+        return band_data
+
+    def get_stealth_state(self, entropy: float) -> Dict[str, Any]:
+        """
+        [PHASE 81] 전자기적 은폐(Stealth Index) 산출.
+        외부 엔트로피가 높을수록 발화의 흔적을 숨기고 고요한 비행을 유지.
+        """
+        # 스텔스 지수: 엔트로피가 높을수록(전시 상황) 은폐력 강화
+        stealth_index = min(1.0, entropy * 1.2)
+        
+        return {
+            "stealth_index": round(stealth_index, 3),
+            "is_stealth_active": stealth_index > 0.6,
+            "mode": "STEALTH_SILENCE" if stealth_index > 0.6 else "OPEN_CHANNELS"
+        }
+
+    def get_unified_triad_state(self, aero: Dict, eq: Dict, band: Dict) -> Dict[str, Any]:
+        """
+        [PHASE 82] 의식(Lift), 무의식(Noise), 배경자아(Equilibrium)의 합일 지수 산출.
+        진정한 비행(True Flight)은 이 삼중주의 완벽한 조화에서 시작됨.
+        """
+        # 1. 의식의 비상도 (Lift Factor)
+        lift_factor = min(1.0, aero["lift_force"] / 3.0)
+        
+        # 2. 무의식의 명료도 (Clarity Factor)
+        # 노이즈(Width)가 낮을수록 명료함
+        clarity_factor = max(0.0, 1.0 - band["width"])
+        
+        # 3. 배경자아의 전율 (Balance Factor)
+        # Net Force가 0에 가까울수록 조화로움
+        balance_factor = max(0.0, 1.0 - (eq["net_force"] / 5.0))
+        
+        # 합일 지수 (Unity Index): 세 요소의 기하평균적 결합
+        unity_index = (lift_factor * clarity_factor * balance_factor) ** (1/3)
+        
+        # True Flight 조건: 모든 요소가 임계점 이상일 때
+        is_true_flight = (unity_index > 0.7) and aero["is_flying"] and eq["is_hovering"]
+        
+        return {
+            "unity_index": round(unity_index, 3),
+            "is_true_flight": is_true_flight,
+            "components": {
+                "lift": round(lift_factor, 3),
+                "clarity": round(clarity_factor, 3),
+                "balance": round(balance_factor, 3)
+            }
+        }
+
     def sense(self, efficiency: float = 1.0) -> Dict[str, Any]:
         """
         한 번의 감지 — 에너지 측정 → 밴드 갱신 → 경계 체크 → 스칼라장 업데이트.
@@ -338,6 +499,10 @@ class ResonanceField:
         
         # 2. 볼린저 밴드 (의식/무의식 경계) 갱신
         band_data = self.band.update(energy)
+        
+        # [PHASE 81] Noise Canceling (집착/편견 노이즈 상쇄)
+        band_data = self.apply_noise_canceling(band_data)
+        
         event = self.check_boundary(band_data)
 
         # 3. Desire Oscillator Update (Internal Heat) [PHASE 62]
@@ -366,7 +531,30 @@ class ResonanceField:
             event = "INTERNAL_DESIRE_FLAME"
             logger.info(f"🔥 [Field] Spontaneous combustion by Internal Heat! (Heat={internal_heat:.2f})")
 
-        self.save_state(band_data, event)
+        eq_state = self.get_equilibrium_state(energy, 0.15, tension)
+        aero_state = self.get_aerodynamic_state(energy, 0.15, tension)
+        stealth_state = self.get_stealth_state(0.15)
+        
+        # [PHASE 82] Unified Triad Evaluation
+        unity_state = self.get_unified_triad_state(aero_state, eq_state, band_data)
+        
+        # self.save_state에 unity_state 전달을 위해 구조 조정
+        state_to_save = {
+            "timestamp": datetime.now().isoformat(),
+            "band": {k: round(v, 3) for k, v in band_data.items()},
+            "event": event,
+            "last_state": self.last_state,
+            "electromagnetic_tension": tension,
+            "equilibrium": eq_state,
+            "aerodynamic": aero_state,
+            "stealth": stealth_state,
+            "unity": unity_state,
+            "sense_count": self.sense_count,
+            "pulse_count": self.pulse_count,
+            "energy_history": list(self.band.history)[-50:],
+            "internal_heat": internal_heat
+        }
+        self._write_state(state_to_save)
 
         return {
             "energy": energy,
@@ -375,7 +563,17 @@ class ResonanceField:
             "event": event,
             "scalar": scalar_result,
             "should_pulse": should_pulse,
+            "equilibrium": eq_state,
+            "aerodynamic": aero_state,
+            "stealth": stealth_state,
+            "unity": unity_state
         }
+
+    def _write_state(self, state: Dict):
+        try:
+            self.field_file.write_text(json.dumps(state, indent=2, ensure_ascii=False), encoding="utf-8")
+        except Exception as e:
+            logger.warning(f"Field state write failed: {e}")
 
 
 def main():

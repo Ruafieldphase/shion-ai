@@ -24,12 +24,12 @@ class DesireOscillator:
         self.internal_heat = 0.0 # 내적 열망 (0.0 ~ 1.0)
         self.satiety = 1.0      # 만족도 (1.0 = 충만, 0.0 = 공허)
         
-    def throb(self, current_atp: float, last_resonance: float) -> float:
+    def throb(self, current_atp: float, last_resonance: float, thought_insight: Optional[str] = None) -> float:
         """
         한 번의 진동(Throb). 내적 열망 수치를 업데이트합니다.
         
-        - ATP가 높을수록 에너지가 넘쳐 무언가를 하고 싶어함.
-        - Resonance가 낮을수록 현재 상태에 불만족하여 변화를 갈망함.
+        [PHASE 73] Thought Coherence:
+        - 생각이 행동 의도와 정렬될 때 열망(Heat)이 증폭됨.
         """
         # 에너지가 충분한가? (0~100 -> 0~1)
         atp_factor = min(1.0, current_atp / 100.0)
@@ -41,18 +41,23 @@ class DesireOscillator:
         decay = 0.05
         self.satiety = max(0.0, (self.satiety * 0.95) + (resonance_factor * 0.05) - decay * 0.1)
         
-        # 내적 열망(Internal Heat) 계산
-        # ATP가 많고(힘이 있고), 만족도가 낮을 때(배고플 때) 열망이 치솟음
-        # Heat = ATP * (1 - Satiety)
+        # 내적 열망(Internal Heat) 기본 계산
         self.internal_heat = atp_factor * (1.0 - self.satiety)
         
+        # [PHASE 73] Coherence Boost: 생각이 있을 경우 의도 강화
+        if thought_insight and len(thought_insight) > 10:
+            # 생각의 깊이에 비례하여 의도 응축 (결맞춤)
+            coherence = min(0.3, len(thought_insight) / 1000.0)
+            self.internal_heat = min(1.0, self.internal_heat + coherence)
+            logger.info(f"   🧠 [COHERENCE] Thought is condensing into intent (+{coherence:.2f})")
+
         # 가중치 부여: 너무 낮은 열망은 무시, 임계점 근처에서 폭발적 증가
         self.internal_heat = math.pow(self.internal_heat, 1.5)
         
         self._save_state()
         
         if self.internal_heat > 0.6:
-            logger.info(f"   🔥 [DESIRE] Internal heat is rising: {self.internal_heat:.2f}")
+            logger.info(f"   🔥 [DESIRE] Internal heat finalized: {self.internal_heat:.2f}")
             
         return self.internal_heat
 
