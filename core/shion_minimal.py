@@ -159,6 +159,8 @@ class ShionMinimal:
         self.uncertainty_streak = 0 
         self.is_lucid_dreaming = False 
         
+        self.last_error_time = None # [NEW Phase 88] 회복력 측정용 시간 저장고
+        
         # [NEW] Phase 57: Meta-FSD Integration
         try:
             from meta_fsd_integrator import MetaFSDIntegrator
@@ -543,6 +545,31 @@ class ShionMinimal:
                 f"{event_type} "
                 f" (ATP -{exec_result['atp_consumed']})"
             )
+            
+            # [PHASE 88] Tangible Validation - Recovery Time Calculation
+            recovery_time = None
+            if not exec_result["passed"]:
+                 if self.last_error_time is None:
+                      self.last_error_time = datetime.now() # 최초 에러 발생 시점 기록
+            else:
+                 if self.last_error_time is not None:
+                      # 에러 상태였다가 성공으로 전환됨 (복구 완료)
+                      recovery_time = (datetime.now() - self.last_error_time).total_seconds()
+                      logger.info(f"   🌱 [RESILIENCE] 안정 박동으로 복구되었습니다. (소요 시간: {recovery_time:.1f}초)")
+                      self.last_error_time = None # 초기화
+                      
+            # 공통 에피소드 로그 기록
+            self.metrics.log_episode(
+                episode_id=f"pulse_{self.cycle_count}",
+                phase="ACT",
+                action=exec_result["action"],
+                success=exec_result["passed"],
+                error_type=exec_result.get("error_type"),
+                recovery_time_sec=recovery_time,
+                human_intervention=False, # 시안 루프 내에선 기본 False
+                resonance_score=self.last_resonance
+            )
+
             # Update residual resonance for the next fractal pulse
             self.residual_resonance = exec_result.get("resonance_at_selection", 0.5)
             self.last_outcome = exec_result # [NEW] 성찰을 위한 결과 보관

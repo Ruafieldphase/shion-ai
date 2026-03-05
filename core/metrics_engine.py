@@ -12,6 +12,7 @@ class MetricsEngine:
     def __init__(self, workspace_root: str):
         self.root = Path(workspace_root)
         self.metrics_path = self.root / "logs" / "quantum_metrics.jsonl"
+        self.tangible_metrics_path = self.root / "logs" / "tangible_metrics.jsonl"
         self.metrics_path.parent.mkdir(parents=True, exist_ok=True)
         
         self.current_metrics = {
@@ -59,6 +60,29 @@ class MetricsEngine:
 
     def get_summary(self):
         return self.current_metrics
+
+    def log_episode(self, episode_id: str, phase: str, action: str, 
+                    success: bool, error_type: str = None, 
+                    recovery_time_sec: float = None, human_intervention: bool = False,
+                    resonance_score: float = 0.5):
+        """[Phase 88] 일반 사용자도 체감할 수 있는 에피소드 단위(Pulse) 공통 로그 기록"""
+        tangible_data = {
+            "timestamp": datetime.now().isoformat(),
+            "episode_id": episode_id,
+            "phase": phase,
+            "action": action,
+            "success": success,
+            "error_type": error_type,
+            "recovery_time_sec": recovery_time_sec,
+            "human_intervention": human_intervention,
+            "resonance_score": resonance_score
+        }
+        with open(self.tangible_metrics_path, "a", encoding="utf-8") as f:
+            f.write(json.dumps(tangible_data) + "\n")
+            
+        # 장애 회복이 완료되었을 때 누적 메트릭에도 추가 보너스 점수 (회복력)
+        if success and recovery_time_sec is not None and recovery_time_sec > 0:
+            self.log_event("unity", 2) # 회복은 큰 합일(Unity)로 간주
 
 if __name__ == "__main__":
     # 독립 테스트

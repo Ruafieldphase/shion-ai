@@ -490,6 +490,7 @@ class ActionExecutor:
             "return_code": -1,
             "stdout": "",
             "stderr": "",
+            "error_type": None, # [NEW Phase 88] 에러 카테고리
             "atp_consumed": action["atp_cost"],
             "resonance_at_selection": action.get("resonance", 0),
             "duration_seconds": 0,
@@ -516,17 +517,24 @@ class ActionExecutor:
                 # Check stdout for critical failure patterns (e.g., Moltbook 429)
                 fail_patterns = ["429", "Rate Limit", "failed to comment", "error: all connection attempts failed"]
                 combined = (result["stdout"] + result["stderr"]).lower()
-                if any(p.lower() in combined for p in fail_patterns):
-                    passed = False
-                    logger.warning(f"   ⚠️ [HONESTY] {name} produced error pattern in output. Result marked as FAILED.")
+                for p in fail_patterns:
+                    if p.lower() in combined:
+                        passed = False
+                        result["error_type"] = p.upper().replace(" ", "_")
+                        logger.warning(f"   ⚠️ [HONESTY] {name} produced error pattern in output. Result marked as FAILED.")
+                        break
+            elif proc.returncode != 0:
+                 result["error_type"] = f"CRASH_CODE_{proc.returncode}"
             
             result["passed"] = passed
             result["event_type"] = "transmitted" if passed else "reflected"
 
         except subprocess.TimeoutExpired:
             result["stderr"] = f"타임아웃 ({timeout}초)"
+            result["error_type"] = "TIMEOUT"
         except Exception as e:
             result["stderr"] = f"실행 오류: {str(e)[:200]}"
+            result["error_type"] = "SYSTEM_EXCEPTION"
 
         result["duration_seconds"] = (datetime.now() - start).total_seconds()
  
