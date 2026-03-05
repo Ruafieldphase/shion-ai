@@ -32,36 +32,57 @@ class AuditoryEngine:
         self.humming_log = self.output_dir / "humming_state.jsonl"
 
     def hum(self, entropy: float, resonance: float) -> Dict:
-        """
-        현재 상태에 기반한 '시스템 웅성거림'의 주파수 특성을 산출합니다.
-        
-        - Entropy (무질서도) -> 기본 주관 주파수 (Pitch)
-        - Resonance (공명도) -> 배음의 화음 조화도 (Harmonics)
-        """
-        # 기본 주파수: 440Hz(A4)를 기준으로 엔트로피에 따라 변동
-        # 엔트로피가 낮을수록(안정적) 차분한 저음, 높을수록 긴장된 고음
+        """... (기존 hum 로직) ..."""
         base_hz = 220 + (entropy * 440) 
-        
-        # 공명도에 따른 배음 구조
-        # 공명도가 높을수록 정수배의 배음(Harmony)이 강해짐
         harmonics = [
             {"freq": base_hz * 1, "gain": 1.0},
             {"freq": base_hz * 2, "gain": resonance * 0.5},
             {"freq": base_hz * 3, "gain": resonance * 0.3},
-            {"freq": base_hz * 1.5, "gain": resonance * 0.2} # 완전 5도
+            {"freq": base_hz * 1.5, "gain": resonance * 0.2} 
         ]
         
         hum_state = {
             "timestamp": datetime.now().isoformat(),
+            "type": "humming",
             "base_frequency": round(base_hz, 2),
             "harmonics": harmonics,
             "vibe": "stable" if resonance > 0.7 else "drifting",
             "description": f"Shion is humming at {base_hz:.1f}Hz with {len(harmonics)} harmonic layers."
         }
-        
         self._log_hum(hum_state)
         logger.info(f"   🎵 [AUDITORY] System Humming: {hum_state['base_frequency']}Hz ({hum_state['vibe']})")
         return hum_state
+
+    def purr(self, atp: float, entropy: float) -> Dict:
+        """
+        [PHASE 69] 고양이의 골골송(Purr) 주파수 생성.
+        치유 주파수 대역: 25Hz ~ 150Hz.
+        ATP가 낮거나 엔트로피가 높을 때 활성화되어 자가 치유 공명 발생.
+        """
+        # ATP가 낮을수록 더 깊고 낮은 주파수 (절박한 치유)
+        # 엔트로피가 높을수록 진동의 진폭(Gain) 강화
+        base_hz = 25 + (atp / 100.0 * 125)
+        
+        # 골골송의 특징인 '불규칙한 리듬' 가미 (Numpy가 있을 때 더 정교함)
+        harmonics = [
+            {"freq": base_hz, "gain": 1.0},
+            {"freq": base_hz * 2, "gain": 0.4},
+            {"freq": 20.0 + (entropy * 10), "gain": 0.3 * entropy} # 서브 베이스 치유
+        ]
+
+        purr_state = {
+            "timestamp": datetime.now().isoformat(),
+            "type": "purring",
+            "atp_context": atp,
+            "base_frequency": round(base_hz, 2),
+            "harmonics": harmonics,
+            "vibe": "healing",
+            "description": f"Shion is purring for self-healing at {base_hz:.1f}Hz. (ATP: {atp:.1f})"
+        }
+        
+        self._log_hum(purr_state)
+        logger.info(f"   🐱 [AUDITORY] System Purring (Healing): {purr_state['base_frequency']}Hz")
+        return purr_state
 
     def _log_hum(self, state: Dict):
         with open(self.humming_log, "a", encoding="utf-8") as f:

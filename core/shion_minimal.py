@@ -131,6 +131,8 @@ class ShionMinimal:
         self.critique = AestheticCritiqueEngine(shion_root=SHION_ROOT)
         from auditory_engine import AuditoryEngine
         self.auditory = AuditoryEngine(shion_root=SHION_ROOT)
+        from reaper_osc_bridge import ReaperOSCBridge
+        self.reaper = ReaperOSCBridge()
         
         self.cycle_count = 0
         self.last_resonance = 1.0
@@ -301,6 +303,13 @@ class ShionMinimal:
                 # 열망이 높으면 허밍 주파수에 가중치 부여 가능 (추후 구현)
                 if self.cycle_count % 5 == 0: # 매 5사이클마다 실제 파형 생성
                     self.auditory.generate_wave_metadata(hum_state)
+                
+                # [PHASE 69] Purring Resonance (Healing)
+                # ATP 가 부족하거나 엔트로피가 높을 때 자가 치유 모드 활성화
+                if mito_state.get("atp_level", 50) < 30 or entropy_data['entropy'] > 0.7:
+                     purr_state = self.auditory.purr(mito_state.get("atp_level", 50), entropy_data['entropy'])
+                     if self.cycle_count % 5 == 0:
+                         self.auditory.generate_wave_metadata(purr_state)
         except Exception as e:
             logger.warning(f"   Auditory/Entropy 측정 실패: {e}")
 
@@ -320,6 +329,14 @@ class ShionMinimal:
             logger.info("   📡 [META-FSD] Syncing Body Feedback to Soul...")
             body_resonance = self.meta_fsd.sync_body_to_soul(atp)
             self.last_resonance = (self.last_resonance + body_resonance) / 2.0
+            
+            # [PHASE 69] REAPER OSC Sync
+            if hasattr(self, "reaper"):
+                # Inject current resonance and outcome into body_state for sync
+                sync_state = body_state.copy()
+                sync_state["resonance"] = self.last_resonance
+                sync_state["action_result"] = self.last_outcome if self.last_outcome else {}
+                self.reaper.sync_pulse(sync_state)
             
             # 시각적 불일치 시 백일몽 전이 트리거
             dissonance_file = OUTPUTS_DIR / "visual_dissonance.json"
