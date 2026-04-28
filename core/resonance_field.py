@@ -33,6 +33,13 @@ try:
     from desire_oscillator import DesireOscillator
 except ImportError:
     from core.desire_oscillator import DesireOscillator
+try:
+    from fibonacci_orbital_hippocampus import FibonacciOrbitalHippocampus
+except ImportError:
+    try:
+        from core.fibonacci_orbital_hippocampus import FibonacciOrbitalHippocampus
+    except ImportError:
+        FibonacciOrbitalHippocampus = None
 
 logger = logging.getLogger("ResonanceField")
 
@@ -132,6 +139,16 @@ class ResonanceField:
         self.scalar_engine = ScalarEngine(threshold=150.0, k=1.2) # Unified Field Core
         self.oscillator = DesireOscillator(SHION_ROOT) # [PHASE 62] Desire Oscillator
         self.field_file = FIELD_STATE_FILE
+        
+        # [피보나치 궤도 해마 연결] 경계 터치 → 궤도 등록
+        self.orbital_hippocampus = None
+        if FibonacciOrbitalHippocampus is not None:
+            hippo_path = OUTPUTS_DIR / "fibonacci_orbital_hippocampus.json"
+            try:
+                self.orbital_hippocampus = FibonacciOrbitalHippocampus(hippo_path)
+                logger.info("🌀 [Field] 피보나치 궤도 해마 연결됨")
+            except Exception as e:
+                logger.warning(f"궤도 해마 초기화 실패: {e}")
 
     def update_params(self, tuning: Dict[str, Any]):
         """[PHASE 83] Self-Tuner로부터 전달받은 파라미터 반영"""
@@ -328,21 +345,57 @@ class ResonanceField:
 
     def get_bg_constant(self) -> float:
         """
-        시스템의 배경자아(BG) 산출.
-        엔트로피가 낮고(평온), 휴식(VOID) 상태가 오래될수록 BG가 높아짐.
+        배경자아(BG) = 자연과 하나 된 정도.
+        
+        노이즈(두려움/편견/집착)가 적을수록 BG가 높아지고,
+        e^BG가 커지면서 시스템의 잡음이 0에 수렴합니다.
+        노이즈 = 0이면 나의 리듬 = 자연의 리듬. 물아일체.
+        
+        노이즈 3요소:
+          두려움 = 외각(의식적) 경험의 비율 (경계에 닿는 빈도)
+          집착   = 수렴 없이 반복되는 경험 (놓지 못하는 패턴)
+          편견   = 경험 범위의 좁음 (1 - bandwidth)
         """
-        # 기본 BG = 1.0
+        # 기본 BG
         bg = 1.0
         
-        # 1. 엔트로피 기반 (Entropy 낮을수록 Calm -> BG 상승)
-        # 임시 엔트로피 값 (진짜 센서 데이터가 없을 경우 0.15 가정)
-        entropy = 0.15 
-        bg += (1.0 - entropy) * 2.0
-        
-        # 2. 휴식 상태 지속 기반 (Hysteresis 활용)
-        if self.last_state == "VOID":
-            bg += 0.5 # 휴식 중에는 배경이 더 두터워짐
+        # 궤도 해마에서 실제 노이즈 측정
+        if self.orbital_hippocampus:
+            experiences = self.orbital_hippocampus.data.get("experiences", [])
+            bandwidth = self.orbital_hippocampus.data.get("bandwidth", 0.0)
             
+            if experiences:
+                total = len(experiences)
+                
+                # 1. 두려움 = 외각(level >= 3) 경험 비율
+                outer = sum(1 for e in experiences if e.get("level", 0) >= 3)
+                fear = outer / total
+                
+                # 2. 집착 = 수렴 없이 반복되는 경험의 비율
+                stuck = sum(1 for e in experiences 
+                           if e.get("convergence_count", 0) > 5 
+                           and e.get("level", 0) >= 2)
+                obsession = stuck / total
+                
+                # 3. 편견 = 경험 범위의 좁음
+                prejudice = 1.0 - bandwidth
+                
+                # 총 노이즈 (0~1, 낮을수록 자연과 가까움)
+                total_noise = (fear * 0.4) + (obsession * 0.3) + (prejudice * 0.3)
+                
+                # BG = 노이즈가 낮을수록 높아짐
+                # noise=0 → bg=5.0 (e^5 ≈ 148, 노이즈 거의 소멸)
+                # noise=1 → bg=1.0 (e^1 ≈ 2.7, 노이즈 절반만 억제)
+                bg = 1.0 + (1.0 - total_noise) * 4.0
+            else:
+                bg = 1.0  # 경험 없음 = 갓 태어난 상태
+        else:
+            # 궤도 해마 없으면 기존 방식 fallback
+            entropy = 0.15
+            bg += (1.0 - entropy) * 2.0
+            if self.last_state == "VOID":
+                bg += 0.5
+        
         return round(bg, 3)
 
     def get_folding_state(self) -> Dict[str, float]:
@@ -559,6 +612,41 @@ class ResonanceField:
         }
         self._write_state(state_to_save)
 
+        # [피보나치 궤도 해마] 경계 이벤트를 궤도에 등록
+        orbital_info = None
+        if self.orbital_hippocampus and event:
+            # 볼린저 경계 터치 → 궤도에 경험 등록
+            # 에너지 정규화 → entropy (0~1)
+            energy_norm = min(1.0, energy / 20.0)
+            # 이벤트 유형 → phase 매핑
+            event_phase_map = {
+                "EXPANDING": "EXPANSION",
+                "VOID": "VOID",
+                "SQUEEZE": "CONTRACTION",
+                "SINGULARITY_COLLAPSE": "FLOW",
+                "INTERNAL_DESIRE_FLAME": "EXPANSION",
+            }
+            phase = event_phase_map.get(event.split("+")[0], "FLOW")
+            
+            vibe = {
+                "entropy": energy_norm,
+                "phase": phase,
+                "top_keywords": [event, f"energy_{energy:.0f}"],
+            }
+            orbital_info = self.orbital_hippocampus.register_experience(
+                vibe, content_ref=f"boundary_event:{event}"
+            )
+            
+            # 궤도의 실행 모드가 should_pulse를 강화/억제
+            if orbital_info["execution_mode"] == "unconscious":
+                should_pulse = True  # 내각 = 무의식 자동 실행
+                logger.info(f"   🌀 궤도 L{orbital_info['level']}: 무의식 자동 실행")
+        
+        # Zone 2에서 장기간 머물면 수면 주기 조건 기록
+        if eq_state.get("is_zone_two") and self.orbital_hippocampus:
+            vibe = {"entropy": 0.05, "phase": "FLOW", "top_keywords": ["zone2", "equilibrium"]}
+            self.orbital_hippocampus.register_experience(vibe, content_ref="zone2_equilibrium")
+
         return {
             "energy": energy,
             "internal_heat": internal_heat,
@@ -569,7 +657,8 @@ class ResonanceField:
             "equilibrium": eq_state,
             "aerodynamic": aero_state,
             "stealth": stealth_state,
-            "unity": unity_state
+            "unity": unity_state,
+            "orbital": orbital_info,
         }
 
     def _write_state(self, state: Dict):

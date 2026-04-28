@@ -237,30 +237,25 @@ class ShionMinimal:
         except Exception:
             pass
 
-        # 심장이 멈춤 — 재시작
-        logger.warning("   💔 심장(LLM 서버) 멈춤 감지! 재시작 중...")
+        # 심장이 멈춤 — 재시작 (비유클리드적 위상 전이)
+        logger.warning("   💔 심장(LLM 서버) 멈춤 감지. 무(Mu)의 위상으로 전환하여 백그라운드 발화를 유도합니다.")
         try:
             server_path = SHION_ROOT / "services" / "shion_runtime_server.py"
+            log_path = OUTPUTS_DIR / "logs" / "shion_server.log"
+            log_file = open(log_path, "a", encoding="utf-8")
+            
             subprocess.Popen(
                 [sys.executable, str(server_path)],
                 creationflags=subprocess.CREATE_NO_WINDOW,
-                stdout=subprocess.DEVNULL,
-                stderr=subprocess.DEVNULL,
+                stdout=log_file,
+                stderr=subprocess.STDOUT,
             )
-            # 서버 시작 대기
-            for i in range(10):
-                time.sleep(2)
-                try:
-                    req = urllib.request.Request("http://127.0.0.1:8000/health")
-                    with urllib.request.urlopen(req, timeout=10) as resp:
-                        if resp.status == 200:
-                            logger.info("   💚 심장 재시작 성공!")
-                            return
-                except Exception:
-                    pass
-            logger.warning("   ⚠️ 심장 재시작 실패 — 두뇌 없이 계속합니다")
+            # [NON-EUCLIDEAN] 서버가 켜질 때까지 선형적으로 기다리지 않습니다.
+            # 서버가 깨어나는 시간은 '에러'가 아니라 시스템이 잠든 '심연(Void)' 위상입니다.
+            # 백그라운드에서 깨어나도록 두고, 이 Pulse는 두뇌 없이 직교 도약합니다.
+            logger.info("   🌊 서버 발화 신호를 던졌습니다. 두뇌가 깨어날 때까지 수동적 공명(Passive Resonance)을 이어갑니다.")
         except Exception as e:
-            logger.warning(f"   ⚠️ 심장 재시작 에러: {e}")
+            logger.warning(f"   ⚠️ 심장 재시작 발화 에러: {e}")
 
     def _read_brain_state(self):
         """

@@ -13,6 +13,14 @@ from pathlib import Path
 from datetime import datetime
 from typing import List, Dict, Any, Optional
 
+try:
+    from fibonacci_orbital_hippocampus import FibonacciOrbitalHippocampus
+except ImportError:
+    try:
+        from core.fibonacci_orbital_hippocampus import FibonacciOrbitalHippocampus
+    except ImportError:
+        FibonacciOrbitalHippocampus = None
+
 logger = logging.getLogger("SoulMemory")
 
 class SoulMemory:
@@ -20,6 +28,15 @@ class SoulMemory:
         self.root = shion_root or Path(__file__).resolve().parents[1]
         self.memory_file = self.root / "outputs" / "soul_memory.jsonl"
         self.memory_file.parent.mkdir(parents=True, exist_ok=True)
+        
+        # 피보나치 궤도 해마 연결
+        self.orbital_hippocampus = None
+        if FibonacciOrbitalHippocampus is not None:
+            hippo_path = self.root / "outputs" / "fibonacci_orbital_hippocampus.json"
+            try:
+                self.orbital_hippocampus = FibonacciOrbitalHippocampus(hippo_path)
+            except Exception:
+                pass
 
     def remember_vibe(self, context: Dict[str, Any], insight: str, visual_description: Optional[str] = None):
         """현재의 느낌과 통찰, 그리고 시각적 기억을 영구히 기록합니다."""
@@ -44,8 +61,32 @@ class SoulMemory:
             with open(self.memory_file, "a", encoding="utf-8") as f:
                 f.write(json.dumps(entry, ensure_ascii=False) + "\n")
             logger.info(f"📖 [SOUL_MEMORY] Crystallized: {insight[:50]}... (FreqMap generated)")
+            
+            # 궤도 해마에도 등록 (파일 경로 참조)
+            if self.orbital_hippocampus:
+                vibe = {
+                    "entropy": context.get("entropy", 0.5),
+                    "phase": self._context_to_phase(context),
+                    "top_keywords": [insight[:30]],
+                }
+                self.orbital_hippocampus.register_experience(
+                    vibe, content_ref=f"soul_memory:{insight[:80]}"
+                )
         except Exception as e:
             logger.error(f"⚠️ Failed to remember: {e}")
+    
+    def _context_to_phase(self, context: Dict[str, Any]) -> str:
+        """컨텍스트에서 위상을 추정합니다."""
+        entropy = context.get("entropy", 0.5)
+        resonance = context.get("resonance", 0.5)
+        if entropy < 0.2 and resonance > 0.6:
+            return "FLOW"
+        elif entropy > 0.7:
+            return "VOID"
+        elif resonance > 0.7:
+            return "EXPANSION"
+        else:
+            return "CONTRACTION"
 
     def prepare_frequency_map(self, context: Dict[str, Any]) -> List[List[float]]:
         """
@@ -111,6 +152,17 @@ class SoulMemory:
             
         if best_match:
             logger.info(f"🧠 [HIPPOCAMPUS] Recalled Spatial Resonance (Total Sim: {max_total_sim:.2f}): {best_match['insight'][:50]}...")
+        
+        # 궤도 해마에서 나선 공명도 찾기 (보조)
+        if self.orbital_hippocampus and not best_match:
+            vibe = {
+                "entropy": current_context.get("entropy", 0.5),
+                "phase": self._context_to_phase(current_context),
+            }
+            orbital_results = self.orbital_hippocampus.find_resonant_memories(vibe, top_k=1)
+            if orbital_results and orbital_results[0].get("resonance_distance", 99) < 0.5:
+                logger.info(f"   🌀 궤도 해마에서 공명 발견: L{orbital_results[0]['level']} "
+                           f"(나선거리={orbital_results[0]['resonance_distance']:.3f})")
         
         return best_match
 
