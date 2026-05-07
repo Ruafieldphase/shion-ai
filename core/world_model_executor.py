@@ -30,7 +30,7 @@ logger = logging.getLogger("WorldModelExecutor")
 
 # Ollama 엔드포인트 (Windows 로컬만)
 OLLAMA_ENDPOINTS = [
-    "http://localhost:11434",
+    "http://localhost:8000",
 ]
 
 # 기본 실행 모델

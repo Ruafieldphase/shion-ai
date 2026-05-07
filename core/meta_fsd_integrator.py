@@ -39,6 +39,10 @@ class MetaFSDIntegrator:
         # Paths
         self.meta_shift_path = shion_root / "outputs" / "meta_shift.json"
         self.dream_log_path = shion_root / "outputs" / "dream_log.jsonl"
+        self.dream_log_paths = [
+            shion_root / "outputs" / "dream_logs.jsonl",
+            self.dream_log_path,
+        ]
         self.contemplation_path = shion_root / "outputs" / "contemplation_insights.jsonl"
         self.shion_status_path = shion_root / "outputs" / "shion_minimal_status.json"
         self.autonomous_intents_path = shion_root / "outputs" / "autonomous_intents.jsonl" # [PHASE 63]
@@ -368,9 +372,11 @@ class MetaFSDIntegrator:
             except: pass
 
         # 3. 꿈 결과 확인
-        if self.dream_log_path.exists():
+        for dream_log_path in self.dream_log_paths:
+            if not dream_log_path.exists():
+                continue
             try:
-                with open(self.dream_log_path, "r", encoding="utf-8") as f:
+                with open(dream_log_path, "r", encoding="utf-8") as f:
                     lines = f.readlines()
                     if lines:
                         last_dream = json.loads(lines[-1])

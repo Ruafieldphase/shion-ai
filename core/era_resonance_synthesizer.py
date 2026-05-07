@@ -30,7 +30,7 @@ INSIGHTS_FILE = OUTPUTS / "contemplation_insights.jsonl"
 VAULT_FILE = AGI_ROOT / "era_resonance_vault.md"
 
 class EraResonanceSynthesizer:
-    def __init__(self, llm_url: str = "http://127.0.0.1:11434"):
+    def __init__(self, llm_url: str = "http://127.0.0.1:8000"):
         self.llm_url = f"{llm_url}/api/chat"
 
     def _get_latest_signals(self) -> Dict:

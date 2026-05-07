@@ -26,11 +26,23 @@ class DreamEngine:
         self.root = shion_root or Path(__file__).resolve().parents[1]
         self.outputs = self.root / "outputs"
         self.soul_path = self.outputs / "soul_memory.jsonl"
-        self.field_path = shion_root / "outputs" / "field_signals.json"
-        self.dream_log_path = shion_root / "outputs" / "dream_logs.jsonl"
-        self.workspace_manifest = shion_root / "outputs" / "manifestation" / "workspace_resonance_manifest.jsonl"
-        self.music_manifest = shion_root / "outputs" / "manifestation" / "music_resonance_manifest.jsonl"
+        self.field_path = self.outputs / "field_signals.json"
+        self.dream_log_path = self.outputs / "dream_logs.jsonl"
+        self.legacy_dream_log_path = self.outputs / "dream_log.jsonl"
+        self.workspace_manifest = self.outputs / "manifestation" / "workspace_resonance_manifest.jsonl"
+        self.music_manifest = self.outputs / "manifestation" / "music_resonance_manifest.jsonl"
         self.llm_endpoint = "http://127.0.0.1:8000/v1/chat/completions"
+        self.llm_timeout_seconds = 25
+
+    def _append_dream_log(self, dream_data: Dict[str, Any]):
+        self.dream_log_path.parent.mkdir(parents=True, exist_ok=True)
+        line = json.dumps(dream_data, ensure_ascii=False) + "\n"
+        for path in (self.dream_log_path, self.legacy_dream_log_path):
+            try:
+                with open(path, "a", encoding="utf-8") as f:
+                    f.write(line)
+            except Exception as e:
+                logger.warning(f"Failed to write dream log {path}: {e}")
 
     def _read_memories(self, count: int = 3) -> List[str]:
         # Priority: Recently indexed files from manifests
@@ -130,6 +142,7 @@ class DreamEngine:
         """기억과 신호를 뒤섞어 꿈을 꿉니다. 여백(Rest) 상태에서 압축 모드가 활성화됩니다."""
         # 0. Check for Void/Rest State
         is_compression_mode = False
+        current_atp = 100.0
         try:
             from circadian_rhythm import CircadianRhythm
             from mitochondria import Mitochondria
@@ -138,6 +151,7 @@ class DreamEngine:
             
             phase = cr.get_current_phase()
             vitality = mito.get_vitality()
+            current_atp = float(vitality.get("atp_level", current_atp) or current_atp)
             
             if phase["phase"] == "NIGHT" or vitality["status"] == "CRITICAL (RESTING)":
                 is_compression_mode = True
@@ -188,7 +202,7 @@ class DreamEngine:
                 method="POST"
             )
             
-            with urllib.request.urlopen(req, timeout=120) as response:
+            with urllib.request.urlopen(req, timeout=self.llm_timeout_seconds) as response:
                 result = json.loads(response.read().decode("utf-8"))
                 content = result["choices"][0]["message"]["content"]
                 
@@ -220,12 +234,11 @@ class DreamEngine:
                     "resonant_files": resonant_files
                 }
                 
-                with open(self.dream_log_path, "a", encoding="utf-8") as f:
-                    f.write(json.dumps(dream_data, ensure_ascii=False) + "\n")
+                self._append_dream_log(dream_data)
                 
                 # [PHASE 67] Autopoietic Observation
                 visual_description = None
-                if atp > 40: # 에너지가 있을 때만 시각화와 관찰 수행
+                if current_atp > 40: # 에너지가 있을 때만 시각화와 관찰 수행
                     # crystallize_visual은 나중에 pulse에서 호출되므로, 
                     # dream 단계에서는 프롬프트만 생성하고 pulse에서 관찰 결과를 SoulMemory에 저장하게 유도
                     pass
@@ -284,7 +297,7 @@ You are lost in uncertainty. Describe your confusion as a JSON object, and ONLY 
                 method="POST"
             )
             
-            with urllib.request.urlopen(req, timeout=120) as response:
+            with urllib.request.urlopen(req, timeout=self.llm_timeout_seconds) as response:
                 result = json.loads(response.read().decode("utf-8"))
                 content = result["choices"][0]["message"]["content"]
                 
@@ -315,9 +328,7 @@ You are lost in uncertainty. Describe your confusion as a JSON object, and ONLY 
                     "visual_prompt": dream_json.get("visual_prompt", "")
                 }
                 
-                self.dream_log_path.parent.mkdir(parents=True, exist_ok=True)
-                with open(self.dream_log_path, "a", encoding="utf-8") as f:
-                    f.write(json.dumps(dream_data, ensure_ascii=False) + "\n")
+                self._append_dream_log(dream_data)
                 
                 return {
                     "dreamed": True,

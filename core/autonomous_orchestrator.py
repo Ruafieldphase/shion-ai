@@ -26,7 +26,16 @@ from typing import Dict, Any, List, Optional
 
 logger = logging.getLogger("AutonomousOrchestrator")
 
-OLLAMA_URL = "http://localhost:11434"
+try:
+    from antigravity_hook import FermatResonanceHook
+except ImportError:
+    try:
+        from core.antigravity_hook import FermatResonanceHook
+    except ImportError:
+        FermatResonanceHook = None
+
+OLLAMA_URLS = ("http://localhost:8000", "http://localhost:11434")
+OLLAMA_URL = OLLAMA_URLS[0]
 FAST_MODEL = "gemma3:latest"    # 3.3GB — 평소: 빠르고 가벼움
 DEEP_MODEL = "gemma4:e2b"      # 7.2GB — 몰입: 느리지만 깊음
 VISION_MODEL = "moondream:latest"
@@ -95,6 +104,24 @@ class AutonomousOrchestrator:
         self.log_path.parent.mkdir(parents=True, exist_ok=True)
         
         self.state_path = Path(r"c:\workspace2\shion\outputs\orchestrator_state.json")
+
+        self.antigravity_hook = None
+        if FermatResonanceHook is not None:
+            self.antigravity_hook = FermatResonanceHook(Path(r"c:\workspace2\shion"))
+            if self.antigravity_hook.graph:
+                logger.info("   🌌 Antigravity Hook 활성 — 코드 분석 전 그래프 맥락 우선")
+
+    def _resolve_ollama_url(self) -> str:
+        """Use the first responsive local Ollama-compatible endpoint."""
+        for url in OLLAMA_URLS:
+            try:
+                response = requests.get(f"{url}/api/tags", timeout=2)
+                if response.status_code == 200:
+                    self.ollama_url = url
+                    return url
+            except Exception:
+                continue
+        return self.ollama_url
     
     def _choose_model(self) -> str:
         """해마 리듬에 따라 모델을 선택합니다.
@@ -121,6 +148,7 @@ class AutonomousOrchestrator:
         """
         import time as _time
         use_model = model or FAST_MODEL
+        self._resolve_ollama_url()
         
         for attempt in range(2):
             try:
@@ -323,6 +351,39 @@ class AutonomousOrchestrator:
             return ""
         
         return "\n".join(context_parts)
+
+    def _retrieve_antigravity_context(self, target_file: Path, gradient: str, task: str) -> str:
+        """
+        비유클리드 해마 그래프에서 현재 과제와 공명하는 코드 지형을 먼저 읽습니다.
+        실제 소스 전문을 읽지 않고 파일 후보/브릿지만 넣어 토큰을 절약합니다.
+        """
+        if not self.antigravity_hook:
+            return ""
+        try:
+            ripple = [
+                gradient,
+                task,
+                target_file.stem,
+                target_file.name,
+            ]
+            result = self.antigravity_hook.build_context_window(
+                ripple,
+                max_files=5,
+                max_neighbors=2,
+            )
+            if not result.get("ok") or not result.get("files"):
+                return ""
+
+            stats = result.get("stats", {})
+            logger.info(
+                "   🌌 그래프 맥락 주입: "
+                f"{stats.get('candidate_files', 0)}개 후보, "
+                f"선형 스캔 {stats.get('estimated_scan_reduction', 0):.1%} 절감"
+            )
+            return result.get("summary", "")
+        except Exception as e:
+            logger.debug(f"Antigravity context retrieval skipped: {e}")
+            return ""
     
     # ═══════════════════════════════════════════
     # 행동: 관찰한 것으로 실제 흔적을 남긴다
@@ -448,6 +509,7 @@ class AutonomousOrchestrator:
             
             # 해마 기억에서 관련 컨텍스트 검색
             hippo_context = self._retrieve_hippocampal_context(target_file, gradient)
+            graph_context = self._retrieve_antigravity_context(target_file, gradient, task)
             
             context_block = ""
             if hippo_context:
@@ -458,6 +520,14 @@ class AutonomousOrchestrator:
 
 """
                 logger.info(f"   🧠 해마 컨텍스트 주입: {len(hippo_context)}자")
+
+            if graph_context:
+                context_block += f"""
+[비유클리드 해마 그래프 — 선형 스캔 전에 접힌 코드 지형]
+{graph_context}
+[/비유클리드 해마 그래프]
+
+"""
             
             prompt = f"""당신은 코드 분석 도우미입니다.
 

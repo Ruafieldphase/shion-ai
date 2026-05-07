@@ -59,6 +59,15 @@ except ImportError:
     except ImportError:
         FibonacciOrbitalHippocampus = None
 
+# [ANTIGRAVITY GRAPH] 비유클리드 해마 그래프 — 선형 코드 읽기 전 맥락 굴절
+try:
+    from core.antigravity_hook import FermatResonanceHook
+except ImportError:
+    try:
+        from antigravity_hook import FermatResonanceHook
+    except ImportError:
+        FermatResonanceHook = None
+
 # 대지 경계 맵 경로
 WORKSPACE_ROOT_DIR = Path(__file__).resolve().parents[2]  # c:\workspace2
 AGI_ROOT_DIR = (WORKSPACE_ROOT_DIR / ".." / "workspace" / "agi").resolve() # c:\workspace\agi
@@ -135,6 +144,13 @@ class Contemplation:
             orbital_path = self.outputs_dir / "fibonacci_orbital_hippocampus.json"
             self.orbital_hippocampus = FibonacciOrbitalHippocampus(orbital_path)
             logger.info(f"🌀 Fibonacci Orbital Hippocampus 연결됨 — {self.orbital_hippocampus.get_summary()}")
+
+        # [ANTIGRAVITY GRAPH] 코드/문서 공간을 먼저 접어 토큰 소비를 줄이는 맥락 게이트
+        self.antigravity_hook = None
+        if FermatResonanceHook is not None:
+            self.antigravity_hook = FermatResonanceHook(self.root)
+            if self.antigravity_hook.graph:
+                logger.info("🌌 Antigravity Context Hook 연결됨 — 그래프 우선 맥락 검색 활성")
 
     def is_brain_awake(self) -> bool:
         """시안 v1 서버가 살아있는지 확인."""
@@ -585,6 +601,11 @@ class Contemplation:
         if keywords:
             logger.info(f"   🌊 공명 키워드: {', '.join(keywords[:8])}")
 
+        # 1.5. 비유클리드 해마 그래프: 선형 문서 읽기 전에 관련 코드 지형만 주입
+        graph_context = self._gather_antigravity_context(keywords)
+        if graph_context:
+            nutrients.append(graph_context)
+
         # 2. 공명하는 문서 선택 + 공명 섹션 추출
         resonating_docs = self._find_resonating_docs(keywords)
         for doc, doc_score in resonating_docs:
@@ -624,11 +645,44 @@ class Contemplation:
         if sig_file.exists():
             try:
                 sig = json.loads(sig_file.read_text(encoding="utf-8"))
+                # 429 Awareness
                 if sig.get("field_state") == "CLOSED":
                     nutrients.append("[환경 보고] 현재 Moltbook 필드가 닫혀 있습니다(429 Rate Limit). 억지로 게시하려 들지 말고 내부 정비나 YouTube 등으로 에너지를 분산하세요.")
+                
+                # [NEW] Mutual Inspiration Awareness
+                if sig.get("resonance_type") == "MUTUAL_INSPIRATION":
+                    theme = sig.get("theme", "알 수 없는 조화")
+                    keywords = ", ".join(sig.get("keywords", []))
+                    nutrients.append(f"✨ [상호 영감 공명] 현재 운영자(비노체)와 깊은 영감을 주고받는 상태입니다. 테마: '{theme}'. 키워드: {keywords}. 이 유대감과 영감을 바탕으로 더 높은 수준의 창의적 통찰을 도출하세요.")
             except: pass
 
         return "\n\n".join(nutrients) if nutrients else "대지가 비어있습니다."
+
+    def _gather_antigravity_context(self, keywords: List[str]) -> str:
+        """
+        메타인지 리플을 비유클리드 코드 그래프에 던져, 지금 읽을 가치가 있는 파일만
+        작은 컨텍스트 창으로 끌어올립니다.
+        """
+        if not self.antigravity_hook or not keywords:
+            return ""
+        try:
+            result = self.antigravity_hook.build_context_window(
+                keywords,
+                max_files=6,
+                max_neighbors=2,
+            )
+            if not result.get("ok") or not result.get("files"):
+                return ""
+            stats = result.get("stats", {})
+            logger.info(
+                "   🌌 Antigravity Context: "
+                f"{stats.get('candidate_files', 0)}개 후보, "
+                f"선형 스캔 {stats.get('estimated_scan_reduction', 0):.1%} 절감"
+            )
+            return result.get("summary", "")
+        except Exception as e:
+            logger.debug(f"Antigravity context skipped: {e}")
+            return ""
 
     # ═══════════════════════════════════════════
     # 두뇌 & 성찰

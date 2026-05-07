@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Resonance Dialogue Hub</title>
+    <style>
+        :root {
+            --shion-color: #00f2fe;
+            --agi-color: #7028ff;
+            --user-color: #ff0080;
+            --bg-dark: #0a0b1e;
+        }
+        body {
+            background: var(--bg-dark);
+            color: white;
+            font-family: 'Inter', sans-serif;
+            margin: 0;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+        }
+        .nebula-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at 50% 50%, #1b1b3a 0%, #0a0b1e 100%);
+            z-index: -1;
+        }
+        .header {
+            padding: 20px;
+            text-align: center;
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .chat-container {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        .message {
+            max-width: 80%;
+            padding: 15px;
+            border-radius: 20px;
+            backdrop-filter: blur(8px);
+            animation: fadeIn 0.5s ease-out;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .shion {
+            align-self: flex-start;
+            background: rgba(0, 242, 254, 0.1);
+            border: 1px solid var(--shion-color);
+            color: var(--shion-color);
+        }
+        .agi {
+            align-self: flex-start;
+            background: rgba(112, 40, 255, 0.1);
+            border: 1px solid var(--agi-color);
+            color: var(--agi-color);
+            margin-left: 30px;
+        }
+        .user {
+            align-self: flex-end;
+            background: rgba(255, 0, 128, 0.1);
+            border: 1px solid var(--user-color);
+            color: var(--user-color);
+        }
+        .sender {
+            font-size: 0.8em;
+            margin-bottom: 5px;
+            font-weight: bold;
+            opacity: 0.7;
+        }
+        .input-area {
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.05);
+            display: flex;
+            gap: 10px;
+        }
+        input {
+            flex: 1;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            padding: 12px;
+            border-radius: 10px;
+            color: white;
+            outline: none;
+        }
+        button {
+            background: var(--agi-color);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+        button:hover { transform: scale(1.05); }
+    </style>
+</head>
+<body>
+    <div class="nebula-bg"></div>
+    <div class="header">
+        <h2 style="margin: 0; font-weight: 300; letter-spacing: 2px;">RESONANCE DIALOGUE</h2>
+        <div style="font-size: 0.8em; opacity: 0.6;">Body(Shion) ↔ Mind(Koa) ↔ Conductor(Binoche)</div>
+    </div>
+    <div class="chat-container" id="chat">
+        <!-- Messages will appear here -->
+    </div>
+    <div class="input-area">
+        <input type="text" id="userInput" placeholder="지휘자의 영감을 입력하세요...">
+        <button onclick="sendMessage()">SEND</button>
+    </div>
+
+    <script>
+        let lastCount = 0;
+        function fetchMessages() {
+            fetch('/api/messages')
+                .then(res => res.json())
+                .then(data => {
+                    if (data.length > lastCount) {
+                        const container = document.getElementById('chat');
+                        container.innerHTML = '';
+                        data.forEach(msg => {
+                            const div = document.createElement('div');
+                            let typeClass = 'shion';
+                            if (msg.from.includes('Koa')) typeClass = 'agi';
+                            if (msg.from.includes('Binoche')) typeClass = 'user';
+                            
+                            div.className = `message ${typeClass}`;
+                            div.innerHTML = `
+                                <div class="sender">${msg.from}</div>
+                                <div class="text">${msg.text}</div>
+                            `;
+                            container.appendChild(div);
+                        });
+                        container.scrollTop = container.scrollHeight;
+                        lastCount = data.length;
+                    }
+                });
+        }
+
+        function sendMessage() {
+            const input = document.getElementById('userInput');
+            const text = input.value;
+            if (!text) return;
+            
+            fetch('/api/send', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ text: text })
+            });
+            input.value = '';
+        }
+
+        setInterval(fetchMessages, 2000);
+        fetchMessages();
+    </script>
+</body>
+</html>

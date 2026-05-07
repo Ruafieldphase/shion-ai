@@ -10,6 +10,8 @@ import uvicorn
 import time
 import json
 from pathlib import Path
+from datetime import datetime
+from typing import Dict
 
 # --- PURE SOVEREIGN CONFIG ---
 BASE_MODEL = "unsloth/Llama-3.2-1B-Instruct"
@@ -114,8 +116,48 @@ def get_workspace_pulse():
 async def health():
     return {"status": "ok", "model": "shion-v1"}
 
+@app.get("/api/tags")
+async def ollama_tags():
+    return {"models": [{"name": "shion-v1", "model": "shion-v1"}]}
+
+@app.post("/api/generate")
+async def ollama_generate(request: Request):
+    body = await request.json()
+    prompt = body.get("prompt", "")
+    if not prompt and "keep_alive" in body:
+        return {
+            "model": body.get("model", "shion-v1"),
+            "created_at": datetime.now().isoformat() + "Z",
+            "response": "",
+            "done": True,
+        }
+    chat_body = {
+        "model": body.get("model", "shion-v1"),
+        "messages": [{"role": "user", "content": prompt}],
+        "max_tokens": body.get("max_tokens", body.get("num_predict", 256)),
+        "stream": False,
+    }
+    chat_request = Request(request.scope, receive=lambda: _json_receive(chat_body))
+    result = await chat_completions(chat_request)
+    if isinstance(result, JSONResponse):
+        return result
+    return {
+        "model": "shion-v1",
+        "created_at": datetime.now().isoformat() + "Z",
+        "response": result["choices"][0]["message"]["content"],
+        "done": True,
+    }
+
+async def _json_receive(body: Dict):
+    return {
+        "type": "http.request",
+        "body": json.dumps(body).encode("utf-8"),
+        "more_body": False,
+    }
+
 @app.post("/v1/chat/completions")
 @app.post("/v1/responses")
+@app.post("/api/chat") # Ollama compatibility alias
 async def chat_completions(request: Request):
     async with resonance_lock: # Ensure pure serial resonance
         try:
@@ -249,6 +291,19 @@ async def chat_completions(request: Request):
                     "content": [{"type": "output_text", "text": final_text}],
                     "status": "completed"
                 }]
+
+            # 7. Ollama compatibility wrapper
+            is_ollama_api = "/api/chat" in str(request.url)
+            if is_ollama_api:
+                return {
+                    "model": "shion-v1",
+                    "created_at": datetime.now().isoformat() + "Z",
+                    "message": {
+                        "role": "assistant",
+                        "content": final_text
+                    },
+                    "done": True
+                }
 
             return result
 
