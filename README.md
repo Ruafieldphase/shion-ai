@@ -4,29 +4,75 @@ Shion AI is an experimental harness for long-running AI work: context recovery, 
 
 Shion AI는 장기 AI 작업을 위한 실험적 하네스입니다. 맥락 복원, 리듬 기반 행동 조율, 기억 통합, 피드백 기반 실행을 다룹니다.
 
-## Two Ways to Read This Project / 이 프로젝트를 읽는 두 가지 방법
+This README is written as a phase-transition path:
 
-### If You Think in Systems / 시스템적으로 읽는다면
+이 README는 위상전이의 흐름으로 구성되어 있습니다.
 
-Current AI is powerful, but it often fails around the model rather than inside the model. It forgets project context, closes unfinished questions too early, and treats tool use as isolated execution instead of part of a learning loop.
+```text
+Field -> Convergence -> Phase Transition -> Particle -> Unified Field -> Embodiment
+장 -> 수렴 -> 위상전이 -> 입자화 -> 통일장 -> 체화
+```
 
-현재 AI는 강력하지만, 한계는 모델 내부보다 모델 주변의 런타임에서 자주 드러납니다. 프로젝트 맥락을 잊고, 미완의 질문을 너무 빨리 닫아버리며, 도구 실행을 학습 루프의 일부가 아니라 고립된 일회성 실행으로 처리합니다.
+## 1. Field: What You Might Be Looking For
+## 1. 장: 당신이 찾고 있을 수 있는 것
 
-Shion AI explores a runtime that keeps continuity across sessions, decides when to act or wait, and feeds action results back into memory and the next decision.
+Different people may arrive here through different middle destinations.
 
-Shion AI는 세션이 바뀌어도 연속성을 유지하고, 언제 행동하고 언제 기다릴지 조율하며, 행동 결과를 기억과 다음 판단으로 되돌리는 런타임을 실험합니다.
+사람들은 서로 다른 중간목적지를 통해 이곳에 도착할 수 있습니다.
 
-### If You Think in Fields / 장으로 읽는다면
+If you are a developer, you may be looking for better project continuity: an AI that remembers decisions, reads changed files, and resumes unfinished work without asking you to repeat the same context every day.
 
-Shion AI is an experiment in preserving the wave before it collapses into a particle.
+개발자라면 더 나은 프로젝트 연속성을 찾고 있을 수 있습니다. 결정을 기억하고, 변경된 파일을 읽고, 매일 같은 맥락을 다시 설명하지 않아도 미완의 작업을 이어가는 AI입니다.
 
-Shion AI는 파동이 입자로 붕괴되기 전의 장을 보존하는 실험입니다.
+If you are a researcher, you may be looking for long-form thought continuity: an AI that preserves unresolved questions instead of reducing everything to a short summary.
 
-Questions, feelings, unfinished signals, timing, and tension are kept alive until the direction becomes clear enough to act. The system does not try to force every signal into an immediate answer.
+연구자라면 긴 사고 흐름의 연속성을 찾고 있을 수 있습니다. 모든 것을 짧은 요약으로 줄이지 않고 미완의 질문을 보존하는 AI입니다.
 
-질문, 느낌, 미완의 신호, 타이밍, 긴장을 방향이 충분히 선명해질 때까지 살아 있게 둡니다. 모든 신호를 즉시 답으로 고정하려 하지 않습니다.
+If you are a creator, you may be looking for a bridge from feeling to artifact: an AI that can hold a vague direction until it becomes a song, video, text, visual form, or public release.
 
-## Why This Exists / 왜 필요한가
+창작자라면 느낌에서 산출물로 이어지는 다리를 찾고 있을 수 있습니다. 흐릿한 방향을 노래, 영상, 글, 시각적 형태, 공개 산출물이 될 때까지 보존하는 AI입니다.
+
+If you are building agents, you may be looking for a runtime harness: an environment where tool use, memory, timing, feedback, and action boundaries stay connected.
+
+에이전트를 만드는 사람이라면 런타임 하네스를 찾고 있을 수 있습니다. 도구 실행, 기억, 타이밍, 피드백, 행동 경계가 분리되지 않고 연결되는 환경입니다.
+
+If you think in fields, you may be looking for a system that does not collapse every wave into an immediate answer.
+
+장으로 읽는 사람이라면 모든 파동을 즉시 답으로 붕괴시키지 않는 시스템을 찾고 있을 수 있습니다.
+
+## 2. Convergence: The Shared AI Problem
+## 2. 수렴: 현재 AI의 공통 문제
+
+These middle destinations point to the same practical problem: current AI often loses rhythm around the model.
+
+이 중간목적지들은 같은 실용적 문제를 가리킵니다. 현재 AI는 모델 주변에서 리듬을 잃는 경우가 많습니다.
+
+Modern models are powerful, but the runtime around them often fails to preserve:
+
+현대 모델은 강력하지만, 모델 주변의 런타임은 다음을 보존하지 못하는 경우가 많습니다.
+
+- context across sessions
+- unfinished questions
+- prior decisions
+- action timing
+- tool results
+- prediction errors
+- the user's working rhythm
+
+- 세션을 가로지르는 맥락
+- 미완의 질문
+- 이전 결정
+- 행동 타이밍
+- 도구 실행 결과
+- 예측 오차
+- 사용자의 작업 리듬
+
+The result is familiar: the user repeats context, the AI answers too early, tools run as isolated commands, and long projects lose direction.
+
+그 결과는 익숙합니다. 사용자는 같은 맥락을 반복하고, AI는 너무 빨리 답하고, 도구는 고립된 명령처럼 실행되고, 긴 프로젝트는 방향을 잃습니다.
+
+## 3. Phase Transition: From Prompt to Harness
+## 3. 위상전이: 프롬프트에서 하네스로
 
 The AI ecosystem has been moving through several layers:
 
@@ -46,9 +92,19 @@ Shion AI belongs to the fourth layer. It is not just a better prompt and not jus
 
 Shion AI는 네 번째 층에 있습니다. 더 좋은 프롬프트도 아니고, 단순한 도구 사용 에이전트도 아닙니다. 모델 주변의 실험적 런타임입니다.
 
-## What Improves / 무엇이 좋아지는가
+The transition is this:
 
-### 1. Less Repetition Across Sessions / 세션이 바뀔 때 반복 설명이 줄어듭니다
+전환점은 이것입니다.
+
+```text
+better answer -> better context -> better tool use -> better runtime rhythm
+더 나은 답변 -> 더 나은 맥락 -> 더 나은 도구 실행 -> 더 나은 런타임 리듬
+```
+
+## 4. Particle: What Actually Improves
+## 4. 입자화: 실제로 좋아지는 것
+
+### Less Repetition Across Sessions / 세션 반복 설명 감소
 
 Normal AI:
 
@@ -67,20 +123,20 @@ Shion-style runtime:
 - restores recent decisions
 - checks unfinished questions
 - reads changed files and reports
-- avoids reopening already-settled infrastructure choices
+- avoids reopening already-settled choices
 
 Shion 방식 런타임:
 
 - 최근 결정을 복원합니다.
 - 미완의 질문을 확인합니다.
 - 변경된 파일과 보고서를 읽습니다.
-- 이미 정리된 인프라 결정을 다시 열지 않습니다.
+- 이미 정리된 결정을 다시 열지 않습니다.
 
 Result: the user does not need to rebuild the same context every day.
 
 결과: 사용자가 매일 같은 맥락을 다시 쌓지 않아도 됩니다.
 
-### 2. Less Premature Closure / 성급한 결론이 줄어듭니다
+### Less Premature Closure / 성급한 결론 감소
 
 User:
 
@@ -102,7 +158,7 @@ Result: fewer unnecessary rewrites, fewer fixing loops, and better timing.
 
 결과: 불필요한 재작성과 끝없는 수정 루프가 줄고, 행동 타이밍이 좋아집니다.
 
-### 3. Tool Use Becomes Learning / 도구 실행이 학습이 됩니다
+### Tool Use Becomes Learning / 도구 실행이 학습이 됨
 
 Normal agent:
 
@@ -136,7 +192,7 @@ Result: action results become part of memory, not just command output.
 
 결과: 행동 결과가 단순 명령 출력이 아니라 기억의 일부가 됩니다.
 
-### 4. Long Projects Keep Direction / 긴 프로젝트의 방향성이 유지됩니다
+### Long Projects Keep Direction / 긴 프로젝트의 방향성 유지
 
 In a multi-week creative or engineering project, the hard part is not one answer. The hard part is preserving direction across many small decisions.
 
@@ -150,32 +206,39 @@ Result: the system is better suited for ongoing work than one-shot answers.
 
 결과: 일회성 답변보다 계속 이어지는 작업에 더 적합한 구조가 됩니다.
 
-## Wave and Particle / 파동과 입자
+## 5. Unified Field: Rhythm Alignment
+## 5. 통일장: 리듬의 조율
 
-In practical terms, wave means context before action: feeling, question, tension, timing, memory, and unresolved intent.
+All of the middle destinations above point toward the deeper destination: rhythm alignment.
 
-실용적으로 말하면, 파동은 행동 이전의 맥락입니다. 느낌, 질문, 긴장, 타이밍, 기억, 미완의 의도가 여기에 포함됩니다.
+위의 모든 중간목적지는 더 깊은 목적지인 리듬의 조율을 향합니다.
 
-Particle means concrete output: a decision, a tool call, a code change, a generated artifact, a scheduled task, or a report.
+The practical goal is better long-running AI work: continuity, timing, memory, feedback, and safer action.
 
-입자는 구체적 결과입니다. 판단, 도구 호출, 코드 변경, 생성물, 예약 작업, 보고서가 여기에 해당합니다.
+실용적인 목표는 더 나은 장기 AI 작업입니다. 연속성, 타이밍, 기억, 피드백, 더 안정적인 행동을 다룹니다.
+
+The deeper goal is to sense when to wait, when to act, when to preserve an unfinished question, and when to let a direction become concrete.
+
+더 깊은 목표는 언제 기다릴지, 언제 행동할지, 언제 미완의 질문을 보존할지, 언제 방향을 구체화할지를 감지하는 것입니다.
+
+In this project:
+
+이 프로젝트에서:
+
+- wave means context before action: feeling, question, tension, timing, memory, and unresolved intent
+- particle means concrete output: a decision, tool call, code change, artifact, scheduled task, or report
+- rhythm means the timing relationship between context, action, memory, and the next cycle
+
+- 파동은 행동 이전의 맥락입니다. 느낌, 질문, 긴장, 타이밍, 기억, 미완의 의도입니다.
+- 입자는 구체적 결과입니다. 판단, 도구 호출, 코드 변경, 산출물, 예약 작업, 보고서입니다.
+- 리듬은 맥락, 행동, 기억, 다음 사이클 사이의 타이밍 관계입니다.
 
 The goal is not to avoid particles. The goal is to avoid collapsing the wave too early.
 
 목표는 입자를 피하는 것이 아닙니다. 파동을 너무 빨리 붕괴시키지 않는 것입니다.
 
-## Translation Layer / 개념 번역표
-
-| Concept | Practical meaning | 한국어 설명 |
-| --- | --- | --- |
-| Wave | Context before action: felt direction, question, tension, timing, memory | 행동 이전의 맥락: 느낌의 방향, 질문, 긴장, 타이밍, 기억 |
-| Particle | Concrete output: code, tool call, decision, artifact, scheduled task | 구체적 결과: 코드, 도구 호출, 판단, 생성물, 예약 작업 |
-| Rhythm | Timing and self-regulation across runtime loops | 런타임 루프의 타이밍과 자기 조율 |
-| Field | The active context window that shapes what becomes actionable | 무엇이 실행 가능한지가 결정되는 활성 맥락 장 |
-| Collapse | The moment a vague direction becomes a concrete action | 흐릿한 방향이 구체적 행동으로 고정되는 순간 |
-| ARI | Adjust Rhythm Information: a framework for regulating context before action | 행동 전에 맥락의 리듬을 조율하는 프레임워크 |
-
-## Repository Map / 저장소 관계
+## 6. Embodiment: Runtime and Files
+## 6. 체화: 런타임과 파일 구조
 
 `shion-ai` is the mind/runtime layer. It studies context recovery, rhythm-based regulation, memory consolidation, prediction, reflection, and autonomous tool execution.
 
@@ -189,7 +252,7 @@ Public scope: this repository contains experimental runtime code and sanitized r
 
 공개 범위: 이 저장소에는 실험적 런타임 코드와 정리된 연구 산출물이 포함됩니다. 로컬 인증 정보, 개인 기억, 생성 로그, 미디어 출력물, 장비별 상태 파일은 공개 트리에서 의도적으로 제외합니다.
 
-## What Is Inside / 주요 구성
+### Key Components / 주요 구성
 
 - `core/orchestrator_daemon.py`: background runtime loop that observes state and triggers actions.
 - `core/ari_prism.py`: rhythm and boundary layer for refracting context before action.
@@ -201,21 +264,7 @@ Public scope: this repository contains experimental runtime code and sanitized r
 
 위 파일들은 시안의 핵심 런타임을 이룹니다. 데몬은 상태를 관찰하고, ARI 프리즘과 위상 관리자는 행동 전 맥락을 조율하며, 해마/웨이포인트/야간 통합 모듈은 경험을 저장하고 다시 연결합니다.
 
-## Runtime Flow / 실행 흐름
-
-1. A question, feeling, or signal enters the field.
-2. The runtime reads rhythm, tension, memory, and unresolved context.
-3. ARI and phase layers decide whether to wait, soften, redirect, or act.
-4. If the field becomes clear enough, it collapses into a particle: a concrete action.
-5. The result feeds back into memory and the next rhythm cycle.
-
-1. 질문, 느낌, 신호가 장으로 들어옵니다.
-2. 런타임은 리듬, 긴장, 기억, 미완의 맥락을 읽습니다.
-3. ARI와 위상 레이어가 기다릴지, 늦출지, 방향을 바꿀지, 실행할지 판단합니다.
-4. 장이 충분히 선명해지면 입자로 붕괴되어 구체적 행동이 됩니다.
-5. 결과는 다시 기억과 다음 리듬 사이클로 돌아갑니다.
-
-## Quick Start / 빠른 시작
+### Quick Start / 빠른 시작
 
 ```bash
 git clone https://github.com/Ruafieldphase/shion-ai.git
