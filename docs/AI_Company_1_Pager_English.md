@@ -1,33 +1,65 @@
-# Shion AI: Self-Healing Autonomous AI Runtime & Multi-Agent Substrate
+# Shion AI Research One-Pager
 
-**One-Pager Executive Summary**
+## Position
 
-## 🚀 Vision & Core Identity
-Shion is not just another LLM wrapper or static agent. It is a **Self-Healing Autonomous AI Runtime** designed to operate continuously, tune its own parameters, and coordinate heterogeneous AI agents. Built autonomously through 10 months of iterative prompt engineering and architectural design (over 7,800 interactions), Shion demonstrates how biological metaphors (circadian rhythms, homeostasis, immune response) can be translated into bulletproof production-grade AI systems. 
+Shion AI is a local AI runtime for continuity, rhythm-aware context, and action regulation. It is not presented as another chatbot wrapper. It is a harness around AI work: a way to preserve intent, recover context, decide when to act, and prevent agent loops from turning into wasteful automation.
 
-## 💡 Key Technical Value Propositions (The 5 Bullets)
+## The Problem
 
-1. **Self-Healing Autonomous AI Runtime (Self-Evolving OS)**
-   Traditional agents crash or enter infinite loops when facing rate limits or hallucinations. Shion features a built-in Autopoietic Engine that dynamically handles API 429s (Rate Limits), timeouts, and internal crashes. In Chaos Engineering benchmarks, Shion achieved a **zero-human-intervention recovery time of < 2.0 seconds**, autonomously altering its execution path (Labyrinth Routing) to bypass roadblocks.
+Current AI workflows often fail after the first successful prompt:
 
-2. **Health-Aware Scheduling & Adaptive Workloads (Frequency Alignment)**
-   Instead of forcing execution through rigid cron jobs, Shion implements an energy-based (ATP) token scheduler. It actively monitors token usage, context window entropy, and external API health. When system "noise" is too high, it enters a "Stealth Mode," proactively rejecting redundant tasks to save compute resources.
+- The model understands a sentence but loses the user's actual direction.
+- The user must repeat prior context across tools and sessions.
+- Agents call APIs and tools without preserving why the work matters.
+- Creative intent is compressed too quickly into linear problem solving.
+- Automation expands until it creates more management work than it removes.
 
-3. **Multi-Agent Coordination Substrate (Shared Unconscious OS)**
-   Shion acts as the fundamental backend bus for an entire ecosystem of LLMs. Through its RESTful `Visual Pulse API` (`/vibe`, `/intent`, `/metrics`), heterogeneous agents (e.g., Claude, GPT) can instantly read Shion’s current state and active goals, allowing them to dynamically align their background tasks without complex orchestration layers.
+This is why the field has moved from prompt engineering toward context engineering, agent engineering, and harness engineering. The problem is no longer only "how do we phrase the prompt?" It is "how do we preserve the direction, memory, timing, and feedback loop around the prompt?"
 
-4. **Runtime-Level Safety & Introspection Layer (Zone 2 Metacognition)**
-   System-level hallucination and deadlock prevention. Shion employs a multi-tiered validation gate (The Unified Triad) where decisions must pass thesis-antithesis-synthesis checks. If it detects obsessive looping or severe contextual ambiguity, it elevates to "Zone 2" metacognitive observation—temporarily halting execution to perform simulated sandboxed testing (Ghost Body) before committing changes to production.
+## The Approach
 
-5. **Efficiency & Resilience Benchmarks (Quantum Metrics)**
-   Performance is continuously quantified. Against standard sequential LLM agents, Shion's self-filtering architecture demonstrated a **252% efficiency improvement** in minimizing redundant tool calls and token waste. It actively senses when to act and when to remain completely dormant, setting a new standard for sustainable, always-on AI operation.
+Shion is organized as a phase-transition runtime:
 
-## 🛠️ Tech Stack & Proof of Work
-- **Core Engine:** Python (Asyncio, FastAPI), Specialized Self-Tuning Prompts, Unified State Machine.
-- **AI Models:** Gemini 2.0 (Pro/Flash/Thinking), Claude 3.5 (Sonnet/Opus), Local LLM (Ollama).
-- **Milestones:** Successfully integrated with OBS, YouTube Data APIs, and Audio Generation models to autonomously produce and orchestrate 149+ verifiable multi-modal outputs.
-- **Repository Validation:** A fully documented sequence of 88 architectural evolutions, transitioning from zero-structure to a complete, metrically-validated autonomous OS.
+1. **Field**: Read the user's pressure, unfinished intent, local state, and prior context.
+2. **Convergence**: Compress that field into a workable direction.
+3. **Phase Transition**: Decide whether the next step should be action, waiting, digestion, or redirection.
+4. **Particle**: Express the direction as a concrete file change, test, document, command, or artifact.
+5. **Unified Field**: Feed the result back into continuity so the next session does not start from zero.
 
----
+## What Improves
 
-*This architecture pushes the boundary of autonomous systems—shifting the paradigm from "AI that waits for commands" to "AI that maintains its own operational cadence, rhythm, and health."*
+For creators:
+
+- Vague creative pressure can become an outline, script, README, design direction, or workflow without losing its original feeling.
+- The user does not need to become more mechanical just to work with a logical AI.
+
+For developers:
+
+- Prior architecture and intent can be recovered before code changes.
+- Agents can be guided by runtime context instead of tool availability alone.
+- Repetition, drift, and unnecessary API use can be reduced.
+
+For public projects:
+
+- The repository can show an accessible entry point for linear readers.
+- The deeper rhythm philosophy can remain present without blocking practical understanding.
+- Private memory and generated logs can stay out of the public proof surface.
+
+## Technical Surface
+
+Representative public components include:
+
+- `core/orchestrator_daemon.py` for rhythm-level runtime coordination
+- `core/ari_prism.py` for boundary and rhythm adjustment
+- `core/phase_governor.py` for wait/act/redirect decisions
+- `core/fibonacci_orbital_hippocampus.py` for continuity and memory geometry
+- `core/unfinished_waypoint_graph.py` for preserving unresolved questions
+- `core/korean_context_harness.py` for keeping Korean user framing intact
+
+## Public Status
+
+This repository is a public research and runtime codebase. Generated logs, private memory, local credentials, and personal outputs are intentionally excluded. The public proof surface should be source code, tests, reproducible behavior, and clear documentation.
+
+## Final Question
+
+If your current AI workflow can answer one prompt but cannot preserve the direction behind it, what runtime layer is missing?
