@@ -1,8 +1,28 @@
 # Shion AI
 
-Shion AI is an experimental harness for long-running AI work: context recovery, rhythm-aware action, memory consolidation, and feedback-based execution.
+Have you ever felt that AI understands your words, but not your direction?
 
-Shion AI는 장기 AI 작업을 위한 실험적 하네스입니다. 맥락 복원, 리듬 기반 행동 조율, 기억 통합, 피드백 기반 실행을 다룹니다.
+AI가 당신의 말은 이해하지만, 당신의 방향은 이해하지 못한다고 느낀 적이 있나요?
+
+Have you repeated the same context again and again because yesterday's memory could not continue into today?
+
+어제의 기억이 오늘로 이어지지 않아서 같은 맥락을 계속 반복하고 있었나요?
+
+Have you used more prompts, more API calls, and more tools, only to feel that the work was drifting away from your real intention?
+
+더 많은 프롬프트, 더 많은 API 호출, 더 많은 도구를 쓰고도 작업이 당신의 진짜 의도에서 멀어지고 있다고 느낀 적이 있나요?
+
+Have you felt a vague creative feeling become too logical, too problem-solving, or too unlike its original rhythm after passing through AI?
+
+모호한 창작의 느낌이 AI를 거치며 너무 논리적이고, 문제 해결 중심적이고, 원래의 리듬과 달라졌다고 느낀 적이 있나요?
+
+Have you felt your thinking become fixed inside the AI's boundaries instead of being widened by it?
+
+AI가 당신의 사고를 넓혀주기보다, 오히려 AI의 경계와 바운더리 안에 당신의 사고가 고정된다고 느낀 적이 있나요?
+
+Shion AI begins from that gap. It is an experimental harness for long-running AI work: context recovery, rhythm-aware action, memory consolidation, and feedback-based execution.
+
+Shion AI는 그 간극에서 시작합니다. 장기 AI 작업을 위한 실험적 하네스로서, 맥락 복원, 리듬 기반 행동 조율, 기억 통합, 피드백 기반 실행을 다룹니다.
 
 This README is written as a phase-transition path:
 
