@@ -143,11 +143,13 @@ Look for:
 ## Read Next / 다음 문서
 
 - `AI_READ_THIS_FIRST.md`: instructions for your AI assistant
+- `EXAMPLES.md`: no-install examples for creators, developers, and agent builders
 - `LINEAR_HARNESS_GUIDE.md`: step-by-step path for linear readers
 - `FIRST_PARTICLE_TEMPLATE.md`: template for the first test
 - `INTEGRATION_ANTI_PATTERNS.md`: what not to do
 
 - `AI_READ_THIS_FIRST.md`: 당신의 AI를 위한 읽기 지침
+- `EXAMPLES.md`: 창작자, 개발자, 에이전트 빌더를 위한 설치 없는 예제
 - `LINEAR_HARNESS_GUIDE.md`: 선형적 독자를 위한 단계별 경로
 - `FIRST_PARTICLE_TEMPLATE.md`: 첫 테스트 양식
 - `INTEGRATION_ANTI_PATTERNS.md`: 하지 말아야 할 연결 방식
