@@ -24,6 +24,10 @@ Shion AI begins from that gap. It is an experimental harness for long-running AI
 
 Shion AI는 그 간극에서 시작합니다. 장기 AI 작업을 위한 실험적 하네스로서, 맥락 복원, 리듬 기반 행동 조율, 기억 통합, 피드백 기반 실행을 다룹니다.
 
+If you are new, start with [`START_HERE.md`](START_HERE.md). If you are asking your own AI to inspect this repository, give it [`AI_READ_THIS_FIRST.md`](AI_READ_THIS_FIRST.md) first.
+
+처음이라면 [`START_HERE.md`](START_HERE.md)에서 시작하세요. 당신의 AI에게 이 저장소를 읽히려면 먼저 [`AI_READ_THIS_FIRST.md`](AI_READ_THIS_FIRST.md)를 읽게 하세요.
+
 This README is written as a phase-transition path:
 
 이 README는 위상전이의 흐름으로 구성되어 있습니다.

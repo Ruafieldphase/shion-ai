@@ -4,6 +4,10 @@ This guide is for people who want to understand how to approach Shion AI without
 
 이 가이드는 Shion AI의 내부 철학을 이미 알고 있지 않아도 접근할 수 있도록 만든 공개 사용자 안내서입니다.
 
+For the shortest path, start with `START_HERE.md`. For your AI assistant, use `AI_READ_THIS_FIRST.md`.
+
+가장 짧은 경로는 `START_HERE.md`에서 시작하세요. 당신의 AI 어시스턴트에게는 `AI_READ_THIS_FIRST.md`를 먼저 읽히세요.
+
 ---
 
 ## 1. What Shion Is / Shion이 하는 일
