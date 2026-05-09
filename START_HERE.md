@@ -144,6 +144,8 @@ Look for:
 
 - `AI_READ_THIS_FIRST.md`: instructions for your AI assistant
 - `AXIOMATIC_GROUNDING.md`: foundational assumptions and reading lenses
+- `LIGHTWEIGHT_BY_DESIGN.md`: why the system starts from small local tests
+- `LIVE_WORK_ARCHIVE.md`: unedited live process archive for observation
 - `EXAMPLES.md`: no-install examples for creators, developers, and agent builders
 - `LINEAR_HARNESS_GUIDE.md`: step-by-step path for linear readers
 - `FIRST_PARTICLE_TEMPLATE.md`: template for the first small test (particle)
@@ -151,6 +153,8 @@ Look for:
 
 - `AI_READ_THIS_FIRST.md`: 당신의 AI를 위한 읽기 지침
 - `AXIOMATIC_GROUNDING.md`: 기반 공리와 읽기 렌즈
+- `LIGHTWEIGHT_BY_DESIGN.md`: 작은 로컬 테스트에서 시작하는 이유
+- `LIVE_WORK_ARCHIVE.md`: 관찰을 위한 편집 없는 라이브 과정 아카이브
 - `EXAMPLES.md`: 창작자, 개발자, 에이전트 빌더를 위한 설치 없는 예제
 - `LINEAR_HARNESS_GUIDE.md`: 선형적 독자를 위한 단계별 경로
 - `FIRST_PARTICLE_TEMPLATE.md`: 첫 작은 테스트(입자) 양식

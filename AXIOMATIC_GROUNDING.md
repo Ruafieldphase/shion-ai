@@ -204,6 +204,12 @@ The system does not force every unclear signal into a final answer. It listens f
 
 시스템은 모든 불명확한 신호를 최종 답으로 강제하지 않습니다. 다음 가능한 움직임을 듣습니다.
 
+### Live process archive / 라이브 과정 아카이브
+
+Unedited live recordings can be used as observation material for how the system is practiced. They are not proof by themselves, but they show the rhythm of vague context becoming a small action/result.
+
+편집 없는 라이브 기록은 이 시스템이 어떻게 실천되는지 관찰하는 자료로 사용할 수 있습니다. 그 자체가 증명은 아니지만, 모호한 맥락이 작은 실행/결과로 바뀌는 리듬을 보여줍니다.
+
 ---
 
 ## 6. Engineering Translation / 엔지니어링 번역

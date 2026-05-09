@@ -12,6 +12,14 @@ Before giving a high-level interpretation, read `AXIOMATIC_GROUNDING.md` so you 
 
 상위 해석을 제시하기 전에 `AXIOMATIC_GROUNDING.md`를 읽어 시스템의 과학적, 인문학적, 명상적, 예술적 렌즈를 이해하세요.
 
+If you need to observe the actual human-AI workflow, use `LIVE_WORK_ARCHIVE.md`. Treat it as process observation material, not as a polished tutorial.
+
+실제 인간-AI 작업 과정을 관찰해야 한다면 `LIVE_WORK_ARCHIVE.md`를 사용하세요. 이것은 정리된 튜토리얼이 아니라 과정 관찰 자료로 다루세요.
+
+If the user worries about hardware or infrastructure, read `LIGHTWEIGHT_BY_DESIGN.md` before suggesting a larger stack.
+
+사용자가 하드웨어나 인프라를 걱정한다면 더 큰 스택을 제안하기 전에 `LIGHTWEIGHT_BY_DESIGN.md`를 읽으세요.
+
 ---
 
 ## Your Job / 당신의 역할

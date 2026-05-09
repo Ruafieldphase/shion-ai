@@ -36,6 +36,14 @@ For the scientific, humanistic, contemplative, and artistic assumptions behind t
 
 시스템의 과학적, 인문학적, 명상적, 예술적 전제는 [`AXIOMATIC_GROUNDING.md`](AXIOMATIC_GROUNDING.md)를 보세요.
 
+For the lightweight local-first design position, see [`LIGHTWEIGHT_BY_DESIGN.md`](LIGHTWEIGHT_BY_DESIGN.md).
+
+가벼운 로컬 우선 설계 관점은 [`LIGHTWEIGHT_BY_DESIGN.md`](LIGHTWEIGHT_BY_DESIGN.md)를 보세요.
+
+For unedited live recordings of the human-AI workflow, see [`LIVE_WORK_ARCHIVE.md`](LIVE_WORK_ARCHIVE.md).
+
+편집 없는 인간-AI 작업 과정 기록은 [`LIVE_WORK_ARCHIVE.md`](LIVE_WORK_ARCHIVE.md)를 보세요.
+
 This README uses public terms first, with our internal rhythm language in parentheses:
 
 이 README는 보편적인 단어를 먼저 쓰고, 괄호 안에 우리의 내부 리듬 언어를 함께 남깁니다.
