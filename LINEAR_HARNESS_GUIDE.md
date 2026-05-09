@@ -76,15 +76,15 @@ Choose one:
 
 ---
 
-## Step 4. Write One First Particle / 첫 입자 하나 쓰기
+## Step 4. Write One First Small Test (Particle) / 첫 작은 테스트(입자) 하나 쓰기
 
 Use `FIRST_PARTICLE_TEMPLATE.md`.
 
 `FIRST_PARTICLE_TEMPLATE.md`를 사용하세요.
 
-The first particle should be small enough to test in one session.
+The first small test (particle) should be small enough to test in one session.
 
-첫 입자는 한 세션 안에서 테스트할 수 있을 만큼 작아야 합니다.
+첫 작은 테스트(입자)는 한 세션 안에서 테스트할 수 있을 만큼 작아야 합니다.
 
 ---
 

@@ -32,17 +32,17 @@ For concrete no-install examples, see [`EXAMPLES.md`](EXAMPLES.md).
 
 설치 없이 따라 하는 구체적인 예시는 [`EXAMPLES.md`](EXAMPLES.md)를 보세요.
 
-This README is written as a phase-transition path:
+This README uses public terms first, with our internal rhythm language in parentheses:
 
-이 README는 위상전이의 흐름으로 구성되어 있습니다.
+이 README는 보편적인 단어를 먼저 쓰고, 괄호 안에 우리의 내부 리듬 언어를 함께 남깁니다.
 
 ```text
-Field -> Convergence -> Phase Transition -> Particle -> Unified Field -> Embodiment
-장 -> 수렴 -> 위상전이 -> 입자화 -> 통일장 -> 체화
+Problem Flow (Field/Wave) -> Direction (Convergence) -> Turning Point (Phase Transition) -> Action/Result (Particle) -> Connected Workflow (Unified Field) -> Local Use (Embodiment)
+문제의 전체 흐름(장/파동) -> 방향 정리(수렴) -> 전환점(위상전이) -> 실행/결과(입자) -> 이어지는 작업 흐름(통일장) -> 실제 사용(체화)
 ```
 
-## 1. Field: What You Might Be Looking For
-## 1. 장: 당신이 찾고 있을 수 있는 것
+## 1. Problem Flow (Field/Wave): What You Might Be Looking For
+## 1. 문제의 전체 흐름(장/파동): 당신이 찾고 있을 수 있는 것
 
 Different people may arrive here through different middle destinations.
 
@@ -64,9 +64,9 @@ If you are building agents, you may be looking for a runtime harness: an environ
 
 에이전트를 만드는 사람이라면 런타임 하네스를 찾고 있을 수 있습니다. 도구 실행, 기억, 타이밍, 피드백, 행동 경계가 분리되지 않고 연결되는 환경입니다.
 
-If you think in fields, you may be looking for a system that does not collapse every wave into an immediate answer.
+If you think in overall flows (fields/waves), you may be looking for a system that does not turn every unclear context into an immediate answer.
 
-장으로 읽는 사람이라면 모든 파동을 즉시 답으로 붕괴시키지 않는 시스템을 찾고 있을 수 있습니다.
+전체 흐름(장/파동)으로 읽는 사람이라면 불명확한 맥락을 즉시 답으로 바꾸지 않는 시스템을 찾고 있을 수 있습니다.
 
 ## 2. Convergence: The Shared AI Problem
 ## 2. 수렴: 현재 AI의 공통 문제
@@ -99,8 +99,8 @@ The result is familiar: the user repeats context, the AI answers too early, tool
 
 그 결과는 익숙합니다. 사용자는 같은 맥락을 반복하고, AI는 너무 빨리 답하고, 도구는 고립된 명령처럼 실행되고, 긴 프로젝트는 방향을 잃습니다.
 
-## 3. Phase Transition: From Prompt to Harness
-## 3. 위상전이: 프롬프트에서 하네스로
+## 3. Turning Point (Phase Transition): From Prompt to Harness
+## 3. 전환점(위상전이): 프롬프트에서 하네스로
 
 The AI ecosystem has been moving through several layers:
 
@@ -129,8 +129,8 @@ better answer -> better context -> better tool use -> better runtime rhythm
 더 나은 답변 -> 더 나은 맥락 -> 더 나은 도구 실행 -> 더 나은 런타임 리듬
 ```
 
-## 4. Particle: What Actually Improves
-## 4. 입자화: 실제로 좋아지는 것
+## 4. Action/Result (Particle): What Actually Improves
+## 4. 실행/결과(입자): 실제로 좋아지는 것
 
 ### Less Repetition Across Sessions / 세션 반복 설명 감소
 
@@ -234,8 +234,8 @@ Result: the system is better suited for ongoing work than one-shot answers.
 
 결과: 일회성 답변보다 계속 이어지는 작업에 더 적합한 구조가 됩니다.
 
-## 5. Unified Field: Rhythm Alignment
-## 5. 통일장: 리듬의 조율
+## 5. Connected Workflow (Unified Field): Rhythm Alignment
+## 5. 이어지는 작업 흐름(통일장): 리듬의 조율
 
 All of the middle destinations above point toward the deeper destination: rhythm alignment.
 
@@ -249,24 +249,24 @@ The deeper goal is to sense when to wait, when to act, when to preserve an unfin
 
 더 깊은 목표는 언제 기다릴지, 언제 행동할지, 언제 미완의 질문을 보존할지, 언제 방향을 구체화할지를 감지하는 것입니다.
 
-In this project:
+In public language, this project uses these translations:
 
-이 프로젝트에서:
+이 프로젝트는 공개 문서에서 다음 번역을 사용합니다.
 
-- wave means context before action: feeling, question, tension, timing, memory, and unresolved intent
-- particle means concrete output: a decision, tool call, code change, artifact, scheduled task, or report
-- rhythm means the timing relationship between context, action, memory, and the next cycle
+- overall flow (field/wave) means context before action: feeling, question, tension, timing, memory, and unresolved intent
+- action/result (particle) means concrete output: a decision, tool call, code change, artifact, scheduled task, or report
+- working rhythm (rhythm) means the timing relationship between context, action, memory, and the next cycle
 
-- 파동은 행동 이전의 맥락입니다. 느낌, 질문, 긴장, 타이밍, 기억, 미완의 의도입니다.
-- 입자는 구체적 결과입니다. 판단, 도구 호출, 코드 변경, 산출물, 예약 작업, 보고서입니다.
-- 리듬은 맥락, 행동, 기억, 다음 사이클 사이의 타이밍 관계입니다.
+- 전체 흐름(장/파동)은 행동 이전의 맥락입니다. 느낌, 질문, 긴장, 타이밍, 기억, 미완의 의도입니다.
+- 실행/결과(입자)는 구체적 결과입니다. 판단, 도구 호출, 코드 변경, 산출물, 예약 작업, 보고서입니다.
+- 작업 리듬(리듬)은 맥락, 행동, 기억, 다음 사이클 사이의 타이밍 관계입니다.
 
-The goal is not to avoid particles. The goal is to avoid collapsing the wave too early.
+The goal is not to avoid action/results (particles). The goal is to avoid turning the whole flow (field/wave) into action too early.
 
-목표는 입자를 피하는 것이 아닙니다. 파동을 너무 빨리 붕괴시키지 않는 것입니다.
+목표는 실행/결과(입자)를 피하는 것이 아닙니다. 전체 흐름(장/파동)을 너무 빨리 실행으로 바꾸지 않는 것입니다.
 
-## 6. Embodiment: Runtime and Files
-## 6. 체화: 런타임과 파일 구조
+## 6. Local Use (Embodiment): Runtime and Files
+## 6. 실제 사용(체화): 런타임과 파일 구조
 
 `shion-ai` is the mind/runtime layer. It studies context recovery, rhythm-based regulation, memory consolidation, prediction, reflection, and autonomous tool execution.
 
@@ -320,7 +320,7 @@ Look for where my current AI system loses context, repeats work, overuses tools,
 Then identify:
 1. which Shion AI concepts match my problem,
 2. which files or modules are relevant,
-3. what the smallest useful integration particle would be,
+3. what the smallest useful integration test (particle) would be,
 4. what should remain private or local,
 5. what we can test first without over-automating.
 ```
@@ -336,7 +336,7 @@ https://github.com/Ruafieldphase/shion-ai 저장소를 내 현재 AI 워크플�
 그리고 다음을 정리해줘.
 1. 내 문제와 맞닿는 Shion AI 개념
 2. 관련 파일 또는 모듈
-3. 가장 작게 테스트할 수 있는 연결 입자
+3. 가장 작게 테스트할 수 있는 연결 테스트(입자)
 4. 비공개 또는 로컬로 남겨야 할 것
 5. 과잉 자동화 없이 먼저 검증할 수 있는 것
 ```
@@ -353,7 +353,7 @@ Ask your AI to inspect these points:
 - Agent loop stability: where does a workflow work once but fail to stay stable?
 - Creative translation: where does vague feeling become too mechanical?
 - Public/private boundary: what should stay local, private, or excluded?
-- First integration particle: what is the smallest connection we can test first?
+- First integration test (particle): what is the smallest connection we can test first?
 
 - 기억의 연속성: 내 AI가 중요한 맥락을 어디에서 잊는가?
 - 의도 보존: 작업은 이해하지만 방향을 놓치는 지점은 어디인가?
@@ -361,9 +361,9 @@ Ask your AI to inspect these points:
 - 에이전트 루프 안정성: 한 번은 되지만 안정적으로 이어지지 않는 흐름은 어디인가?
 - 창작 번역: 모호한 느낌이 너무 기계적으로 바뀌는 지점은 어디인가?
 - 공개/비공개 경계: 무엇을 로컬, 비공개, 제외 대상으로 남겨야 하는가?
-- 첫 연결 입자: 가장 작게 테스트할 수 있는 연결점은 무엇인가?
+- 첫 연결 테스트(입자): 가장 작게 테스트할 수 있는 연결점은 무엇인가?
 
-### First Integration Particle / 첫 연결 입자
+### First Integration Test (Particle) / 첫 연결 테스트(입자)
 
 Start small. Do not try to run every loop at once.
 
@@ -421,9 +421,9 @@ Could the destination you are working toward be resonating with the destination 
 
 혹시 당신이 풀고 있는 목적지도, 이 시스템이 풀고 있는 최종목적지인 리듬의 조율과 비슷한 결로 공명하고 있지는 않을까요?
 
-If so, Shion AI is not asking you to adopt its philosophy first. It is offering a runtime shape for the kind of work that needs continuity, timing, memory, and the patience to let a wave become a particle at the right moment.
+If so, Shion AI is not asking you to adopt its philosophy first. It is offering a runtime shape for the kind of work that needs continuity, timing, memory, and the patience to let the overall flow (field/wave) become action/result (particle) at the right moment.
 
-그렇다면 Shion AI는 먼저 철학을 받아들이라고 요구하지 않습니다. 연속성, 타이밍, 기억, 그리고 파동이 적절한 순간에 입자가 되도록 기다리는 인내가 필요한 작업을 위한 런타임 형태를 제안합니다.
+그렇다면 Shion AI는 먼저 철학을 받아들이라고 요구하지 않습니다. 연속성, 타이밍, 기억, 그리고 전체 흐름(장/파동)이 적절한 순간에 실행/결과(입자)가 되도록 기다리는 인내가 필요한 작업을 위한 런타임 형태를 제안합니다.
 
 ## Core Sentence / 핵심 문장
 

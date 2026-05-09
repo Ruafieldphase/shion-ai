@@ -99,7 +99,7 @@ Find where my current workflow loses context, repeats explanation, overuses tool
 
 Then suggest the smallest Shion-style integration we can test first.
 Do not propose a full migration.
-Focus on one useful particle.
+Focus on one useful small test (particle).
 ```
 
 ```text
@@ -108,7 +108,7 @@ https://github.com/Ruafieldphase/shion-ai 저장소를 내 AI 워크플로우를
 내 현재 워크플로우가 어디에서 맥락을 잃고, 설명을 반복하고, 도구를 과사용하고, 내 의도를 놓치고, 창작적 느낌을 기계적인 문제 해결로 바꾸는지 찾아줘.
 
 그리고 가장 작게 테스트할 수 있는 Shion 방식 연결을 하나 제안해줘.
-전체 이전을 제안하지 말고, 유용한 입자 하나에 집중해줘.
+전체 이전을 제안하지 말고, 유용한 작은 테스트(입자) 하나에 집중해줘.
 ```
 
 Ask your AI to return:
@@ -172,7 +172,7 @@ When evaluating Shion, look for practical effects:
 - Does it reduce repeated explanation?
 - Does it preserve the user's actual direction?
 - Does it avoid unnecessary tool and API use?
-- Does it turn vague intent into usable particles?
+- Does it turn vague intent into usable action/results (particles)?
 - Does it keep private memory out of public artifacts?
 
 Shion을 평가할 때는 다음을 보세요.
@@ -180,7 +180,7 @@ Shion을 평가할 때는 다음을 보세요.
 - 같은 설명을 줄이는가?
 - 사용자의 실제 방향을 보존하는가?
 - 불필요한 도구/API 사용을 줄이는가?
-- 모호한 의도를 사용할 수 있는 입자로 풀어내는가?
+- 모호한 의도를 사용할 수 있는 실행/결과(입자)로 풀어내는가?
 - 개인 기억을 공개 산출물과 분리하는가?
 
 ---

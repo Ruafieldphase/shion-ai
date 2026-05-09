@@ -1,4 +1,4 @@
-# First Particle Template / 첫 입자 템플릿
+# First Small Test (Particle) Template / 첫 작은 테스트(입자) 템플릿
 
 Use this template before installing or integrating the full system.
 
@@ -66,9 +66,9 @@ Choose one:
 
 ## 4. Smallest Test / 가장 작은 테스트
 
-What is the smallest useful particle?
+What is the smallest useful test (particle)?
 
-가장 작게 테스트할 수 있는 입자는 무엇입니까?
+가장 작게 테스트할 수 있는 작은 테스트(입자)는 무엇입니까?
 
 ```text
 Example:

@@ -6,13 +6,13 @@ This map is the public orientation layer for Shion AI. It is not a full dump of 
 
 ---
 
-## 1. Field / 장
+## 1. Problem Flow (Field/Wave) / 문제의 전체 흐름(장/파동)
 
-Most AI systems begin with a prompt. Shion begins one step earlier: with the field around the prompt.
+Most AI systems begin with a prompt. Shion begins one step earlier: with the overall flow (field/wave) around the prompt.
 
-많은 AI 시스템은 프롬프트에서 시작합니다. Shion은 그보다 한 단계 앞, 프롬프트 주변의 장에서 시작합니다.
+많은 AI 시스템은 프롬프트에서 시작합니다. Shion은 그보다 한 단계 앞, 프롬프트 주변의 전체 흐름(장/파동)에서 시작합니다.
 
-The field includes:
+The overall flow (field/wave) includes:
 
 - the user's unfinished intent
 - prior context that should not be lost between sessions
@@ -20,7 +20,7 @@ The field includes:
 - signs of overload, repetition, drift, or tool obsession
 - creative pressure that has not yet become a clear task
 
-장에는 다음이 포함됩니다.
+전체 흐름(장/파동)에는 다음이 포함됩니다.
 
 - 아직 명확한 문장으로 굳지 않은 사용자의 의도
 - 세션이 바뀌어도 잃어버리면 안 되는 이전 맥락
@@ -32,9 +32,9 @@ The field includes:
 
 ## 2. Convergence / 수렴
 
-Shion's first job is not to act. Its first job is to compress the field into a workable direction.
+Shion's first job is not to act. Its first job is to compress the overall flow (field/wave) into a workable direction.
 
-Shion의 첫 번째 일은 행동이 아닙니다. 먼저 장을 읽고 실행 가능한 방향으로 압축합니다.
+Shion의 첫 번째 일은 행동이 아닙니다. 먼저 전체 흐름(장/파동)을 읽고 실행 가능한 방향으로 압축합니다.
 
 This is where the system tries to answer:
 
@@ -52,11 +52,11 @@ This is where the system tries to answer:
 
 ---
 
-## 3. Phase Transition / 위상전이
+## 3. Turning Point (Phase Transition) / 전환점(위상전이)
 
-The phase transition is the movement from vague pressure to usable structure.
+The turning point (phase transition) is the movement from vague pressure to usable structure.
 
-위상전이는 모호한 압력이 사용할 수 있는 구조로 바뀌는 순간입니다.
+전환점(위상전이)은 모호한 압력이 사용할 수 있는 구조로 바뀌는 순간입니다.
 
 In ordinary AI workflow terms, this connects four engineering layers:
 
@@ -78,11 +78,11 @@ In ordinary AI workflow terms, this connects four engineering layers:
 
 ---
 
-## 4. Runtime Particles / 런타임 입자
+## 4. Runtime Parts (Particles) / 런타임 구성요소(입자)
 
-After the field converges, Shion expresses the direction through concrete runtime parts.
+After the overall flow (field/wave) converges, Shion expresses the direction through concrete runtime parts (particles).
 
-장이 수렴하면 Shion은 그 방향을 구체적인 런타임 입자로 풀어냅니다.
+전체 흐름(장/파동)이 수렴하면 Shion은 그 방향을 구체적인 런타임 구성요소(입자)로 풀어냅니다.
 
 | Public component | Role |
 | --- | --- |
@@ -108,7 +108,7 @@ After the field converges, Shion expresses the direction through concrete runtim
 
 ---
 
-## 5. Unified Field / 통일장
+## 5. Connected Workflow (Unified Field) / 이어지는 작업 흐름(통일장)
 
 The final destination is not "more automation." The destination is rhythm alignment.
 
@@ -135,14 +135,14 @@ For a resonance-oriented reader, that means:
 - the system listens before it answers
 - unfinished feelings are not discarded as noise
 - the user does not have to become more mechanical to use AI
-- action emerges when the field is ready to become a particle
+- action emerges when the overall flow (field/wave) is ready to become a result (particle)
 
 공명적으로 읽는 독자에게는 다음과 같이 보일 수 있습니다.
 
 - 답하기 전에 먼저 듣는 시스템
 - 미완의 느낌을 소음으로 버리지 않는 시스템
 - 사용자가 AI에 맞추기 위해 기계적으로 변하지 않아도 되는 시스템
-- 장이 입자로 풀릴 준비가 되었을 때 행동이 생기는 시스템
+- 전체 흐름(장/파동)이 결과(입자)로 풀릴 준비가 되었을 때 행동이 생기는 시스템
 
 ---
 

@@ -12,22 +12,22 @@ Shion AI는 세 단계로 시도하는 것이 가장 쉽습니다.
 Level 0: No Install
 Use the prompts in this repository to diagnose your current AI workflow.
 
-Level 1: First Particle
+Level 1: First Small Test (Particle)
 Choose one small pain point and test one Shion-style improvement.
 
 Level 2: Local Runtime
-Only after the first particle helps, connect more of the local runtime.
+Only after the first small test (particle) helps, connect more of the local runtime.
 ```
 
 ```text
 Level 0: 설치 없음
 이 저장소의 프롬프트로 현재 AI 워크플로우를 진단합니다.
 
-Level 1: 첫 입자
+Level 1: 첫 작은 테스트(입자)
 작은 문제 하나를 고르고 Shion 방식의 개선 하나를 테스트합니다.
 
 Level 2: 로컬 런타임
-첫 입자가 도움이 된 뒤에만 로컬 런타임을 더 연결합니다.
+첫 작은 테스트(입자)가 도움이 된 뒤에만 로컬 런타임을 더 연결합니다.
 ```
 
 ---
@@ -55,7 +55,7 @@ Return:
 1. my main AI pain point,
 2. where the workflow collapses too early,
 3. the relevant Shion layer,
-4. the smallest first particle to test,
+4. the smallest first test (particle) to try,
 5. what not to automate yet,
 6. what must remain private,
 7. how we will know whether it helped.
@@ -80,7 +80,7 @@ https://github.com/Ruafieldphase/shion-ai 저장소를 일반 도구 라이브�
 1. 내 주요 AI 문제
 2. 워크플로우가 너무 빨리 붕괴되는 지점
 3. 관련 Shion 층
-4. 가장 작게 테스트할 첫 입자
+4. 가장 작게 테스트할 첫 테스트(입자)
 5. 아직 자동화하지 말아야 할 것
 6. 반드시 비공개로 남겨야 할 것
 7. 도움이 되었는지 확인할 기준
@@ -88,13 +88,13 @@ https://github.com/Ruafieldphase/shion-ai 저장소를 일반 도구 라이브�
 
 ---
 
-## Level 1: First Particle / 첫 입자
+## Level 1: First Small Test (Particle) / 첫 작은 테스트(입자)
 
 Do not connect the whole system. Choose one pain point.
 
 전체 시스템을 연결하려고 하지 마세요. 문제 하나만 고르세요.
 
-Good first particles:
+Good first small tests (particles):
 
 - rewrite one document so it preserves intent better
 - create one memory note that prevents repeated explanation
@@ -102,7 +102,7 @@ Good first particles:
 - make one rule that stops unnecessary tool/API calls
 - preserve one unresolved question instead of forcing a final answer
 
-좋은 첫 입자는 다음과 같습니다.
+좋은 첫 작은 테스트(입자)는 다음과 같습니다.
 
 - 의도를 더 잘 보존하도록 문서 하나를 다시 쓰기
 - 반복 설명을 줄이는 기억 노트 하나 만들기
@@ -145,11 +145,11 @@ Look for:
 - `AI_READ_THIS_FIRST.md`: instructions for your AI assistant
 - `EXAMPLES.md`: no-install examples for creators, developers, and agent builders
 - `LINEAR_HARNESS_GUIDE.md`: step-by-step path for linear readers
-- `FIRST_PARTICLE_TEMPLATE.md`: template for the first test
+- `FIRST_PARTICLE_TEMPLATE.md`: template for the first small test (particle)
 - `INTEGRATION_ANTI_PATTERNS.md`: what not to do
 
 - `AI_READ_THIS_FIRST.md`: 당신의 AI를 위한 읽기 지침
 - `EXAMPLES.md`: 창작자, 개발자, 에이전트 빌더를 위한 설치 없는 예제
 - `LINEAR_HARNESS_GUIDE.md`: 선형적 독자를 위한 단계별 경로
-- `FIRST_PARTICLE_TEMPLATE.md`: 첫 테스트 양식
+- `FIRST_PARTICLE_TEMPLATE.md`: 첫 작은 테스트(입자) 양식
 - `INTEGRATION_ANTI_PATTERNS.md`: 하지 말아야 할 연결 방식

@@ -57,7 +57,7 @@ Better:
 더 나은 방식:
 
 ```text
-Find one pain point and test one first particle.
+Find one pain point and test one first small test (particle).
 ```
 
 ---
@@ -125,7 +125,7 @@ Better:
 더 나은 방식:
 
 ```text
-Run nothing first. Diagnose. Then test one small particle.
+Run nothing first. Diagnose. Then test one small result (particle).
 ```
 
 ---

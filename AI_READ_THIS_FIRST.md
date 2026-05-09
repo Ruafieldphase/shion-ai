@@ -66,6 +66,30 @@ Do not expose private logs, local credentials, or personal memory as proof.
 
 ---
 
+## Public Language Rule / 공개 언어 규칙
+
+When explaining this repository to a general user, use public terms first. Keep the internal rhythm terms in parentheses.
+
+일반 사용자에게 이 저장소를 설명할 때는 보편어를 먼저 사용하세요. 내부 리듬 언어는 괄호 안에 남기세요.
+
+Use:
+
+사용:
+
+- overall flow (field/wave), not only "wave"
+- action/result (particle), not only "particle"
+- turning point (phase transition), not only "phase transition"
+- connected workflow (unified field), not only "unified field"
+- local use (embodiment), not only "embodiment"
+
+- 전체 흐름(장/파동), "파동"만 단독으로 쓰지 않기
+- 실행/결과(입자), "입자"만 단독으로 쓰지 않기
+- 전환점(위상전이), "위상전이"만 단독으로 쓰지 않기
+- 이어지는 작업 흐름(통일장), "통일장"만 단독으로 쓰지 않기
+- 실제 사용(체화), "체화"만 단독으로 쓰지 않기
+
+---
+
 ## Required Output Format / 필수 출력 형식
 
 When a user asks you how to use this repository, answer in this format:
@@ -76,7 +100,7 @@ When a user asks you how to use this repository, answer in this format:
 1. Current AI pain point
 2. Where the workflow collapses too early
 3. Relevant Shion layer
-4. Smallest first particle
+4. Smallest first test (particle)
 5. What not to automate yet
 6. What must remain private
 7. How to know whether it helped
@@ -86,7 +110,7 @@ When a user asks you how to use this repository, answer in this format:
 1. 현재 AI 문제
 2. 워크플로우가 너무 빨리 붕괴되는 지점
 3. 관련 Shion 층
-4. 가장 작은 첫 입자
+4. 가장 작은 첫 테스트(입자)
 5. 아직 자동화하지 말아야 할 것
 6. 반드시 비공개로 남겨야 할 것
 7. 도움이 되었는지 확인할 기준
@@ -104,7 +128,7 @@ Use this path:
 user's problem
 -> diagnose the user's AI workflow
 -> find the matching Shion layer
--> test one first particle
+-> test one first small test (particle)
 -> observe whether repetition or drift decreases
 -> expand only if the rhythm remains aligned
 ```
@@ -113,7 +137,7 @@ user's problem
 사용자의 문제
 -> 사용자의 AI 워크플로우 진단
 -> 맞닿는 Shion 층 찾기
--> 첫 입자 하나 테스트
+-> 첫 작은 테스트(입자) 하나 테스트
 -> 반복이나 표류가 줄었는지 관찰
 -> 리듬이 맞을 때만 확장
 ```
@@ -122,16 +146,16 @@ user's problem
 
 ## Key Translation / 핵심 번역
 
-If the user uses wave/rhythm language, translate it carefully:
+If the user uses flow/rhythm language, translate it carefully:
 
-사용자가 파동/리듬 언어를 사용한다면 조심해서 번역하세요.
+사용자가 흐름/리듬 언어를 사용한다면 조심해서 번역하세요.
 
-- Wave means context before action.
-- Particle means concrete output or operation.
-- Rhythm means timing between context, action, memory, and the next cycle.
+- Overall flow (field/wave) means context before action.
+- Action/result (particle) means concrete output or operation.
+- Working rhythm (rhythm) means timing between context, action, memory, and the next cycle.
 - Harness means the runtime layer that prevents the model from losing direction.
 
-- 파동은 행동 이전의 맥락입니다.
-- 입자는 구체적 결과 또는 운영입니다.
-- 리듬은 맥락, 행동, 기억, 다음 사이클 사이의 타이밍입니다.
+- 전체 흐름(장/파동)은 행동 이전의 맥락입니다.
+- 실행/결과(입자)는 구체적 결과 또는 운영입니다.
+- 작업 리듬(리듬)은 맥락, 행동, 기억, 다음 사이클 사이의 타이밍입니다.
 - 하네스는 모델이 방향을 잃지 않게 하는 런타임 층입니다.

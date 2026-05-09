@@ -19,7 +19,7 @@ Read https://github.com/Ruafieldphase/shion-ai and especially AI_READ_THIS_FIRST
 
 Do not summarize first.
 Diagnose where my AI workflow loses context, repeats explanation, overuses tools, or misses my direction.
-Return one first particle we can test without installing the full runtime.
+Return one first small test (particle) we can try without installing the full runtime.
 ```
 
 ```text
@@ -27,7 +27,7 @@ https://github.com/Ruafieldphase/shion-ai 저장소와 AI_READ_THIS_FIRST.md를 
 
 요약부터 하지 말고,
 내 AI 워크플로우가 어디에서 맥락을 잃고, 설명을 반복하고, 도구를 과사용하고, 내 방향을 놓치는지 진단해줘.
-전체 런타임을 설치하지 않고 테스트할 수 있는 첫 입자 하나를 제안해줘.
+전체 런타임을 설치하지 않고 테스트할 수 있는 첫 작은 테스트(입자) 하나를 제안해줘.
 ```
 
 ### Step 2. Choose one pain point / 2단계. 문제 하나 고르기
@@ -50,7 +50,7 @@ Pick one:
 - 창작적 느낌의 기계화
 - 불안정한 에이전트 루프
 
-### Step 3. Write the first particle / 3단계. 첫 입자 작성
+### Step 3. Write the first small test (particle) / 3단계. 첫 작은 테스트(입자) 작성
 
 Use `FIRST_PARTICLE_TEMPLATE.md`.
 
@@ -75,23 +75,23 @@ The user has a vague feeling for a video, song, essay, or visual concept, but th
 ### Prompt / 프롬프트
 
 ```text
-Before turning this into a plan, hold the feeling as a wave.
+Before turning this into a plan, hold the feeling as the overall flow (field/wave).
 
 My vague direction is:
 [write the feeling here]
 
 Ask me 3 questions that preserve the feeling before producing an outline.
-Then create only one first particle: a title, a scene, a paragraph, or a concept note.
+Then create only one first small result (particle): a title, a scene, a paragraph, or a concept note.
 ```
 
 ```text
-이것을 계획으로 바꾸기 전에, 이 느낌을 파동으로 보존해줘.
+이것을 계획으로 바꾸기 전에, 이 느낌을 전체 흐름(장/파동)으로 보존해줘.
 
 내 모호한 방향은:
 [여기에 느낌 작성]
 
 개요를 만들기 전에 이 느낌을 보존하는 질문 3개를 해줘.
-그 다음 제목, 장면, 문단, 콘셉트 노트 중 첫 입자 하나만 만들어줘.
+그 다음 제목, 장면, 문단, 콘셉트 노트 중 첫 작은 결과(입자) 하나만 만들어줘.
 ```
 
 ### Success Signal / 성공 신호
