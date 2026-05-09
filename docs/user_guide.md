@@ -78,7 +78,54 @@ If those files are not present in your clone or environment, inspect the `core/`
 
 ---
 
-## 4. Working With Shion / Shion과 함께 작업하기
+## 4. Ask Your AI To Read Shion / 당신의 AI에게 Shion을 읽히기
+
+If you already use ChatGPT, Claude, Gemini, Cursor, Codex, or another agent, the most practical first step is to let that AI inspect Shion for your own workflow.
+
+이미 ChatGPT, Claude, Gemini, Cursor, Codex 또는 다른 에이전트를 쓰고 있다면, 가장 실용적인 첫 단계는 그 AI에게 Shion을 당신의 워크플로우 관점에서 읽히는 것입니다.
+
+Use this prompt:
+
+다음 프롬프트를 사용할 수 있습니다.
+
+```text
+Read https://github.com/Ruafieldphase/shion-ai as a runtime/harness layer for my AI workflow.
+
+Find where my current workflow loses context, repeats explanation, overuses tools, misses my intent, or turns creative feeling into mechanical problem solving.
+
+Then suggest the smallest Shion-style integration we can test first.
+Do not propose a full migration.
+Focus on one useful particle.
+```
+
+```text
+https://github.com/Ruafieldphase/shion-ai 저장소를 내 AI 워크플로우를 위한 런타임/하네스 층으로 읽어줘.
+
+내 현재 워크플로우가 어디에서 맥락을 잃고, 설명을 반복하고, 도구를 과사용하고, 내 의도를 놓치고, 창작적 느낌을 기계적인 문제 해결로 바꾸는지 찾아줘.
+
+그리고 가장 작게 테스트할 수 있는 Shion 방식 연결을 하나 제안해줘.
+전체 이전을 제안하지 말고, 유용한 입자 하나에 집중해줘.
+```
+
+Ask your AI to return:
+
+AI에게 다음 결과를 요구하세요.
+
+- the pain point it found
+- the Shion concept or file that matches it
+- the first small test
+- what should remain private
+- how to know whether the test helped
+
+- 발견한 문제 지점
+- 그 문제와 맞닿는 Shion 개념 또는 파일
+- 첫 번째 작은 테스트
+- 비공개로 남겨야 할 것
+- 테스트가 도움이 되었는지 확인하는 기준
+
+---
+
+## 5. Working With Shion / Shion과 함께 작업하기
 
 ### Bring a direction / 방향을 가져오기
 
@@ -114,7 +161,7 @@ If the runtime begins to create work for the sake of work, slow it down. The goa
 
 ---
 
-## 5. What To Verify / 확인할 것
+## 6. What To Verify / 확인할 것
 
 When evaluating Shion, look for practical effects:
 

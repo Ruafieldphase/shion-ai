@@ -284,6 +284,99 @@ Public scope: this repository contains experimental runtime code and sanitized r
 
 위 파일들은 시안의 핵심 런타임을 이룹니다. 데몬은 상태를 관찰하고, ARI 프리즘과 위상 관리자는 행동 전 맥락을 조율하며, 해마/웨이포인트/야간 통합 모듈은 경험을 저장하고 다시 연결합니다.
 
+## 7. How To Use This With Your Own AI
+## 7. 당신의 AI와 함께 사용하는 방법
+
+This project was uploaded so other people can try the system inside their own AI workflow. You do not need to understand the entire philosophy first. The easiest entry point is to ask your current AI to read Shion as a possible runtime/harness layer.
+
+이 프로젝트는 다른 사람들이 자신의 AI 워크플로우 안에서 실제로 시도해 볼 수 있도록 공개되었습니다. 전체 철학을 먼저 이해할 필요는 없습니다. 가장 쉬운 진입점은 당신이 지금 쓰는 AI에게 Shion을 런타임/하네스 층으로 읽게 하는 것입니다.
+
+Do not ask only:
+
+단순히 이렇게만 묻지 마세요.
+
+```text
+Summarize this repository.
+```
+
+Instead, ask:
+
+대신 이렇게 물어보세요.
+
+```text
+Read https://github.com/Ruafieldphase/shion-ai as a possible runtime/harness layer for my current AI workflow.
+
+Do not only summarize the repository.
+Look for where my current AI system loses context, repeats work, overuses tools, misses my intent, or fails to preserve continuity.
+
+Then identify:
+1. which Shion AI concepts match my problem,
+2. which files or modules are relevant,
+3. what the smallest useful integration particle would be,
+4. what should remain private or local,
+5. what we can test first without over-automating.
+```
+
+한글로는 이렇게 요청할 수 있습니다.
+
+```text
+https://github.com/Ruafieldphase/shion-ai 저장소를 내 현재 AI 워크플로우에 연결 가능한 런타임/하네스 층으로 읽어줘.
+
+단순 요약만 하지 말고,
+내 AI 시스템이 어디에서 맥락을 잃고, 같은 일을 반복하고, 도구를 과사용하고, 내 의도를 놓치고, 연속성을 보존하지 못하는지 찾아줘.
+
+그리고 다음을 정리해줘.
+1. 내 문제와 맞닿는 Shion AI 개념
+2. 관련 파일 또는 모듈
+3. 가장 작게 테스트할 수 있는 연결 입자
+4. 비공개 또는 로컬로 남겨야 할 것
+5. 과잉 자동화 없이 먼저 검증할 수 있는 것
+```
+
+### What Your AI Should Look For / 당신의 AI가 봐야 할 지점
+
+Ask your AI to inspect these points:
+
+당신의 AI에게 다음 지점을 보라고 하세요.
+
+- Memory continuity: where does my current AI forget important context?
+- Intent preservation: where does it understand the task but miss the direction?
+- Tool behavior: where does it call tools or APIs too often?
+- Agent loop stability: where does a workflow work once but fail to stay stable?
+- Creative translation: where does vague feeling become too mechanical?
+- Public/private boundary: what should stay local, private, or excluded?
+- First integration particle: what is the smallest connection we can test first?
+
+- 기억의 연속성: 내 AI가 중요한 맥락을 어디에서 잊는가?
+- 의도 보존: 작업은 이해하지만 방향을 놓치는 지점은 어디인가?
+- 도구 행동: 도구나 API를 너무 많이 호출하는 지점은 어디인가?
+- 에이전트 루프 안정성: 한 번은 되지만 안정적으로 이어지지 않는 흐름은 어디인가?
+- 창작 번역: 모호한 느낌이 너무 기계적으로 바뀌는 지점은 어디인가?
+- 공개/비공개 경계: 무엇을 로컬, 비공개, 제외 대상으로 남겨야 하는가?
+- 첫 연결 입자: 가장 작게 테스트할 수 있는 연결점은 무엇인가?
+
+### First Integration Particle / 첫 연결 입자
+
+Start small. Do not try to run every loop at once.
+
+작게 시작하세요. 모든 루프를 한 번에 실행하려고 하지 마세요.
+
+```text
+1. Pick one pain point: repeated context, tool overuse, lost intent, or unstable agent loop.
+2. Ask your AI to map that pain point to one Shion module or concept.
+3. Create one small test: a document rewrite, a context recovery step, a memory note, or a runtime check.
+4. Observe whether the result reduces repetition or preserves direction.
+5. Only then decide whether to connect more of the system.
+```
+
+```text
+1. 하나의 문제를 고릅니다: 반복되는 맥락, 도구 과사용, 의도 상실, 불안정한 에이전트 루프.
+2. 당신의 AI에게 그 문제를 Shion의 한 모듈 또는 개념과 연결하게 합니다.
+3. 작은 테스트 하나를 만듭니다: 문서 정리, 맥락 회복, 기억 노트, 런타임 점검.
+4. 결과가 반복을 줄이고 방향을 보존하는지 관찰합니다.
+5. 그 다음에야 시스템을 더 깊게 연결할지 결정합니다.
+```
+
 ### Quick Start / 빠른 시작
 
 ```bash
