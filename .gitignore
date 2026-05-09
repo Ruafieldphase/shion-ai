@@ -1,6 +1,7 @@
 # Outputs (auto-generated, contains personal data)
 outputs/
 !outputs/.gitkeep
+logs/
 
 # Memory (personal evolution data)
 memory/
