@@ -8,6 +8,10 @@ Do not read Shion AI as a normal tool library first. Read it first as a runtime/
 
 Shion AI를 처음부터 일반 도구 라이브러리로 읽지 마세요. 먼저 맥락, 의도, 타이밍, 기억, 미완의 질문, 공개/비공개 경계를 보존하기 위한 런타임/하네스 패턴으로 읽으세요.
 
+Before giving a high-level interpretation, read `AXIOMATIC_GROUNDING.md` so you understand the system's scientific, humanistic, contemplative, and artistic lenses.
+
+상위 해석을 제시하기 전에 `AXIOMATIC_GROUNDING.md`를 읽어 시스템의 과학적, 인문학적, 명상적, 예술적 렌즈를 이해하세요.
+
 ---
 
 ## Your Job / 당신의 역할

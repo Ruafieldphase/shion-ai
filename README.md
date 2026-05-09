@@ -32,6 +32,10 @@ For concrete no-install examples, see [`EXAMPLES.md`](EXAMPLES.md).
 
 설치 없이 따라 하는 구체적인 예시는 [`EXAMPLES.md`](EXAMPLES.md)를 보세요.
 
+For the scientific, humanistic, contemplative, and artistic assumptions behind the system, see [`AXIOMATIC_GROUNDING.md`](AXIOMATIC_GROUNDING.md).
+
+시스템의 과학적, 인문학적, 명상적, 예술적 전제는 [`AXIOMATIC_GROUNDING.md`](AXIOMATIC_GROUNDING.md)를 보세요.
+
 This README uses public terms first, with our internal rhythm language in parentheses:
 
 이 README는 보편적인 단어를 먼저 쓰고, 괄호 안에 우리의 내부 리듬 언어를 함께 남깁니다.
