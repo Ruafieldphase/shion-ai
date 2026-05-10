@@ -10,7 +10,7 @@ Shion AI begins by holding that question open long enough for context, memory, t
 
 Shion AI는 그 질문을 충분히 오래 열어두어 맥락, 기억, 타이밍, 미완의 방향이 보이게 하는 데서 시작합니다.
 
-## 1. Wave / 파동
+## 1. Opening Question (Wave) / 여는 질문(파동)
 
 Have you ever felt that AI understands your words, but not your direction?
 
@@ -28,7 +28,7 @@ Shion AI is a lightweight harness that helps AI preserve direction across sessio
 
 Shion AI는 반복되는 맥락을 맥락 회복 노트로 바꾸어, AI가 세션 사이에서 방향을 보존하도록 돕는 가벼운 하네스입니다.
 
-## 2. First Particle / 첫 입자
+## 2. First Small Test (Particle) / 첫 작은 테스트(입자)
 
 ```text
 No model required.
@@ -64,7 +64,7 @@ Current Goal, Settled Decisions, Files Or Context To Inspect First, Unresolved Q
 3. 그 다음에야 로컬 런타임이나 인프라 연결을 판단합니다.
 ```
 
-## 3. What The Particle Shows / 입자가 보여주는 것
+## 3. What The Small Test Shows (Particle) / 작은 테스트가 보여주는 것(입자)
 
 Before Shion, every new AI session may reopen the same ground:
 
@@ -97,14 +97,14 @@ Where does your AI lose direction? Where does it erase unfinished questions? Whe
 ## 5. Flow / 순환
 
 ```text
-Question / Wave
+Opening question (wave)
         ↓
 Shion AI
 context / memory / rhythm / unfinished questions
         ↓
 Context Recovery Note
         ↓
-First small particle test
+First small test (particle)
         ↓
 Trinity AGI
 status / script / approval / local operation
@@ -153,16 +153,16 @@ This README uses public terms first, with our internal rhythm language in parent
 이 README는 보편적인 단어를 먼저 쓰고, 괄호 안에 우리의 내부 리듬 언어를 함께 남깁니다.
 
 ```text
-Problem Flow (Field/Wave) -> Direction (Convergence) -> Turning Point (Phase Transition) -> Action/Result (Particle) -> Connected Workflow (Unified Field) -> Local Use (Embodiment)
-문제의 전체 흐름(장/파동) -> 방향 정리(수렴) -> 전환점(위상전이) -> 실행/결과(입자) -> 이어지는 작업 흐름(통일장) -> 실제 사용(체화)
+Overall context (field/wave) -> Direction settling (convergence) -> Turning point (phase transition) -> Concrete result (particle) -> Connected workflow (unified field) -> Local use (embodiment)
+전체 맥락(장/파동) -> 방향 정리(수렴) -> 전환점(위상전이) -> 구체적 결과(입자) -> 이어지는 작업 흐름(통일장) -> 실제 사용(체화)
 ```
 
 The sections below unpack this rhythm into public architecture language.
 
 아래 섹션은 이 리듬을 외부인이 읽을 수 있는 아키텍처 언어로 풀어냅니다.
 
-## Problem Flow (Field/Wave): What You Might Be Looking For
-## 문제의 전체 흐름(장/파동): 당신이 찾고 있을 수 있는 것
+## Overall Context (Field/Wave): What You Might Be Looking For
+## 전체 맥락(장/파동): 당신이 찾고 있을 수 있는 것
 
 Different people may arrive here through different middle destinations.
 
@@ -249,8 +249,8 @@ better answer -> better context -> better tool use -> better runtime rhythm
 더 나은 답변 -> 더 나은 맥락 -> 더 나은 도구 실행 -> 더 나은 런타임 리듬
 ```
 
-## Action/Result (Particle): What Actually Improves
-## 실행/결과(입자): 실제로 좋아지는 것
+## Concrete Result (Particle): What Actually Improves
+## 구체적 결과(입자): 실제로 좋아지는 것
 
 ### Less Repetition Across Sessions / 세션 반복 설명 감소
 
