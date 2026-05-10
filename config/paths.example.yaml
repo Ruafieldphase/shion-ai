@@ -1,0 +1,14 @@
+# Example public path configuration for Shion AI.
+#
+# Copy this file to config/paths.local.yaml for a local machine. Keep local
+# credentials, private archives, generated outputs, and machine-specific paths
+# out of public commits.
+
+paths:
+  shion_root: "."
+  agi_workspace_root: "../agi"
+  outputs: "outputs"
+  memory: "memory"
+  logs: "logs"
+  credentials: "config/credentials"
+  archive_workspace: ""

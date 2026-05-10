@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import importlib.util
+import os
 from pathlib import Path
 
 
@@ -43,3 +44,47 @@ def test_context_recovery_demo_runs_without_external_dependencies() -> None:
     assert "Unresolved Questions" in note
     assert "What Not To Reopen Unless Evidence Changes" in note
     assert "Next Smallest Action" in note
+
+
+def test_paths_example_loads_without_external_dependencies() -> None:
+    config_path = ROOT / "config" / "paths.example.yaml"
+    resolver_path = ROOT / "core" / "path_config.py"
+    spec = importlib.util.spec_from_file_location("shion_path_config", resolver_path)
+    assert spec and spec.loader
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+
+    previous = os.environ.get("SHION_ROOT")
+    previous_agi = os.environ.get("AGI_WORKSPACE_ROOT")
+    os.environ.pop("SHION_ROOT", None)
+    os.environ.pop("AGI_WORKSPACE_ROOT", None)
+    try:
+        values = module.load_path_config(config_path)
+        resolved = module.resolve_paths(config_path)
+    finally:
+        if previous is not None:
+            os.environ["SHION_ROOT"] = previous
+        if previous_agi is not None:
+            os.environ["AGI_WORKSPACE_ROOT"] = previous_agi
+
+    assert values["shion_root"] == "."
+    assert values["outputs"] == "outputs"
+    assert resolved["shion_root"] == ROOT.resolve()
+    assert resolved["outputs"] == (ROOT / "outputs").resolve()
+    assert resolved["archive_workspace"] is None
+
+    previous = os.environ.get("SHION_ROOT")
+    previous_agi = os.environ.get("AGI_WORKSPACE_ROOT")
+    os.environ["SHION_ROOT"] = str(ROOT / "custom_shion")
+    os.environ.pop("AGI_WORKSPACE_ROOT", None)
+    try:
+        overridden = module.resolve_paths(config_path)
+    finally:
+        if previous is None:
+            os.environ.pop("SHION_ROOT", None)
+        else:
+            os.environ["SHION_ROOT"] = previous
+        if previous_agi is not None:
+            os.environ["AGI_WORKSPACE_ROOT"] = previous_agi
+
+    assert overridden["shion_root"] == (ROOT / "custom_shion").resolve()
