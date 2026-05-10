@@ -1,5 +1,81 @@
 # Shion AI
 
+Shion AI is a lightweight harness that helps AI preserve direction across sessions by turning repeated context into a context recovery note.
+
+Shion AI는 반복되는 맥락을 맥락 회복 노트로 바꾸어, AI가 세션 사이에서 방향을 보존하도록 돕는 가벼운 하네스입니다.
+
+## 3-Minute Start / 3분 시작
+
+```text
+No model required.
+No API key required.
+No credentials required.
+
+Run:
+python examples/context_recovery_demo.py
+
+Then:
+1. Read the generated Context Recovery Note.
+2. Use it before asking your AI to edit, refactor, or automate.
+3. Only then decide whether to connect local runtime or infrastructure.
+```
+
+```text
+모델이 필요하지 않습니다.
+API 키가 필요하지 않습니다.
+인증 정보가 필요하지 않습니다.
+
+실행:
+python examples/context_recovery_demo.py
+
+그 다음:
+1. 생성된 Context Recovery Note를 읽습니다.
+2. AI에게 수정, 리팩터링, 자동화를 요청하기 전에 이 노트를 사용합니다.
+3. 그 다음에야 로컬 런타임이나 인프라 연결을 판단합니다.
+```
+
+## Before / After
+
+Before Shion, every new AI session may ask again:
+
+- What is this project?
+- What did we decide last time?
+- Which files should I inspect first?
+- Should I refactor now?
+
+After Shion context recovery, the AI first reads:
+
+- Current Goal
+- Settled Decisions
+- Files Or Context To Inspect First
+- Unresolved Questions
+- What Not To Reopen Unless Evidence Changes
+- Next Smallest Action
+
+Shion 이전에는 새 AI 세션마다 같은 배경을 다시 묻기 쉽습니다. Shion 맥락 회복 이후에는 현재 목표, 확정된 결정, 먼저 볼 맥락, 미완의 질문, 다시 열지 말아야 할 것, 다음의 가장 작은 행동을 먼저 읽습니다.
+
+## Flow / 흐름
+
+Shion AI preserves direction across AI sessions. Trinity AGI turns formed direction into safe local operation.
+
+Shion AI는 AI 세션 사이에서 방향을 보존합니다. Trinity AGI는 형성된 방향을 안전한 로컬 운영으로 바꿉니다.
+
+```text
+Vague user direction
+        ↓
+Shion AI
+context / memory / rhythm / unfinished questions
+        ↓
+Context Recovery Note
+        ↓
+First small particle test
+        ↓
+Trinity AGI
+status / script / approval / local operation
+        ↓
+Evidence returns to the next AI cycle
+```
+
 Have you ever felt that AI understands your words, but not your direction?
 
 AI가 당신의 말은 이해하지만, 당신의 방향은 이해하지 못한다고 느낀 적이 있나요?
@@ -23,40 +99,6 @@ AI가 당신의 사고를 넓혀주기보다, 오히려 AI의 경계와 바운�
 Shion AI begins from that gap. It is an experimental harness for long-running AI work: context recovery, rhythm-aware action, memory consolidation, and feedback-based execution.
 
 Shion AI는 그 간극에서 시작합니다. 장기 AI 작업을 위한 실험적 하네스로서, 맥락 복원, 리듬 기반 행동 조율, 기억 통합, 피드백 기반 실행을 다룹니다.
-
-```text
-Start small:
-1. Do not install the full runtime first.
-2. Do not run every daemon.
-3. Pick one pain point.
-4. Try one first particle test.
-```
-
-```text
-작게 시작하세요:
-1. 처음부터 전체 런타임을 설치하지 마세요.
-2. 모든 데몬을 실행하지 마세요.
-3. 문제 하나를 고르세요.
-4. 첫 작은 입자 테스트 하나만 해보세요.
-```
-
-Shion AI preserves direction across AI sessions. Trinity AGI turns formed direction into safe local operation.
-
-Shion AI는 AI 세션 사이에서 방향을 보존합니다. Trinity AGI는 형성된 방향을 안전한 로컬 운영으로 바꿉니다.
-
-```text
-User's vague direction
-        ↓
-Shion AI
-context / memory / rhythm / unfinished questions
-        ↓
-First small particle test
-        ↓
-Trinity AGI
-status / script / approval / local operation
-        ↓
-Evidence returns to the next AI cycle
-```
 
 If you are new, start with [`START_HERE.md`](START_HERE.md). If you are asking your own AI to inspect this repository, give it [`AI_READ_THIS_FIRST.md`](AI_READ_THIS_FIRST.md) first.
 
