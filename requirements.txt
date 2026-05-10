@@ -1,17 +1,10 @@
-# Shion AI - Dependencies
-torch
-transformers
-diffusers
-peft
-fastapi
-uvicorn
-httpx
-Pillow
-numpy
-aiohttp
-argparse
-pathlib
-requests
-accelerate
-safetensors
-sentencepiece
+# Shion AI default install
+#
+# Keep the public default lightweight. This supports no-model first-particle
+# demos and documentation checks. Install heavier layers only when needed:
+#
+#   pip install -r requirements-runtime.txt
+#   pip install -r requirements-ml.txt
+#   pip install -r requirements-dev.txt
+
+-r requirements-minimal.txt

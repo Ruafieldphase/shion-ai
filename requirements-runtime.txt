@@ -1,0 +1,9 @@
+# Runtime and integration layer dependencies.
+fastapi
+uvicorn
+httpx
+Pillow
+numpy
+aiohttp
+requests
+PyYAML

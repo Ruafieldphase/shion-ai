@@ -1,0 +1,2 @@
+# Minimal first-particle demos use only the Python standard library.
+# This file is intentionally empty of third-party packages.

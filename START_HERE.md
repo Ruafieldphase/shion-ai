@@ -101,6 +101,7 @@ Good first small tests (particles):
 - add one context recovery checklist to your AI workflow
 - make one rule that stops unnecessary tool/API calls
 - preserve one unresolved question instead of forcing a final answer
+- run `python examples/context_recovery_demo.py` to generate one context recovery note without models, APIs, or credentials
 
 좋은 첫 작은 테스트(입자)는 다음과 같습니다.
 
@@ -109,10 +110,15 @@ Good first small tests (particles):
 - AI 워크플로우에 맥락 회복 체크리스트 하나 추가하기
 - 불필요한 도구/API 호출을 막는 규칙 하나 만들기
 - 최종 답을 강제하지 않고 미완의 질문 하나를 보존하기
+- `python examples/context_recovery_demo.py`를 실행해 모델, API, 인증 정보 없이 맥락 회복 노트 하나 만들기
 
 Use `FIRST_PARTICLE_TEMPLATE.md` to write the test.
 
 테스트는 `FIRST_PARTICLE_TEMPLATE.md`로 작성하세요.
+
+The default `requirements.txt` is intentionally minimal. Install heavier runtime or local model dependencies only after a small test helps.
+
+기본 `requirements.txt`는 의도적으로 최소화되어 있습니다. 작은 테스트가 도움이 된 뒤에만 런타임 또는 로컬 모델 의존성을 설치하세요.
 
 ---
 

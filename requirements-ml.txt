@@ -1,0 +1,9 @@
+# Optional local model and training/inference dependencies.
+-r requirements-runtime.txt
+torch
+transformers
+diffusers
+peft
+accelerate
+safetensors
+sentencepiece

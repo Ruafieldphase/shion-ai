@@ -24,6 +24,40 @@ Shion AI begins from that gap. It is an experimental harness for long-running AI
 
 Shion AI는 그 간극에서 시작합니다. 장기 AI 작업을 위한 실험적 하네스로서, 맥락 복원, 리듬 기반 행동 조율, 기억 통합, 피드백 기반 실행을 다룹니다.
 
+```text
+Start small:
+1. Do not install the full runtime first.
+2. Do not run every daemon.
+3. Pick one pain point.
+4. Try one first particle test.
+```
+
+```text
+작게 시작하세요:
+1. 처음부터 전체 런타임을 설치하지 마세요.
+2. 모든 데몬을 실행하지 마세요.
+3. 문제 하나를 고르세요.
+4. 첫 작은 입자 테스트 하나만 해보세요.
+```
+
+Shion AI preserves direction across AI sessions. Trinity AGI turns formed direction into safe local operation.
+
+Shion AI는 AI 세션 사이에서 방향을 보존합니다. Trinity AGI는 형성된 방향을 안전한 로컬 운영으로 바꿉니다.
+
+```text
+User's vague direction
+        ↓
+Shion AI
+context / memory / rhythm / unfinished questions
+        ↓
+First small particle test
+        ↓
+Trinity AGI
+status / script / approval / local operation
+        ↓
+Evidence returns to the next AI cycle
+```
+
 If you are new, start with [`START_HERE.md`](START_HERE.md). If you are asking your own AI to inspect this repository, give it [`AI_READ_THIS_FIRST.md`](AI_READ_THIS_FIRST.md) first.
 
 처음이라면 [`START_HERE.md`](START_HERE.md)에서 시작하세요. 당신의 AI에게 이 저장소를 읽히려면 먼저 [`AI_READ_THIS_FIRST.md`](AI_READ_THIS_FIRST.md)를 읽게 하세요.
@@ -31,6 +65,14 @@ If you are new, start with [`START_HERE.md`](START_HERE.md). If you are asking y
 For concrete no-install examples, see [`EXAMPLES.md`](EXAMPLES.md).
 
 설치 없이 따라 하는 구체적인 예시는 [`EXAMPLES.md`](EXAMPLES.md)를 보세요.
+
+For a runnable no-model demo, use:
+
+모델 없이 실행되는 데모는 다음을 사용하세요.
+
+```bash
+python examples/context_recovery_demo.py
+```
 
 For the scientific, humanistic, contemplative, and artistic assumptions behind the system, see [`AXIOMATIC_GROUNDING.md`](AXIOMATIC_GROUNDING.md).
 

@@ -12,6 +12,22 @@ Use this when you already have an AI assistant and want to test whether Shion's 
 
 이미 AI 어시스턴트를 쓰고 있고, Shion의 접근이 내 워크플로우에 도움이 되는지 테스트하고 싶을 때 사용하세요.
 
+If you want a runnable demo that uses no model, no API, and no credentials:
+
+모델, API, 인증 정보 없이 실행되는 데모를 원한다면:
+
+```bash
+python examples/context_recovery_demo.py
+```
+
+It produces one context recovery note from a small sample. You can also pass your own text file:
+
+작은 샘플에서 맥락 회복 노트 하나를 만듭니다. 직접 만든 텍스트 파일도 전달할 수 있습니다.
+
+```bash
+python examples/context_recovery_demo.py path/to/project_notes.txt
+```
+
 ### Step 1. Give your AI the reading protocol / 1단계. AI에게 읽기 프로토콜 주기
 
 ```text
