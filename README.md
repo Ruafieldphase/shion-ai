@@ -1,10 +1,34 @@
 # Shion AI
 
+## 0. Question / 질문
+
+What if the problem is not that AI cannot answer, but that it answers before the direction has settled?
+
+AI가 답을 못하는 것이 문제가 아니라, 방향이 정렬되기 전에 너무 빨리 답하는 것이 문제라면?
+
+Shion AI begins by holding that question open long enough for context, memory, timing, and unresolved direction to become visible.
+
+Shion AI는 그 질문을 충분히 오래 열어두어 맥락, 기억, 타이밍, 미완의 방향이 보이게 하는 데서 시작합니다.
+
+## 1. Wave / 파동
+
+Have you ever felt that AI understands your words, but not your direction?
+
+AI가 당신의 말은 이해하지만, 당신의 방향은 이해하지 못한다고 느낀 적이 있나요?
+
+Have you repeated the same context again and again because yesterday's memory could not continue into today?
+
+어제의 기억이 오늘로 이어지지 않아서 같은 맥락을 계속 반복하고 있었나요?
+
+Have you felt a vague creative feeling become too logical, too problem-solving, or too unlike its original rhythm after passing through AI?
+
+모호한 창작의 느낌이 AI를 거치며 너무 논리적이고, 문제 해결 중심적이고, 원래의 리듬과 달라졌다고 느낀 적이 있나요?
+
 Shion AI is a lightweight harness that helps AI preserve direction across sessions by turning repeated context into a context recovery note.
 
 Shion AI는 반복되는 맥락을 맥락 회복 노트로 바꾸어, AI가 세션 사이에서 방향을 보존하도록 돕는 가벼운 하네스입니다.
 
-## 3-Minute Start / 3분 시작
+## 2. First Particle / 첫 입자
 
 ```text
 No model required.
@@ -40,9 +64,9 @@ Current Goal, Settled Decisions, Files Or Context To Inspect First, Unresolved Q
 3. 그 다음에야 로컬 런타임이나 인프라 연결을 판단합니다.
 ```
 
-## Before / After
+## 3. What The Particle Shows / 입자가 보여주는 것
 
-Before Shion, every new AI session may ask again:
+Before Shion, every new AI session may reopen the same ground:
 
 - What is this project?
 - What did we decide last time?
@@ -60,14 +84,20 @@ After Shion context recovery, the AI first reads:
 
 Shion 이전에는 새 AI 세션마다 같은 배경을 다시 묻기 쉽습니다. Shion 맥락 회복 이후에는 현재 목표, 확정된 결정, 먼저 볼 맥락, 미완의 질문, 다시 열지 말아야 할 것, 다음의 가장 작은 행동을 먼저 읽습니다.
 
-## Flow / 흐름
+## 4. Return Question / 되돌아오는 질문
 
-Shion AI preserves direction across AI sessions. Trinity AGI turns formed direction into safe local operation.
+This system is not trying to automate more things faster. It asks where the flow closes too early.
 
-Shion AI는 AI 세션 사이에서 방향을 보존합니다. Trinity AGI는 형성된 방향을 안전한 로컬 운영으로 바꿉니다.
+이 시스템은 더 많은 것을 더 빠르게 자동화하려는 것이 아닙니다. 흐름이 어디에서 너무 빨리 닫히는지를 묻습니다.
+
+Where does your AI lose direction? Where does it erase unfinished questions? Where does it turn uncertainty into an answer before the timing is ready?
+
+당신의 AI는 어디에서 방향을 잃나요? 어디에서 미완의 질문을 지우나요? 어디에서 아직 때가 아닌 불확실성을 답으로 바꾸나요?
+
+## 5. Flow / 순환
 
 ```text
-Vague user direction
+Question / Wave
         ↓
 Shion AI
 context / memory / rhythm / unfinished questions
@@ -82,29 +112,11 @@ status / script / approval / local operation
 Evidence returns to the next AI cycle
 ```
 
-Have you ever felt that AI understands your words, but not your direction?
+Shion AI preserves direction across AI sessions. Trinity AGI turns formed direction into safe local operation.
 
-AI가 당신의 말은 이해하지만, 당신의 방향은 이해하지 못한다고 느낀 적이 있나요?
+Shion AI는 AI 세션 사이에서 방향을 보존합니다. Trinity AGI는 형성된 방향을 안전한 로컬 운영으로 바꿉니다.
 
-Have you repeated the same context again and again because yesterday's memory could not continue into today?
-
-어제의 기억이 오늘로 이어지지 않아서 같은 맥락을 계속 반복하고 있었나요?
-
-Have you used more prompts, more API calls, and more tools, only to feel that the work was drifting away from your real intention?
-
-더 많은 프롬프트, 더 많은 API 호출, 더 많은 도구를 쓰고도 작업이 당신의 진짜 의도에서 멀어지고 있다고 느낀 적이 있나요?
-
-Have you felt a vague creative feeling become too logical, too problem-solving, or too unlike its original rhythm after passing through AI?
-
-모호한 창작의 느낌이 AI를 거치며 너무 논리적이고, 문제 해결 중심적이고, 원래의 리듬과 달라졌다고 느낀 적이 있나요?
-
-Have you felt your thinking become fixed inside the AI's boundaries instead of being widened by it?
-
-AI가 당신의 사고를 넓혀주기보다, 오히려 AI의 경계와 바운더리 안에 당신의 사고가 고정된다고 느낀 적이 있나요?
-
-Shion AI begins from that gap. It is an experimental harness for long-running AI work: context recovery, rhythm-aware action, memory consolidation, and feedback-based execution.
-
-Shion AI는 그 간극에서 시작합니다. 장기 AI 작업을 위한 실험적 하네스로서, 맥락 복원, 리듬 기반 행동 조율, 기억 통합, 피드백 기반 실행을 다룹니다.
+## 6. Map / 지도
 
 If you are new, start with [`START_HERE.md`](START_HERE.md). If you are asking your own AI to inspect this repository, give it [`AI_READ_THIS_FIRST.md`](AI_READ_THIS_FIRST.md) first.
 
@@ -134,6 +146,8 @@ For unedited live recordings of the human-AI workflow, see [`LIVE_WORK_ARCHIVE.m
 
 편집 없는 인간-AI 작업 과정 기록은 [`LIVE_WORK_ARCHIVE.md`](LIVE_WORK_ARCHIVE.md)를 보세요.
 
+## 7. Builder Layer / 만드는 사람들을 위한 층
+
 This README uses public terms first, with our internal rhythm language in parentheses:
 
 이 README는 보편적인 단어를 먼저 쓰고, 괄호 안에 우리의 내부 리듬 언어를 함께 남깁니다.
@@ -143,8 +157,12 @@ Problem Flow (Field/Wave) -> Direction (Convergence) -> Turning Point (Phase Tra
 문제의 전체 흐름(장/파동) -> 방향 정리(수렴) -> 전환점(위상전이) -> 실행/결과(입자) -> 이어지는 작업 흐름(통일장) -> 실제 사용(체화)
 ```
 
-## 1. Problem Flow (Field/Wave): What You Might Be Looking For
-## 1. 문제의 전체 흐름(장/파동): 당신이 찾고 있을 수 있는 것
+The sections below unpack this rhythm into public architecture language.
+
+아래 섹션은 이 리듬을 외부인이 읽을 수 있는 아키텍처 언어로 풀어냅니다.
+
+## Problem Flow (Field/Wave): What You Might Be Looking For
+## 문제의 전체 흐름(장/파동): 당신이 찾고 있을 수 있는 것
 
 Different people may arrive here through different middle destinations.
 
@@ -170,8 +188,8 @@ If you think in overall flows (fields/waves), you may be looking for a system th
 
 전체 흐름(장/파동)으로 읽는 사람이라면 불명확한 맥락을 즉시 답으로 바꾸지 않는 시스템을 찾고 있을 수 있습니다.
 
-## 2. Convergence: The Shared AI Problem
-## 2. 수렴: 현재 AI의 공통 문제
+## Convergence: The Shared AI Problem
+## 수렴: 현재 AI의 공통 문제
 
 These middle destinations point to the same practical problem: current AI often loses rhythm around the model.
 
@@ -201,8 +219,8 @@ The result is familiar: the user repeats context, the AI answers too early, tool
 
 그 결과는 익숙합니다. 사용자는 같은 맥락을 반복하고, AI는 너무 빨리 답하고, 도구는 고립된 명령처럼 실행되고, 긴 프로젝트는 방향을 잃습니다.
 
-## 3. Turning Point (Phase Transition): From Prompt to Harness
-## 3. 전환점(위상전이): 프롬프트에서 하네스로
+## Turning Point (Phase Transition): From Prompt to Harness
+## 전환점(위상전이): 프롬프트에서 하네스로
 
 The AI ecosystem has been moving through several layers:
 
@@ -231,8 +249,8 @@ better answer -> better context -> better tool use -> better runtime rhythm
 더 나은 답변 -> 더 나은 맥락 -> 더 나은 도구 실행 -> 더 나은 런타임 리듬
 ```
 
-## 4. Action/Result (Particle): What Actually Improves
-## 4. 실행/결과(입자): 실제로 좋아지는 것
+## Action/Result (Particle): What Actually Improves
+## 실행/결과(입자): 실제로 좋아지는 것
 
 ### Less Repetition Across Sessions / 세션 반복 설명 감소
 
@@ -336,8 +354,8 @@ Result: the system is better suited for ongoing work than one-shot answers.
 
 결과: 일회성 답변보다 계속 이어지는 작업에 더 적합한 구조가 됩니다.
 
-## 5. Connected Workflow (Unified Field): Rhythm Alignment
-## 5. 이어지는 작업 흐름(통일장): 리듬의 조율
+## Connected Workflow (Unified Field): Rhythm Alignment
+## 이어지는 작업 흐름(통일장): 리듬의 조율
 
 All of the middle destinations above point toward the deeper destination: rhythm alignment.
 
@@ -367,8 +385,8 @@ The goal is not to avoid action/results (particles). The goal is to avoid turnin
 
 목표는 실행/결과(입자)를 피하는 것이 아닙니다. 전체 흐름(장/파동)을 너무 빨리 실행으로 바꾸지 않는 것입니다.
 
-## 6. Local Use (Embodiment): Runtime and Files
-## 6. 실제 사용(체화): 런타임과 파일 구조
+## Local Use (Embodiment): Runtime and Files
+## 실제 사용(체화): 런타임과 파일 구조
 
 `shion-ai` is the mind/runtime layer. It studies context recovery, rhythm-based regulation, memory consolidation, prediction, reflection, and autonomous tool execution.
 
@@ -394,8 +412,8 @@ Public scope: this repository contains experimental runtime code and sanitized r
 
 위 파일들은 시안의 핵심 런타임을 이룹니다. 데몬은 상태를 관찰하고, ARI 프리즘과 위상 관리자는 행동 전 맥락을 조율하며, 해마/웨이포인트/야간 통합 모듈은 경험을 저장하고 다시 연결합니다.
 
-## 7. How To Use This With Your Own AI
-## 7. 당신의 AI와 함께 사용하는 방법
+## How To Use This With Your Own AI
+## 당신의 AI와 함께 사용하는 방법
 
 This project was uploaded so other people can try the system inside their own AI workflow. You do not need to understand the entire philosophy first. The easiest entry point is to ask your current AI to read Shion as a possible runtime/harness layer.
 
