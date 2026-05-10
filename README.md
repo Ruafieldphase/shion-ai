@@ -14,6 +14,9 @@ No credentials required.
 Run:
 python examples/context_recovery_demo.py
 
+Expected output:
+A Context Recovery Note with Current Goal, Settled Decisions, Files Or Context To Inspect First, Unresolved Questions, What Not To Reopen Unless Evidence Changes, and Next Smallest Action.
+
 Then:
 1. Read the generated Context Recovery Note.
 2. Use it before asking your AI to edit, refactor, or automate.
@@ -27,6 +30,9 @@ API 키가 필요하지 않습니다.
 
 실행:
 python examples/context_recovery_demo.py
+
+예상 출력:
+Current Goal, Settled Decisions, Files Or Context To Inspect First, Unresolved Questions, What Not To Reopen Unless Evidence Changes, Next Smallest Action이 포함된 Context Recovery Note가 생성됩니다.
 
 그 다음:
 1. 생성된 Context Recovery Note를 읽습니다.
