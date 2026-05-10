@@ -3,12 +3,10 @@ from __future__ import annotations
 import os
 from pathlib import Path
 
-try:
-    from workspace_root import get_workspace_root
-except ImportError:
-    def get_workspace_root() -> Path:
-        env_root = os.getenv("SHION_ROOT") or os.getenv("AGI_WORKSPACE_ROOT")
-        return Path(env_root).expanduser().resolve() if env_root else Path(__file__).resolve().parents[1]
+
+def get_workspace_root() -> Path:
+    env_root = os.getenv("SHION_ROOT")
+    return Path(env_root).expanduser().resolve() if env_root else Path(__file__).resolve().parents[1]
 
 
 ENV_OVERRIDES = {
@@ -44,7 +42,7 @@ def _unquote(value: str) -> str:
 def load_path_config(config_path: Path | None = None) -> dict[str, str]:
     """Load the simple public paths.example.yaml format without third-party YAML."""
     root = get_workspace_root()
-    path = config_path or (root / "config" / "paths.example.yaml")
+    path = config_path or _default_config_path(root)
     values: dict[str, str] = {}
     in_paths = False
 
@@ -65,6 +63,13 @@ def load_path_config(config_path: Path | None = None) -> dict[str, str]:
         values[key.strip()] = _unquote(_strip_inline_comment(value))
 
     return values
+
+
+def _default_config_path(root: Path) -> Path:
+    local_path = root / "config" / "paths.local.yaml"
+    if local_path.exists():
+        return local_path
+    return root / "config" / "paths.example.yaml"
 
 
 def resolve_path(value: str, root: Path | None = None) -> Path | None:

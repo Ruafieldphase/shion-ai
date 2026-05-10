@@ -26,10 +26,16 @@ from typing import Dict, Any, Optional, List
 
 logger = logging.getLogger("SleepCycleIntegrator")
 
-# 경로 설정
-SHION_ROOT = Path(__file__).resolve().parents[1]
-OUTPUTS_DIR = SHION_ROOT / "outputs"
-AGI_ROOT = (SHION_ROOT / ".." / "workspace" / "agi").resolve()
+try:
+    from core.path_config import resolve_paths
+except ImportError:
+    from path_config import resolve_paths
+
+# 경로 설정: public path_config를 통해 로컬 경로 의존성을 밖으로 분리합니다.
+PATHS = resolve_paths()
+SHION_ROOT = PATHS.get("shion_root") or Path(__file__).resolve().parents[1]
+OUTPUTS_DIR = PATHS.get("outputs") or (SHION_ROOT / "outputs")
+AGI_ROOT = PATHS.get("agi_workspace_root") or (SHION_ROOT.parent / "agi").resolve()
 LEDGER_PATH = AGI_ROOT / "memory" / "resonance_ledger.jsonl"
 HIPPOCAMPAL_MAP_PATH = OUTPUTS_DIR / "hippocampal_vibe_map.json"
 SLEEP_LOG_PATH = OUTPUTS_DIR / "sleep_cycle_log.jsonl"

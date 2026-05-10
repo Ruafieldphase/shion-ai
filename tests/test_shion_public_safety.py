@@ -3,6 +3,7 @@ from __future__ import annotations
 import importlib.util
 import os
 from pathlib import Path
+import sys
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -88,3 +89,78 @@ def test_paths_example_loads_without_external_dependencies() -> None:
             os.environ["AGI_WORKSPACE_ROOT"] = previous_agi
 
     assert overridden["shion_root"] == (ROOT / "custom_shion").resolve()
+
+
+def test_path_config_keeps_shion_root_separate_from_agi_root() -> None:
+    resolver_path = ROOT / "core" / "path_config.py"
+    spec = importlib.util.spec_from_file_location("shion_path_config_env", resolver_path)
+    assert spec and spec.loader
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+
+    previous_shion = os.environ.get("SHION_ROOT")
+    previous_agi = os.environ.get("AGI_WORKSPACE_ROOT")
+    os.environ.pop("SHION_ROOT", None)
+    os.environ["AGI_WORKSPACE_ROOT"] = str(ROOT / "external_agi")
+    try:
+        assert module.get_workspace_root() == ROOT.resolve()
+    finally:
+        if previous_shion is not None:
+            os.environ["SHION_ROOT"] = previous_shion
+        else:
+            os.environ.pop("SHION_ROOT", None)
+        if previous_agi is not None:
+            os.environ["AGI_WORKSPACE_ROOT"] = previous_agi
+        else:
+            os.environ.pop("AGI_WORKSPACE_ROOT", None)
+
+
+def test_sleep_cycle_integrator_uses_path_config_for_outputs_and_ledger(tmp_path) -> None:
+    shion_root = tmp_path / "shion"
+    agi_root = tmp_path / "agi"
+    config_dir = shion_root / "config"
+    config_dir.mkdir(parents=True)
+    agi_root.mkdir()
+    (config_dir / "paths.example.yaml").write_text(
+        "\n".join(
+            [
+                "paths:",
+                '  shion_root: "."',
+                '  agi_workspace_root: "../agi"',
+                '  outputs: "outputs"',
+                '  memory: "memory"',
+                '  logs: "logs"',
+                '  credentials: "config/credentials"',
+                '  archive_workspace: ""',
+            ]
+        ),
+        encoding="utf-8",
+    )
+
+    previous_shion = os.environ.get("SHION_ROOT")
+    previous_agi = os.environ.get("AGI_WORKSPACE_ROOT")
+    os.environ["SHION_ROOT"] = str(shion_root)
+    os.environ["AGI_WORKSPACE_ROOT"] = str(agi_root)
+    sys.path.insert(0, str(ROOT))
+    try:
+        integrator_path = ROOT / "core" / "sleep_cycle_integrator.py"
+        spec = importlib.util.spec_from_file_location("sleep_cycle_integrator_paths", integrator_path)
+        assert spec and spec.loader
+        module = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(module)
+    finally:
+        if str(ROOT) in sys.path:
+            sys.path.remove(str(ROOT))
+        if previous_shion is not None:
+            os.environ["SHION_ROOT"] = previous_shion
+        else:
+            os.environ.pop("SHION_ROOT", None)
+        if previous_agi is not None:
+            os.environ["AGI_WORKSPACE_ROOT"] = previous_agi
+        else:
+            os.environ.pop("AGI_WORKSPACE_ROOT", None)
+
+    assert module.SHION_ROOT == shion_root.resolve()
+    assert module.OUTPUTS_DIR == (shion_root / "outputs").resolve()
+    assert module.AGI_ROOT == agi_root.resolve()
+    assert module.LEDGER_PATH == (agi_root / "memory" / "resonance_ledger.jsonl").resolve()
