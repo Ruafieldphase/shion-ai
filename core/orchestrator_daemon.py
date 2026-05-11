@@ -33,6 +33,7 @@ import traceback
 import asyncio
 from pathlib import Path
 from datetime import datetime, timedelta
+from typing import Optional
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
@@ -72,6 +73,8 @@ REFLEX_CHECK_INTERVAL = 5      # 쉬는 동안에도 짧게 장 변화를 감지
 REFLEX_WAKE_SALIENCE = 0.58    # 이 값 이상이면 예정 시간을 기다리지 않고 깨어납니다.
 REFLEX_CRITICAL_SALIENCE = 0.80
 SIDEBAND_LOG_PATH = Path(r"c:\workspace2\shion\outputs\resonance_sidebands.jsonl")
+EXPERIENCE_FEEDBACK_LOG_PATH = Path(r"c:\workspace2\shion\outputs\experience_feedback.jsonl")
+EXPERIENCE_FEEDBACK_STATE_PATH = Path(r"c:\workspace2\shion\outputs\experience_feedback_state.json")
 REFLEX_ACTIONS = {
     "ACTION_CRISIS_STABILIZE",
     "ACTION_PRE_BREACH_TUNE",
@@ -418,6 +421,150 @@ def register_context_unpacking_experience(hippo, analysis: dict):
     candidate_id = top_candidate.get("id", "NO_CANDIDATE")
     content_ref = f"context_unpack:{boundary_type}:{candidate_id}"
     hippo.register_experience(vibe, content_ref=content_ref)
+
+
+def _transition_phase(transition: str) -> str:
+    if transition in {"resonance_to_explore", "creative_autonomy", "waypoint_bridge", "axiom_experiment"}:
+        return "EXPANSION"
+    if transition in {"boundary_to_unpack", "pre_breach_tune", "contingency_lock", "velocity_dilation"}:
+        return "CONTRACTION"
+    if transition in {"experience_digest", "daydream_integrate", "phase_cancel_to_silence", "axiom_release"}:
+        return "VOID"
+    return "FLOW"
+
+
+def build_experience_feedback_candidate(rhythm_frame: dict, action: str, analysis: dict) -> Optional[dict]:
+    """
+    Convert field contact into a tiny experience particle when the runtime is
+    otherwise only observing. This closes field communication into feedback
+    without forcing a heavy scan.
+    """
+    natural = rhythm_frame.get("natural_rhythm_tuning", {})
+    problem = natural.get("problem_origin", {}) if isinstance(natural.get("problem_origin"), dict) else {}
+    mistake = natural.get("mistake_digestion", {}) if isinstance(natural.get("mistake_digestion"), dict) else {}
+    dark_field = rhythm_frame.get("dark_field", {})
+    prediction = rhythm_frame.get("waves", {}).get("prediction", {})
+    field_communication = analysis.get("field_communication") or analysis.get("memory_retrieval") or {}
+    resonance_unpacking = analysis.get("resonance_unpacking") or {}
+
+    learning_signal = _field_float(mistake.get("learning_signal"))
+    problem_seed = _field_float(problem.get("problem_seed"))
+    threshold_risk = _field_float(mistake.get("threshold_risk"))
+    dissonance = _field_float(prediction.get("dissonance"))
+    boundary_contact = _field_float(dark_field.get("boundary_contact"))
+    field_contact = bool(field_communication.get("found") or resonance_unpacking.get("unpacked"))
+    feedback_signal = max(learning_signal, problem_seed, dissonance, boundary_contact)
+
+    feedback_actions = {
+        "ACTION_OBSERVE",
+        "ACTION_PRE_BREACH_TUNE",
+        "ACTION_AXIOM_RELEASE",
+        "ACTION_EXPERIENCE_DIGEST",
+    }
+    if action not in feedback_actions:
+        return None
+    if threshold_risk >= 0.72:
+        return None
+    if not field_contact and feedback_signal < 0.34:
+        return None
+
+    transition = rhythm_frame.get("transition", "mixed_hold")
+    phase = _transition_phase(transition)
+    entropy = min(1.0, max(0.05, 0.35 * feedback_signal + 0.25 * problem_seed + 0.20 * dissonance + 0.20 * boundary_contact))
+    intensity = max(feedback_signal, _field_float(dark_field.get("gravity")))
+    self_closure = _field_float(mistake.get("self_closure_overcontrol", mistake.get("overcontrol_boundary_density")))
+    resonant_refinement = _field_float(mistake.get("resonant_refinement"))
+
+    signature = "|".join(
+        [
+            action,
+            transition,
+            mistake.get("phase", "unknown"),
+            problem.get("phase", "unknown"),
+            str(field_communication.get("similar_id")),
+        ]
+    )
+    field_distribution_delta = {
+        "problem_seed": round(problem_seed, 6),
+        "learning_signal": round(learning_signal, 6),
+        "self_closure_overcontrol": round(self_closure, 6),
+        "resonant_refinement": round(resonant_refinement, 6),
+        "dissonance": round(dissonance, 6),
+        "boundary_contact": round(boundary_contact, 6),
+    }
+    next_contact_condition_delta = {
+        "field_contact": field_contact,
+        "lower_repetition_blindness": round(min(0.35, feedback_signal * 0.35), 6),
+        "raise_context_sensitivity": round(min(0.45, (problem_seed + learning_signal) * 0.25), 6),
+        "keep_threshold_pause": threshold_risk >= 0.55,
+    }
+    return {
+        "vibe": {
+            "entropy": round(entropy, 4),
+            "phase": phase,
+            "intensity": round(intensity, 4),
+            "source": "experience_feedback",
+            "transition": transition,
+            "mistake_phase": mistake.get("phase", "unknown"),
+            "field_contact": field_contact,
+        },
+        "content_ref": f"experience_feedback:{transition}:{mistake.get('phase', 'unknown')}",
+        "signature": signature,
+        "field_distribution_delta": field_distribution_delta,
+        "next_contact_condition_delta": next_contact_condition_delta,
+    }
+
+
+def maybe_register_experience_feedback(logger, hippo, rhythm_frame: dict, action: str, analysis: dict, *, min_interval_seconds: int = 900) -> Optional[dict]:
+    candidate = build_experience_feedback_candidate(rhythm_frame, action, analysis)
+    if not candidate:
+        return None
+
+    now = datetime.now()
+    state = {}
+    if EXPERIENCE_FEEDBACK_STATE_PATH.exists():
+        try:
+            state = json.loads(EXPERIENCE_FEEDBACK_STATE_PATH.read_text(encoding="utf-8"))
+        except Exception:
+            state = {}
+    last_signature = state.get("last_signature")
+    last_at = state.get("last_at")
+    if last_signature == candidate["signature"] and last_at:
+        try:
+            elapsed = (now - datetime.fromisoformat(last_at)).total_seconds()
+            if elapsed < min_interval_seconds:
+                logger.info("   🧫 [EXPERIENCE_FEEDBACK] 같은 장 흔적 대기 중: elapsed=%d초", int(elapsed))
+                return None
+        except ValueError:
+            pass
+
+    result = hippo.register_experience(candidate["vibe"], content_ref=candidate["content_ref"])
+    entry = {
+        "timestamp": now.isoformat(),
+        "action": action,
+        "content_ref": candidate["content_ref"],
+        "signature": candidate["signature"],
+        "field_distribution_delta": candidate["field_distribution_delta"],
+        "next_contact_condition_delta": candidate["next_contact_condition_delta"],
+        "hippocampus": {
+            "converged": result.get("converged"),
+            "total_registered": result.get("total_registered"),
+            "total_absorbed": result.get("total_absorbed"),
+        },
+        "principle": "field_contact_becomes_small_experience_feedback_before_more_scanning",
+    }
+    append_jsonl(EXPERIENCE_FEEDBACK_LOG_PATH, entry)
+    EXPERIENCE_FEEDBACK_STATE_PATH.write_text(
+        json.dumps({"last_at": now.isoformat(), "last_signature": candidate["signature"]}, ensure_ascii=False, indent=2),
+        encoding="utf-8",
+    )
+    logger.info(
+        "   🧫 [EXPERIENCE_FEEDBACK] 작은 경험 등록: %s entropy=%.2f phase=%s",
+        candidate["content_ref"],
+        candidate["vibe"]["entropy"],
+        candidate["vibe"]["phase"],
+    )
+    return entry
 
 
 def run_sleep_micro_cycles(logger, hippo, rhythm_frame: dict, *, label: str) -> list[dict]:
@@ -1094,9 +1241,25 @@ def main():
             registered_delta = int(proton.get("total_registered", 0) or 0) - int(before_proton.get("total_registered", 0) or 0)
             absorbed_delta = int(proton.get("total_absorbed", 0) or 0) - int(before_proton.get("total_absorbed", 0) or 0)
             converged_delta = int(proton.get("total_converged", 0) or 0) - int(before_proton.get("total_converged", 0) or 0)
+            if registered_delta == 0:
+                feedback_entry = maybe_register_experience_feedback(
+                    logger,
+                    hippo,
+                    rhythm_frame,
+                    action,
+                    mock_hypo_analysis,
+                )
+                if feedback_entry:
+                    hippo = FibonacciOrbitalHippocampus(HIPPO_PATH)
+                    proton = hippo.data.get("proton", {})
+                    registered_delta = int(proton.get("total_registered", 0) or 0) - int(before_proton.get("total_registered", 0) or 0)
+                    absorbed_delta = int(proton.get("total_absorbed", 0) or 0) - int(before_proton.get("total_absorbed", 0) or 0)
+                    converged_delta = int(proton.get("total_converged", 0) or 0) - int(before_proton.get("total_converged", 0) or 0)
             digestion_note = (
                 "체화 증가"
                 if absorbed_delta > 0
+                else "작은 경험 피드백 등록"
+                if registered_delta > 0
                 else "체화 대기: 내각 수렴/결정화 조건 미도달"
             )
             

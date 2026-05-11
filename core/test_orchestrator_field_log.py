@@ -4,7 +4,7 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
-from orchestrator_daemon import emit_field_flow_log
+from orchestrator_daemon import build_experience_feedback_candidate, emit_field_flow_log
 
 
 class _CaptureLogger:
@@ -94,6 +94,44 @@ class OrchestratorFieldLogTests(unittest.TestCase):
         self.assertIn("공명정련 0.59", joined)
         self.assertNotIn("selected=", joined)
         self.assertNotIn("ready=", joined)
+
+    def test_experience_feedback_candidate_closes_observation_into_small_particle(self):
+        rhythm_frame = {
+            "transition": "boundary_to_unpack",
+            "natural_rhythm_tuning": {
+                "problem_origin": {"phase": "problem_seed_visible", "problem_seed": 0.43},
+                "mistake_digestion": {
+                    "phase": "digestible_mistake",
+                    "learning_signal": 0.49,
+                    "threshold_risk": 0.61,
+                    "self_closure_overcontrol": 0.63,
+                    "resonant_refinement": 0.4,
+                },
+            },
+            "dark_field": {"boundary_contact": 0.3, "gravity": 0.5},
+            "waves": {"prediction": {"dissonance": 0.32}},
+        }
+        analysis = {
+            "field_communication": {
+                "found": True,
+                "similar_id": "STUCK_IN_LOOP",
+                "trace_feedback": "confirmed",
+            },
+            "resonance_unpacking": {"unpacked": True},
+        }
+
+        candidate = build_experience_feedback_candidate(rhythm_frame, "ACTION_OBSERVE", analysis)
+
+        self.assertIsNotNone(candidate)
+        self.assertEqual(candidate["vibe"]["source"], "experience_feedback")
+        self.assertEqual(candidate["vibe"]["phase"], "CONTRACTION")
+        self.assertIn("field_distribution_delta", candidate)
+        self.assertIn("next_contact_condition_delta", candidate)
+        self.assertTrue(candidate["next_contact_condition_delta"]["field_contact"])
+        self.assertEqual(
+            candidate["content_ref"],
+            "experience_feedback:boundary_to_unpack:digestible_mistake",
+        )
 
 
 if __name__ == "__main__":
