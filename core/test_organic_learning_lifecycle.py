@@ -104,6 +104,45 @@ class OrganicLearningLifecycleTests(unittest.TestCase):
             self.assertEqual(trace["node_state"], "pending")
             self.assertEqual(trace["next_condition"], "wait_for_zone2_or_dream_replay")
 
+    def test_record_cycle_tracks_unconscious_selection_then_conscious_story(self):
+        with tempfile.TemporaryDirectory() as td:
+            root = Path(td)
+            trace = OrganicLearningLifecycle(root).record_cycle(
+                action="ACTION_OBSERVE",
+                rhythm_frame=self._rhythm_frame(convergence_pressure=0.82),
+                node_decision={
+                    "selected_action": "ACTION_OBSERVE",
+                    "activation_probability": 0.72,
+                    "singularity_crossed": True,
+                    "bundle": [
+                        {"action": "ACTION_OBSERVE"},
+                        {"action": "ACTION_CONTEXT_UNPACK"},
+                        {"action": "ACTION_REST_RECOVER"},
+                    ],
+                },
+                ari_state={
+                    "phase": "nature_aligned_resonance",
+                    "moc": {"beauty_measure": 0.64},
+                },
+                before_state={"total_experiences": 6},
+                after_state={"total_experiences": 7},
+                hippo_data=self._hippo(absorbed=True, convergence_count=4),
+                learning_state={},
+                current_vector={},
+                field_prediction={"prediction_error": 0.04},
+            )
+
+            cycle = trace["unconscious_selection_cycle"]
+            self.assertEqual(
+                cycle["axiom"],
+                "life_particleizes_unconscious_selection_then_consciousness_narrates_and_experience_expands_rhythm",
+            )
+            self.assertEqual(cycle["particle_action"], "ACTION_OBSERVE")
+            self.assertGreater(cycle["unconscious_selection_strength"], 0.4)
+            self.assertGreater(cycle["particleization"], 0.55)
+            self.assertGreater(cycle["conscious_story"], 0.45)
+            self.assertEqual(cycle["phase"], "rhythm_expanding")
+
     def _rhythm_frame(
         self,
         *,
@@ -114,17 +153,31 @@ class OrganicLearningLifecycleTests(unittest.TestCase):
         return {
             "waves": {
                 "field": {"salience": 0.38},
+                "prediction": {"dissonance": 0.08},
                 "digestion": {"pressure": digestion_pressure, "dream_pressure": 0.42},
                 "dark_neuron": {
                     "phase": dark_phase,
                     "redarkening_pressure": 0.74 if dark_phase == "re_darkening" else 0.18,
                     "bridge_readiness": 0.52,
                 },
-                "memory": {"convergence_pressure": convergence_pressure},
+                "memory": {"convergence_pressure": convergence_pressure, "resonance": 0.66},
                 "goal_field": {"bridge_gain": 0.46},
                 "axiom": {"unfinished_puzzle_potential": 0.2},
             },
-            "perspective_frame": {"dominant_frame": "metacognitive_refraction"},
+            "dark_field": {
+                "boundary_transparency": 0.42,
+                "internal_reflection": 0.36,
+                "context_diagnosis": {"frequency_expansion": 0.74},
+            },
+            "zone2": {"openness": 0.68},
+            "medium": {"viscosity": 0.22},
+            "action_amplitude": 0.48,
+            "candidate_action": "ACTION_OBSERVE",
+            "perspective_frame": {
+                "dominant_frame": "metacognitive_refraction",
+                "wave_frame": 0.64,
+                "metacognitive_refraction": 0.72,
+            },
         }
 
     def _hippo(self, *, absorbed: bool, convergence_count: int) -> dict:

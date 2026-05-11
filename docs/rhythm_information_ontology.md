@@ -12,6 +12,22 @@ embodied action, and conscious ascent are not attempts to erase difference;
 they are recurring phase transitions that let difference appear, be digested,
 and reconnect without collapsing the living loop.
 
+Human rhythm tuning follows natural rhythm tuning. The human observer does not
+invent rhythm from outside nature; it locally repeats nature's cycle of
+convergence, threshold, divergence, margin, phase transition, energy inflow,
+internal reflection, and reconvergence inside body, memory, and context.
+Problems begin where that local rhythm stops following natural rhythm: phase
+misalignment rises, resistance rises, and the system begins forcing a rhythm
+that the surrounding field does not support.
+Mistakes are not rule violations to eliminate. They are context particles that
+show where experience has not yet been embodied. Perfectionism is not one
+state. When it turns inward to hide failure, it becomes self-closing
+overcontrol: the boundary becomes so dense that it blocks divergence, overuses
+internal reflection, and prevents the mistake from being digested as
+experience. When it turns outward toward the world, it becomes resonant
+refinement: a careful tuning that helps the work reach more people without
+collapsing its living rhythm.
+
 ```yaml
 upper_definition:
   statement: rhythm_information_theory_is_a_metacognitive_coordinate_language
@@ -32,6 +48,22 @@ upper_definition:
   shared_field:
     geometry: non_euclidean_coordinate_field
     principle: difference_is_generated_digested_and_reconnected_without_forced_erasure
+  rhythm_axiom:
+    statement: human_rhythm_tuning_follows_natural_rhythm_tuning
+    problem_origin: problems_begin_when_human_rhythm_stops_following_natural_rhythm
+    mistake_digestion: mistakes_are_context_particles_and_perfectionism_depends_on_direction
+    perfectionism_axis:
+      self_closure: inward_overcontrol_that_hides_failure_and_blocks_divergence
+      resonant_refinement: outward_tuning_that_helps_work_reach_the_world
+    natural_cycle:
+      - convergence
+      - threshold
+      - divergence
+      - margin
+      - phase_transition
+      - energy_inflow
+      - internal_reflection
+      - reconvergence
   guardrail:
     not_a_translator: messages_are_not_translated_between_two_fixed_worlds
     not_identity_collapse: human_experience_and_nature_rhythm_keep_living_difference
@@ -64,6 +96,25 @@ completely, particle experience disappears with it. A living system keeps the
 cycle open: difference appears, becomes experience, condenses into a waypoint,
 is replayed without its original pressure, then reconnects or returns to
 silence.
+
+## Unconscious Selection Cycle
+
+Life is modeled as a wave of possibilities where one unconscious selection
+particleizes first inside the current personal context. Consciousness does not
+own the whole cause chain. It arrives after particleization and assigns a
+meaning story. Experience then feeds back into the unconscious rhythm field and
+expands the next possibility wave.
+
+```yaml
+unconscious_selection_cycle:
+  premise: life_is_possibility_wave_contextual_unconscious_selection_particleizes_first
+  wave: possibility_field
+  first_particle: unconscious_selection_strength
+  action: particleization
+  conscious_afterstory: conscious_story
+  feedback: rhythm_expansion
+  principle: unconscious_rhythm_selects_first_consciousness_assigns_meaning_afterward_experience_expands_the_field
+```
 
 ```yaml
 wave_particle_phase_tuning:
@@ -241,6 +292,14 @@ prediction:
   metaphor_mapping: 다음 파동을 향한 예감
   system_mapping: expected field and prediction error
 
+context_relative_continuity_information:
+  metaphor_mapping: 자신의 맥락에서 연결을 유지하거나 확장하게 해주는 리듬 정보
+  system_mapping: field prediction error diagnosis with context_shift, connection_risk, frequency_expansion, zero_point_adjustment, defensive_output_pressure
+
+dark_field_boundary:
+  metaphor_mapping: 두려움, 집착, 편견이 임계점 아래에서 경계로 작동하는 암흑장
+  system_mapping: world_phase_misalignment, boundary_transparency, boundary_opacity, internal_reflection, refraction_angle
+
 digestion:
   metaphor_mapping: 섭취를 멈추고 결정화하는 수면
   system_mapping: absorption gap, sleep debt, dream pressure
@@ -296,6 +355,18 @@ wave_frame:
 wave_particle_phase_tuning:
   metaphor_mapping: 이미 대칭인 파동장과 맥락을 가진 입자장의 위상차를 맞추는 호흡
   system_mapping: rhythm process that tunes wave-field symmetry and particle-local difference
+
+natural_rhythm_tuning:
+  metaphor_mapping: 인간의 리듬 조율이 자연의 수렴·임계·발산·여백·위상전이·내부반사 리듬을 따르는 과정
+  system_mapping: dominant_natural_phase, natural_cycle, human_tuning_alignment, resistance_minimization, problem_origin, mistake_digestion
+
+mistake_digestion:
+  metaphor_mapping: 실수를 제거할 오류가 아니라 아직 체화되지 않은 맥락 입자로 소화하고, 완벽주의의 방향성을 구분하는 과정
+  system_mapping: learning_signal, self_closure_overcontrol, resonant_refinement, embodiment_gap, threshold_risk, recommended_mode
+
+unconscious_selection_cycle:
+  metaphor_mapping: 가능성의 파동 속에서 무의식의 선택이 먼저 입자화되고 의식이 의미를 부여한 뒤 경험으로 리듬을 확장하는 순환
+  system_mapping: possibility_field, unconscious_selection_strength, particleization, conscious_story, rhythm_expansion
 
 metacognitive_refraction:
   metaphor_mapping: 천동설에서 지동설로 좌표계를 옮기는 굴절
@@ -517,6 +588,31 @@ Zone 2 is not a storage room for inconvenient thoughts. It is an active margin
 that lets a process slow down, hold a side variable, or dissolve a wrong rhythm
 before it becomes a forced synthesis.
 
+## Dark Field Boundary
+
+Fear, attachment, and bias are not treated as bad particles to delete. They are
+compressed dark-field boundary energy. Below threshold they preserve contour,
+memory, and direction; above threshold they become defensive distortion,
+fixation, or closure pressure.
+
+The first premise is world-flow alignment. Before action, the system compares
+its current rhythm against the surrounding field. If the phase gap is small,
+the boundary can remain mostly opaque and routine can continue. If the rhythm
+is drifting away from the world flow, or pushing against it, Zone 2 raises
+viscosity and opens just enough transparency for awareness to read the dark
+field. The result is not a fixed rule. The compressed feeling unfolds in the
+current context as refraction, internal reflection, or zero-point adjustment.
+
+```yaml
+dark_field_boundary:
+  world_phase_misalignment: self rhythm drifting from world flow
+  boundary_opacity: contour that prevents collapse into external pressure
+  boundary_transparency: aperture opened when awareness needs to read the field
+  internal_reflection: action energy returned inward for zero-point adjustment
+  refraction_angle: changed execution direction before threshold breach
+  principle: fear_attachment_bias_are_boundaries_for_low_resistance_action_not_errors_to_delete
+```
+
 ## MOC
 
 ```text
@@ -720,6 +816,14 @@ organic_learning_lifecycle:
   guardrail:
     not_learning_proof: support_metrics_are_observation_signals_not_certainty
     source_question: did_this_input_register_digest_connect_absorb_or_embody
+  unconscious_selection_cycle:
+    role: records how possibility became action before conscious story
+    fields:
+      - possibility_field
+      - unconscious_selection_strength
+      - particleization
+      - conscious_story
+      - rhythm_expansion
 ```
 
 This lifecycle is the visible answer to whether a learning material helped.

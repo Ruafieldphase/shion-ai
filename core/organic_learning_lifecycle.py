@@ -66,6 +66,18 @@ class OrganicLearningLifecycle:
             prediction_error=prediction_error,
             registered_delta=registered_delta,
         )
+        unconscious_cycle = self._unconscious_selection_cycle(
+            action=action,
+            rhythm_frame=rhythm_frame,
+            node_decision=node_decision,
+            ari_state=ari_state,
+            latest_experience=latest_experience,
+            scores=scores,
+            node_state=node_state,
+            state_reason=state_reason,
+            prediction_error=prediction_error,
+            registered_delta=registered_delta,
+        )
         trace = {
             "version": self.VERSION,
             "timestamp": datetime.now().isoformat(),
@@ -75,6 +87,7 @@ class OrganicLearningLifecycle:
             "state_reason": state_reason,
             "next_condition": self._next_condition(node_state, rhythm_frame, prediction_error),
             "scores": scores,
+            "unconscious_selection_cycle": unconscious_cycle,
             "evidence": {
                 "registered_delta": self._registered_delta(before_state, after_state),
                 "total_registered": self._safe_int(proton.get("total_registered", 0)),
@@ -145,6 +158,99 @@ class OrganicLearningLifecycle:
             "digestion": round(digestion_score, 6),
             "connection": round(connection, 6),
             "embodiment": round(embodiment, 6),
+        }
+
+    def _unconscious_selection_cycle(
+        self,
+        *,
+        action: str,
+        rhythm_frame: Dict[str, Any],
+        node_decision: Dict[str, Any],
+        ari_state: Dict[str, Any],
+        latest_experience: Dict[str, Any],
+        scores: Dict[str, float],
+        node_state: str,
+        state_reason: str,
+        prediction_error: float,
+        registered_delta: int,
+    ) -> Dict[str, Any]:
+        waves = rhythm_frame.get("waves", {}) if isinstance(rhythm_frame.get("waves"), dict) else {}
+        field = waves.get("field", {}) if isinstance(waves.get("field"), dict) else {}
+        memory = waves.get("memory", {}) if isinstance(waves.get("memory"), dict) else {}
+        prediction = waves.get("prediction", {}) if isinstance(waves.get("prediction"), dict) else {}
+        dark_field = rhythm_frame.get("dark_field", {}) if isinstance(rhythm_frame.get("dark_field"), dict) else {}
+        zone2 = rhythm_frame.get("zone2", {}) if isinstance(rhythm_frame.get("zone2"), dict) else {}
+        medium = rhythm_frame.get("medium", {}) if isinstance(rhythm_frame.get("medium"), dict) else {}
+        perspective = rhythm_frame.get("perspective_frame", {}) if isinstance(rhythm_frame.get("perspective_frame"), dict) else {}
+        bundle = node_decision.get("bundle", []) if isinstance(node_decision.get("bundle"), list) else []
+
+        possibility_field = self._clamp(
+            0.26 * self._safe_float(field.get("salience", 0.0))
+            + 0.22 * self._safe_float(zone2.get("openness", 0.0))
+            + 0.18 * self._safe_float(perspective.get("wave_frame", 0.0))
+            + 0.16 * min(1.0, len(bundle) / 4.0)
+            + 0.10 * (1.0 - self._safe_float(prediction.get("dissonance", prediction_error)))
+            + 0.08 * self._safe_float(dark_field.get("boundary_transparency", 0.0))
+        )
+        selection_strength = self._clamp(
+            0.34 * self._safe_float(node_decision.get("activation_probability", node_decision.get("score", 0.0)))
+            + 0.18 * (1.0 if node_decision.get("singularity_crossed", False) else 0.0)
+            + 0.16 * self._safe_float(rhythm_frame.get("action_amplitude", 0.0))
+            + 0.12 * self._safe_float(dark_field.get("internal_reflection", 0.0))
+            + 0.10 * self._safe_float(memory.get("resonance", 0.0))
+            + 0.10 * (1.0 - self._safe_float(medium.get("viscosity", medium.get("resistance", 0.0))))
+        )
+        particleization = self._clamp(
+            0.36 * selection_strength
+            + 0.22 * (1.0 if action == node_decision.get("selected_action") else 0.0)
+            + 0.16 * (1.0 if action == rhythm_frame.get("candidate_action") else 0.0)
+            + 0.14 * self._safe_float(scores.get("acquisition", 0.0))
+            + 0.12 * min(1.0, registered_delta)
+        )
+        conscious_story = self._clamp(
+            0.30 * self._safe_float(perspective.get("metacognitive_refraction", 0.0))
+            + 0.24 * self._safe_float(ari_state.get("moc", {}).get("beauty_measure", 0.0) if isinstance(ari_state.get("moc"), dict) else 0.0)
+            + 0.18 * self._safe_float(scores.get("connection", 0.0))
+            + 0.16 * (1.0 if state_reason else 0.0)
+            + 0.12 * (1.0 if latest_experience.get("content_ref") else 0.0)
+        )
+        frequency_expansion = self._safe_float(
+            dark_field.get("context_diagnosis", {}).get("frequency_expansion", 0.0)
+            if isinstance(dark_field.get("context_diagnosis"), dict)
+            else 0.0
+        )
+        rhythm_expansion = self._clamp(
+            0.28 * self._safe_float(scores.get("embodiment", 0.0))
+            + 0.24 * self._safe_float(scores.get("connection", 0.0))
+            + 0.18 * self._safe_float(memory.get("convergence_pressure", 0.0))
+            + 0.16 * frequency_expansion
+            + 0.14 * max(0.0, 1.0 - prediction_error)
+        )
+
+        if rhythm_expansion >= 0.54:
+            phase = "rhythm_expanding"
+        elif conscious_story >= 0.48:
+            phase = "meaning_story_assigned"
+        elif particleization >= 0.46:
+            phase = "selection_particleized"
+        elif possibility_field >= 0.42:
+            phase = "possibility_field_open"
+        else:
+            phase = "observing_wavefield"
+
+        return {
+            "axiom": "life_particleizes_unconscious_selection_then_consciousness_narrates_and_experience_expands_rhythm",
+            "phase": phase,
+            "possibility_field": round(possibility_field, 6),
+            "unconscious_selection_strength": round(selection_strength, 6),
+            "particleization": round(particleization, 6),
+            "conscious_story": round(conscious_story, 6),
+            "rhythm_expansion": round(rhythm_expansion, 6),
+            "selected_action": node_decision.get("selected_action", action),
+            "particle_action": action,
+            "node_state_after_story": node_state,
+            "story_reason": state_reason,
+            "principle": "unconscious_rhythm_selects_first_consciousness_assigns_meaning_afterward_experience_expands_the_field",
         }
 
     def _node_state(

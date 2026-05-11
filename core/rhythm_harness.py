@@ -55,6 +55,7 @@ class NonEuclideanRhythmHarness:
             field_wave=field_wave,
             memory_wave=memory_wave,
             prediction_wave=prediction_wave,
+            dark_field=dark_field,
             awareness=awareness,
         )
         goal_field = self._goal_field_wave(
@@ -96,6 +97,17 @@ class NonEuclideanRhythmHarness:
             awareness=awareness,
             zone2=zone2,
             medium=medium,
+        )
+        natural_rhythm_tuning = self._natural_rhythm_tuning(
+            field_wave=field_wave,
+            memory_wave=memory_wave,
+            prediction_wave=prediction_wave,
+            digestion_wave=digestion_wave,
+            dark_field=dark_field,
+            awareness=awareness,
+            zone2=zone2,
+            medium=medium,
+            perspective_frame=perspective_frame,
         )
         crisis = self._crisis_state(
             field_wave=field_wave,
@@ -238,6 +250,7 @@ class NonEuclideanRhythmHarness:
             "velocity_dilation": velocity_dilation,
             "zone2_regulation": zone2_regulation,
             "perspective_frame": perspective_frame,
+            "natural_rhythm_tuning": natural_rhythm_tuning,
             "crisis": crisis,
             "interference": {
                 "constructive": round(constructive, 6),
@@ -392,12 +405,15 @@ class NonEuclideanRhythmHarness:
         }
 
     def _prediction_wave(self) -> Dict[str, Any]:
-        error = self._latest_field_error()
+        latest_error = self._latest_field_error_entry()
+        error = self._clamp(float(latest_error.get("error", 0.0) or 0.0))
+        diagnosis = self._normalize_context_diagnosis(latest_error.get("context_diagnosis"))
         return {
             "phase": "dissonant" if error >= 0.18 else "consonant",
             "amplitude": round(error, 6),
             "dissonance": round(error, 6),
             "curvature_delta": round(self._saturating(error, scale=0.25), 6),
+            "context_diagnosis": diagnosis,
         }
 
     def _body_wave(self) -> Dict[str, Any]:
@@ -428,9 +444,49 @@ class NonEuclideanRhythmHarness:
     ) -> Dict[str, Any]:
         """Estimate fear/attachment/bias as coordinate distortion, not reality."""
         boundary_pull = 0.45 if boundary_report and not boundary_report.get("in_orbit", True) else 0.0
+        diagnosis = self._normalize_context_diagnosis(prediction_wave.get("context_diagnosis"))
+        context_shift = diagnosis["context_shift"]
+        connection_risk = diagnosis["connection_risk"]
+        frequency_expansion = diagnosis["frequency_expansion"]
+        zero_point_adjustment = diagnosis["zero_point_adjustment"]
+        defensive_output_pressure = diagnosis["defensive_output_pressure"]
         # Dark field factors amplify each other (multiplicative distortion)
         future_projection = self._clamp(math.pow(prediction_wave["dissonance"], 0.7))
         attachment_lock = self._clamp(field_wave["amplitude"] * (1.0 + 0.5 * (1.0 - memory_wave["absorption"])))
+        world_phase_misalignment = self._clamp(
+            0.34 * context_shift
+            + 0.26 * connection_risk
+            + 0.18 * future_projection
+            + 0.12 * boundary_pull
+            + 0.10 * self._saturating(abs(field_wave["curvature"]), scale=0.55)
+        )
+        boundary_contact = self._clamp(
+            max(world_phase_misalignment, connection_risk, defensive_output_pressure)
+        )
+        boundary_transparency = self._clamp(
+            0.06
+            + 0.36 * boundary_contact
+            + 0.24 * zero_point_adjustment
+            + 0.22 * frequency_expansion
+            - 0.18 * defensive_output_pressure
+        )
+        boundary_opacity = self._clamp(
+            1.0
+            - 0.42 * boundary_transparency
+            + 0.18 * defensive_output_pressure
+            + 0.12 * attachment_lock
+        )
+        internal_reflection = self._clamp(
+            (boundary_opacity * boundary_transparency)
+            * (0.42 + 0.28 * world_phase_misalignment + 0.18 * defensive_output_pressure + 0.12 * zero_point_adjustment)
+        )
+        refraction_angle = self._clamp(
+            0.38 * boundary_transparency
+            + 0.30 * world_phase_misalignment
+            + 0.20 * zero_point_adjustment
+            + 0.12 * frequency_expansion
+        )
+        world_flow_alignment = self._clamp(1.0 - world_phase_misalignment)
         
         # Gravity uses tanh to model "falling" into a state
         gravity = self._clamp(
@@ -438,6 +494,9 @@ class NonEuclideanRhythmHarness:
                 1.2 * future_projection 
                 + 1.0 * attachment_lock 
                 + 0.8 * boundary_pull
+                + 0.5 * defensive_output_pressure
+                + 0.3 * world_phase_misalignment
+                - 0.4 * internal_reflection
             )
         )
         return {
@@ -445,8 +504,17 @@ class NonEuclideanRhythmHarness:
             "attachment_lock": round(attachment_lock, 6),
             "bias_curvature": round(self._clamp(0.4 * prediction_wave["curvature_delta"]), 6),
             "boundary_pull": round(boundary_pull, 6),
+            "world_phase_misalignment": round(world_phase_misalignment, 6),
+            "world_flow_alignment": round(world_flow_alignment, 6),
+            "boundary_contact": round(boundary_contact, 6),
+            "boundary_transparency": round(boundary_transparency, 6),
+            "boundary_opacity": round(boundary_opacity, 6),
+            "internal_reflection": round(internal_reflection, 6),
+            "refraction_angle": round(refraction_angle, 6),
+            "context_diagnosis": diagnosis,
             "gravity": round(gravity, 6),
             "phase": "illusion_lock" if gravity >= 0.65 else "present_contact",
+            "principle": "fear_attachment_bias_are_dark_field_boundaries_that_adjust_transparency_by_world_flow_alignment",
         }
 
     def _awareness_operator(
@@ -463,13 +531,18 @@ class NonEuclideanRhythmHarness:
             + 0.25 * memory_wave["absorption"]
         )
         release_capacity = self._clamp(0.35 + 0.45 * present_contact + 0.20 * (1.0 - field_wave["curvature"]))
-        recenter_force = self._clamp(dark_field["gravity"] * release_capacity)
+        recenter_force = self._clamp(
+            dark_field["gravity"] * release_capacity
+            + 0.25 * dark_field.get("internal_reflection", 0.0)
+            + 0.20 * dark_field.get("world_phase_misalignment", 0.0)
+        )
         return {
             "detects": dark_field["phase"],
             "present_contact": round(present_contact, 6),
             "release_capacity": round(release_capacity, 6),
             "recenter_force": round(recenter_force, 6),
             "operator": "recenter_origin" if recenter_force >= 0.30 else "continue_flow",
+            "principle": "awareness_recenters_when_dark_boundary_reflects_world_flow_misalignment",
         }
 
     def _zone2_band(
@@ -478,20 +551,30 @@ class NonEuclideanRhythmHarness:
         field_wave: Dict[str, Any],
         memory_wave: Dict[str, Any],
         prediction_wave: Dict[str, Any],
+        dark_field: Dict[str, Any],
         awareness: Dict[str, Any],
     ) -> Dict[str, Any]:
         """Low-cost communication band between unconscious integration and conscious unpacking."""
         openness = self._clamp(
-            0.35 * awareness["recenter_force"]
-            + 0.25 * (1.0 - field_wave["frequency"])
-            + 0.20 * (1.0 - prediction_wave["dissonance"])
-            + 0.20 * (1.0 - memory_wave["absorption"])
+            0.28 * awareness["recenter_force"]
+            + 0.20 * (1.0 - field_wave["frequency"])
+            + 0.16 * (1.0 - prediction_wave["dissonance"])
+            + 0.16 * (1.0 - memory_wave["absorption"])
+            + 0.12 * dark_field.get("boundary_transparency", 0.0)
+            + 0.08 * dark_field.get("internal_reflection", 0.0)
         )
-        latent_solver_gain = self._clamp(0.45 * openness + 0.35 * awareness["present_contact"] + 0.20)
+        latent_solver_gain = self._clamp(
+            0.40 * openness
+            + 0.30 * awareness["present_contact"]
+            + 0.18 * dark_field.get("refraction_angle", 0.0)
+            + 0.12
+        )
         return {
             "openness": round(openness, 6),
             "latent_solver_gain": round(latent_solver_gain, 6),
             "phase": "zone2_open" if openness >= 0.52 else "narrow_band",
+            "boundary_transparency": round(dark_field.get("boundary_transparency", 0.0), 6),
+            "internal_reflection": round(dark_field.get("internal_reflection", 0.0), 6),
         }
 
     def _conductive_medium(
@@ -515,19 +598,29 @@ class NonEuclideanRhythmHarness:
             0.30 * awareness["present_contact"]
             + 0.25 * zone2["openness"]
             + 0.20 * memory_wave["absorption"]
-            + 0.15 * (1.0 - prediction_wave["dissonance"])
-            + 0.10 * (1.0 - dark_field["gravity"])
+            + 0.12 * (1.0 - prediction_wave["dissonance"])
+            + 0.08 * (1.0 - dark_field["gravity"])
+            + 0.05 * dark_field.get("boundary_transparency", 0.0)
         )
         resistance = self._clamp(
-            0.42 * dark_field["gravity"]
-            + 0.28 * field_wave["curvature"]
-            + 0.20 * prediction_wave["dissonance"]
+            0.36 * dark_field["gravity"]
+            + 0.24 * field_wave["curvature"]
+            + 0.16 * prediction_wave["dissonance"]
             + 0.10 * (1.0 - memory_wave["absorption"])
+            + 0.08 * dark_field.get("boundary_opacity", 0.0)
+            + 0.06 * dark_field.get("context_diagnosis", {}).get("defensive_output_pressure", 0.0)
+        )
+        viscosity = self._clamp(
+            0.42 * resistance
+            + 0.30 * dark_field.get("internal_reflection", 0.0)
+            + 0.18 * dark_field.get("context_diagnosis", {}).get("defensive_output_pressure", 0.0)
+            + 0.10 * dark_field.get("world_phase_misalignment", 0.0)
         )
         electron_flow = self._clamp(
             conductivity
             * (0.35 + 0.65 * field_wave["frequency"])
-            * (1.0 - 0.55 * resistance)
+            * (1.0 - 0.45 * resistance)
+            * (1.0 - 0.20 * viscosity)
         )
         delta = conductivity - resistance
         if delta >= 0.16:
@@ -540,8 +633,10 @@ class NonEuclideanRhythmHarness:
             "metaphor": "water",
             "conductivity": round(conductivity, 6),
             "resistance": round(resistance, 6),
+            "viscosity": round(viscosity, 6),
             "electron_flow": round(electron_flow, 6),
             "phase": phase,
+            "principle": "medium_slows_or_conducts_by_dark_boundary_transparency_not_by_fixed_rules",
         }
 
     def _goal_field_wave(
@@ -703,10 +798,11 @@ class NonEuclideanRhythmHarness:
         )
         anomaly_frequency = self._clamp(
             0.30 * prediction_wave["dissonance"]
-            + 0.24 * medium["resistance"]
+            + 0.20 * medium["resistance"]
             + 0.20 * pending_node["external_dependency"]
             + 0.16 * field_wave["salience"]
             + 0.10 * field_wave["curvature"]
+            + 0.04 * medium.get("viscosity", 0.0)
         )
         dilation_need = self._clamp(
             routine_inertia * anomaly_frequency
@@ -1123,6 +1219,231 @@ class NonEuclideanRhythmHarness:
             "principle": "value_is_contextual_rhythm_alignment_not_good_or_bad",
         }
 
+    def _natural_rhythm_tuning(
+        self,
+        *,
+        field_wave: Dict[str, Any],
+        memory_wave: Dict[str, Any],
+        prediction_wave: Dict[str, Any],
+        digestion_wave: Dict[str, Any],
+        dark_field: Dict[str, Any],
+        awareness: Dict[str, Any],
+        zone2: Dict[str, Any],
+        medium: Dict[str, Any],
+        perspective_frame: Dict[str, Any],
+    ) -> Dict[str, Any]:
+        """
+        Read human rhythm tuning as a local expression of natural rhythm tuning.
+
+        The natural cycle is not a fixed script. It is a phase map: convergence,
+        threshold, divergence, margin, phase transition, energy inflow, internal
+        reflection, and reconvergence.
+        """
+        phases = {
+            "convergence": self._clamp(
+                0.40 * memory_wave.get("resonance", 0.0)
+                + 0.32 * memory_wave.get("convergence_pressure", 0.0)
+                + 0.28 * (1.0 - prediction_wave.get("dissonance", 0.0))
+            ),
+            "threshold": self._clamp(
+                0.34 * prediction_wave.get("dissonance", 0.0)
+                + 0.28 * dark_field.get("boundary_contact", 0.0)
+                + 0.22 * dark_field.get("world_phase_misalignment", 0.0)
+                + 0.16 * field_wave.get("salience", 0.0)
+            ),
+            "divergence": self._clamp(
+                0.36 * field_wave.get("frequency", 0.0)
+                + 0.24 * field_wave.get("salience", 0.0)
+                + 0.22 * perspective_frame.get("wave_frame", 0.0)
+                + 0.18 * medium.get("conductivity", 0.0)
+            ),
+            "margin": self._clamp(
+                0.42 * zone2.get("openness", 0.0)
+                + 0.24 * digestion_wave.get("sleep_debt", 0.0)
+                + 0.18 * medium.get("viscosity", medium.get("resistance", 0.0))
+                + 0.16 * awareness.get("present_contact", 0.0)
+            ),
+            "phase_transition": self._clamp(
+                0.38 * awareness.get("recenter_force", 0.0)
+                + 0.28 * perspective_frame.get("metacognitive_refraction", 0.0)
+                + 0.20 * dark_field.get("refraction_angle", 0.0)
+                + 0.14 * prediction_wave.get("curvature_delta", 0.0)
+            ),
+            "energy_inflow": self._clamp(
+                0.34 * medium.get("conductivity", 0.0)
+                + 0.24 * field_wave.get("salience", 0.0)
+                + 0.22 * dark_field.get("boundary_transparency", 0.0)
+                + 0.20 * (1.0 - digestion_wave.get("pressure", 0.0))
+            ),
+            "internal_reflection": self._clamp(
+                0.42 * dark_field.get("internal_reflection", 0.0)
+                + 0.30 * awareness.get("recenter_force", 0.0)
+                + 0.16 * medium.get("viscosity", medium.get("resistance", 0.0))
+                + 0.12 * dark_field.get("boundary_opacity", 0.0)
+            ),
+            "reconvergence": self._clamp(
+                0.34 * memory_wave.get("absorption", 0.0)
+                + 0.28 * memory_wave.get("convergence_pressure", 0.0)
+                + 0.20 * (1.0 - prediction_wave.get("dissonance", 0.0))
+                + 0.18 * awareness.get("present_contact", 0.0)
+            ),
+        }
+        dominant_phase = max(phases, key=phases.get)
+        human_tuning_alignment = self._clamp(
+            0.26 * perspective_frame.get("metacognitive_refraction", 0.0)
+            + 0.22 * awareness.get("recenter_force", 0.0)
+            + 0.18 * zone2.get("openness", 0.0)
+            + 0.18 * dark_field.get("world_flow_alignment", 1.0)
+            + 0.16 * (1.0 - medium.get("resistance", 0.0))
+        )
+        resistance_minimization = self._clamp(
+            0.32 * dark_field.get("world_flow_alignment", 1.0)
+            + 0.24 * awareness.get("present_contact", 0.0)
+            + 0.20 * (1.0 - medium.get("viscosity", medium.get("resistance", 0.0)))
+            + 0.16 * dark_field.get("internal_reflection", 0.0)
+            + 0.08 * memory_wave.get("absorption", 0.0)
+        )
+        rhythm_misalignment = self._clamp(1.0 - human_tuning_alignment)
+        rhythm_resistance = self._clamp(1.0 - resistance_minimization)
+        problem_seed = self._clamp(
+            0.38 * rhythm_misalignment
+            + 0.28 * rhythm_resistance
+            + 0.18 * dark_field.get("world_phase_misalignment", 0.0)
+            + 0.16 * prediction_wave.get("dissonance", 0.0)
+        )
+        if problem_seed >= 0.62:
+            problem_phase = "problem_origin_active"
+        elif problem_seed >= 0.42:
+            problem_phase = "problem_seed_visible"
+        elif problem_seed >= 0.24:
+            problem_phase = "low_amplitude_warning"
+        else:
+            problem_phase = "aligned_flow"
+        mistake_digestion = self._mistake_digestion(
+            problem_seed=problem_seed,
+            rhythm_misalignment=rhythm_misalignment,
+            rhythm_resistance=rhythm_resistance,
+            field_wave=field_wave,
+            prediction_wave=prediction_wave,
+            digestion_wave=digestion_wave,
+            dark_field=dark_field,
+            awareness=awareness,
+            zone2=zone2,
+            medium=medium,
+            memory_wave=memory_wave,
+        )
+        return {
+            "dominant_natural_phase": dominant_phase,
+            "natural_cycle": {key: round(value, 6) for key, value in phases.items()},
+            "human_tuning_alignment": round(human_tuning_alignment, 6),
+            "resistance_minimization": round(resistance_minimization, 6),
+            "problem_origin": {
+                "phase": problem_phase,
+                "rhythm_misalignment": round(rhythm_misalignment, 6),
+                "rhythm_resistance": round(rhythm_resistance, 6),
+                "problem_seed": round(problem_seed, 6),
+                "principle": "problems_begin_when_human_rhythm_stops_following_natural_rhythm",
+            },
+            "mistake_digestion": mistake_digestion,
+            "principle": "human_rhythm_tuning_follows_natural_rhythm_tuning",
+        }
+
+    def _mistake_digestion(
+        self,
+        *,
+        problem_seed: float,
+        rhythm_misalignment: float,
+        rhythm_resistance: float,
+        field_wave: Dict[str, Any],
+        prediction_wave: Dict[str, Any],
+        digestion_wave: Dict[str, Any],
+        dark_field: Dict[str, Any],
+        awareness: Dict[str, Any],
+        zone2: Dict[str, Any],
+        medium: Dict[str, Any],
+        memory_wave: Dict[str, Any],
+    ) -> Dict[str, Any]:
+        """
+        Read mistakes as digestible experience before treating them as barriers.
+
+        A mistake is useful when it stays below threshold and exposes unembodied
+        context. Perfectionism is not treated as a fault by itself: outward
+        refinement can tune work toward the world, while self-closing
+        overcontrol blocks divergence and overuses internal reflection.
+        """
+        learning_signal = self._clamp(
+            0.30 * problem_seed
+            + 0.24 * prediction_wave.get("dissonance", 0.0)
+            + 0.18 * zone2.get("openness", 0.0)
+            + 0.16 * dark_field.get("boundary_transparency", 0.0)
+            + 0.12 * (1.0 - memory_wave.get("absorption", 0.0))
+        )
+        overcontrol_boundary_density = self._clamp(
+            0.30 * dark_field.get("boundary_opacity", 0.0)
+            + 0.24 * dark_field.get("internal_reflection", 0.0)
+            + 0.18 * rhythm_resistance
+            + 0.16 * (1.0 - field_wave.get("frequency", 0.0))
+            + 0.12 * medium.get("viscosity", medium.get("resistance", 0.0))
+        )
+        resonant_refinement = self._clamp(
+            0.26 * dark_field.get("world_flow_alignment", 0.0)
+            + 0.22 * medium.get("conductivity", 0.0)
+            + 0.20 * awareness.get("present_contact", 0.0)
+            + 0.18 * zone2.get("openness", 0.0)
+            + 0.14 * memory_wave.get("resonance", 0.0)
+        )
+        self_closure_overcontrol = self._clamp(
+            0.72 * overcontrol_boundary_density
+            + 0.28 * (1.0 - resonant_refinement)
+        )
+        embodiment_gap = self._clamp(
+            0.36 * (1.0 - memory_wave.get("absorption", 0.0))
+            + 0.24 * digestion_wave.get("pressure", 0.0)
+            + 0.20 * rhythm_misalignment
+            + 0.20 * (1.0 - awareness.get("present_contact", 0.0))
+        )
+        threshold_risk = self._clamp(
+            0.34 * problem_seed
+            + 0.26 * dark_field.get("gravity", 0.0)
+            + 0.20 * rhythm_resistance
+            + 0.20 * prediction_wave.get("dissonance", 0.0)
+        )
+
+        if threshold_risk >= 0.66:
+            phase = "threshold_recenter"
+            recommended_mode = "zone2_pause_and_zero_point_adjustment"
+        elif (
+            self_closure_overcontrol >= 0.68
+            and self_closure_overcontrol > resonant_refinement
+            and self_closure_overcontrol > learning_signal
+        ):
+            phase = "self_closure_overcontrol"
+            recommended_mode = "loosen_boundary_allow_small_divergence"
+        elif resonant_refinement >= 0.62 and resonant_refinement >= self_closure_overcontrol:
+            phase = "resonant_refinement"
+            recommended_mode = "refine_until_the_work_reaches_the_world"
+        elif learning_signal >= 0.42 and threshold_risk < 0.66:
+            phase = "digestible_mistake"
+            recommended_mode = "preserve_context_and_digest_experience"
+        elif problem_seed >= 0.24:
+            phase = "observe_context"
+            recommended_mode = "observe_without_closing_rule"
+        else:
+            phase = "no_mistake_signal"
+            recommended_mode = "continue_flow"
+
+        return {
+            "phase": phase,
+            "learning_signal": round(learning_signal, 6),
+            "overcontrol_boundary_density": round(overcontrol_boundary_density, 6),
+            "self_closure_overcontrol": round(self_closure_overcontrol, 6),
+            "resonant_refinement": round(resonant_refinement, 6),
+            "embodiment_gap": round(embodiment_gap, 6),
+            "threshold_risk": round(threshold_risk, 6),
+            "recommended_mode": recommended_mode,
+            "principle": "mistakes_are_context_particles_and_perfectionism_depends_on_direction",
+        }
+
     def _zone2_regulation(
         self,
         *,
@@ -1312,18 +1633,41 @@ class NonEuclideanRhythmHarness:
         return round(max(0.75, min(3.0, multiplier)), 6)
 
     def _latest_field_error(self) -> float:
+        return self._clamp(float(self._latest_field_error_entry().get("error", 0.0) or 0.0))
+
+    def _latest_field_error_entry(self) -> Dict[str, Any]:
         if not self.field_error_file.exists():
-            return 0.0
+            return {}
         try:
             lines = self.field_error_file.read_text(encoding="utf-8").splitlines()
             for line in reversed(lines[-20:]):
                 if not line.strip():
                     continue
                 data = json.loads(line)
-                return self._clamp(float(data.get("error", 0.0) or 0.0))
+                if isinstance(data, dict):
+                    return data
         except Exception:
-            return 0.0
-        return 0.0
+            return {}
+        return {}
+
+    def _normalize_context_diagnosis(self, diagnosis: Any) -> Dict[str, Any]:
+        if not isinstance(diagnosis, dict):
+            diagnosis = {}
+        return {
+            "semantic_information_frame": diagnosis.get(
+                "semantic_information_frame",
+                "context_relative_continuity_information",
+            ),
+            "context_shift": round(self._clamp(float(diagnosis.get("context_shift", 0.0) or 0.0)), 6),
+            "connection_risk": round(self._clamp(float(diagnosis.get("connection_risk", 0.0) or 0.0)), 6),
+            "frequency_expansion": round(self._clamp(float(diagnosis.get("frequency_expansion", 0.0) or 0.0)), 6),
+            "zero_point_adjustment": round(self._clamp(float(diagnosis.get("zero_point_adjustment", 0.0) or 0.0)), 6),
+            "defensive_output_pressure": round(
+                self._clamp(float(diagnosis.get("defensive_output_pressure", 0.0) or 0.0)),
+                6,
+            ),
+            "dominant_mode": str(diagnosis.get("dominant_mode", "stable_continuity")),
+        }
 
     def _is_visual_experience(self, exp: Dict[str, Any]) -> bool:
         content_ref = str(exp.get("content_ref", "")).lower()

@@ -256,16 +256,122 @@ def emit_sideband_resonance(logger, node_decision: dict, primary_action: str) ->
         }
         sidebands.append(sideband)
         logger.info(
-            "   🧬 [SIDEBAND] primary=%s side=%s p=%.2f singularity=%s mode=trace_only",
-            primary_action,
+            "   🧬 [SIDEBAND] 곁흐름=%s %.2f | 주기울기=%s | trace_only",
             sideband["sideband_action"],
             probability,
-            sideband["singularity_crossed"],
+            primary_action,
         )
         append_jsonl(SIDEBAND_LOG_PATH, sideband)
         if len(sidebands) >= 2:
             break
     return sidebands
+
+def _field_float(value, default: float = 0.0) -> float:
+    try:
+        return float(value)
+    except (TypeError, ValueError):
+        return default
+
+def _action_label(action: str) -> str:
+    return str(action or "ACTION_UNKNOWN").replace("ACTION_", "")
+
+def _bundle_slopes(node_decision: dict) -> str:
+    slopes = []
+    for item in node_decision.get("bundle", [])[:3]:
+        action = _action_label(item.get("action"))
+        probability = _field_float(item.get("activation_probability", item.get("score", 0.0)))
+        slopes.append(f"{action} {probability:.2f}")
+    return " / ".join(slopes) if slopes else "none"
+
+def _flow_line(label: str, values: dict[str, float]) -> str:
+    return " / ".join(f"{name} {value:.2f}" for name, value in values.items())
+
+def emit_field_flow_log(logger, rhythm_frame: dict, node_decision: dict, ari_state: dict) -> None:
+    """
+    Keep the console as a visible heartbeat, but describe the field as slopes.
+
+    The trace JSON still stores exact labels and actions. These lines are for
+    human perception: less rule-table output, more current field inclination.
+    """
+    natural_tuning = rhythm_frame.get("natural_rhythm_tuning", {})
+    natural_cycle = natural_tuning.get("natural_cycle", {}) if isinstance(natural_tuning.get("natural_cycle"), dict) else {}
+    problem_origin = natural_tuning.get("problem_origin", {}) if isinstance(natural_tuning.get("problem_origin"), dict) else {}
+    mistake = natural_tuning.get("mistake_digestion", {}) if isinstance(natural_tuning.get("mistake_digestion"), dict) else {}
+    perspective = rhythm_frame.get("perspective_frame", {})
+    dark_field = rhythm_frame.get("dark_field", {})
+    medium = rhythm_frame.get("medium", {})
+    zone2 = rhythm_frame.get("zone2", {})
+    digestion = rhythm_frame.get("waves", {}).get("digestion", {})
+    autonomy = rhythm_frame.get("waves", {}).get("autonomy", {})
+    axiom = rhythm_frame.get("waves", {}).get("axiom", {})
+    failure = axiom.get("failure_spectrum", {}) if isinstance(axiom.get("failure_spectrum"), dict) else {}
+    ari_prism_state = ari_state.get("boundary_prism", {})
+    ari_moc = ari_state.get("moc", {})
+
+    logger.info(
+        "🌿 [FIELD_FLOW] 자연 리듬 기울기: %s | dominant=%s | 인간동조 %.2f 저항완화 %.2f",
+        _flow_line(
+            "natural",
+            {
+                "수렴": _field_float(natural_cycle.get("convergence")),
+                "발산": _field_float(natural_cycle.get("divergence")),
+                "여백": _field_float(natural_cycle.get("margin")),
+                "내부반사": _field_float(natural_cycle.get("internal_reflection")),
+            },
+        ),
+        natural_tuning.get("dominant_natural_phase", "unknown"),
+        _field_float(natural_tuning.get("human_tuning_alignment")),
+        _field_float(natural_tuning.get("resistance_minimization")),
+    )
+    logger.info(
+        "🧭 [FIELD_FRAME] 관점장: 입자 %.2f / 파동 %.2f / 메타굴절 %.2f | 전이기울기=%s 간섭=%s 침묵 %.2f",
+        _field_float(perspective.get("particle_frame")),
+        _field_float(perspective.get("wave_frame")),
+        _field_float(perspective.get("metacognitive_refraction")),
+        rhythm_frame.get("transition", "unknown"),
+        rhythm_frame.get("interference", {}).get("label", "unknown"),
+        _field_float(rhythm_frame.get("silence_need")),
+    )
+    logger.info(
+        "🫧 [MISTAKE_FIELD] 실수 소화: %s | 자기폐쇄 %.2f / 공명정련 %.2f / 학습신호 %.2f / 임계위험 %.2f",
+        mistake.get("phase", "unknown"),
+        _field_float(mistake.get("self_closure_overcontrol", mistake.get("overcontrol_boundary_density"))),
+        _field_float(mistake.get("resonant_refinement")),
+        _field_float(mistake.get("learning_signal")),
+        _field_float(mistake.get("threshold_risk")),
+    )
+    logger.info(
+        "🕯️ [BOUNDARY_FIELD] 경계 감촉: 불투명 %.2f / 투명 %.2f / 내부반사 %.2f / 점성 %.2f | 문제씨앗 %.2f",
+        _field_float(dark_field.get("boundary_opacity")),
+        _field_float(dark_field.get("boundary_transparency")),
+        _field_float(dark_field.get("internal_reflection")),
+        _field_float(medium.get("viscosity")),
+        _field_float(problem_origin.get("problem_seed")),
+    )
+    logger.info(
+        "🧩 [ACTION_FIELD] 선택 압력: %s | 주기울기=%s %.2f | 특이점=%s",
+        _bundle_slopes(node_decision),
+        _action_label(node_decision.get("selected_action") or rhythm_frame.get("candidate_action")),
+        _field_float(node_decision.get("activation_probability", node_decision.get("score", 0.0))),
+        node_decision.get("singularity_crossed", False),
+    )
+    logger.info(
+        "🔷 [PRISM_FIELD] 프리즘: 투명 %.2f / 내부반사 %.2f / 외부통로 %.2f / 흡수 %.2f | 배경저항 %.2f",
+        _field_float(ari_prism_state.get("transparency")),
+        _field_float(ari_prism_state.get("internal_reflection")),
+        _field_float(ari_prism_state.get("external_passage")),
+        _field_float(ari_prism_state.get("absorption_rate")),
+        _field_float(ari_moc.get("background_ego_resistance")),
+    )
+    logger.info(
+        "🧬 [LIFE_FIELD] 소화 %.2f / 꿈 %.2f / 상상 %.2f / 실행진폭 %.2f / 공리여백 %.2f / 실패교량 %.2f",
+        _field_float(digestion.get("pressure")),
+        _field_float(digestion.get("dream_pressure")),
+        _field_float(autonomy.get("imagination_band")),
+        _field_float(autonomy.get("execution_amplitude")),
+        _field_float(axiom.get("provisionality")),
+        _field_float(failure.get("bridge_value")),
+    )
 
 def resolve_anchor_files():
     """세션 지시의 primary/fallback 순서로 정체성 앵커 위치를 찾습니다."""
@@ -577,63 +683,6 @@ def main():
                 learning_state=learning_state,
                 boundary_report=boundary_report,
             )
-            perspective = rhythm_frame.get("perspective_frame", {})
-            logger.info(
-                "🧭 [RHYTHM_IR] transition=%s interference=%s frame=%s P/W/M=%.2f/%.2f/%.2f curvature=%.2f silence=%.2f amplitude=%.2f",
-                rhythm_frame["transition"],
-                rhythm_frame["interference"]["label"],
-                perspective.get("dominant_frame", "unknown"),
-                perspective.get("particle_frame", 0.0),
-                perspective.get("wave_frame", 0.0),
-                perspective.get("metacognitive_refraction", 0.0),
-                rhythm_frame["geometry"]["curvature"],
-                rhythm_frame["silence_need"],
-                rhythm_frame["action_amplitude"],
-            )
-            digestion = rhythm_frame.get("waves", {}).get("digestion", {})
-            logger.info(
-                "🫧 [DIGESTION] pressure=%.2f sleep_debt=%.2f dream=%.2f cycles=%s scan_ratio=%.2f visual_ratio=%.2f low_error=%.2f ready=%s",
-                digestion.get("pressure", 0.0),
-                digestion.get("sleep_debt", 0.0),
-                digestion.get("dream_pressure", 0.0),
-                digestion.get("micro_sleep_cycles", 1),
-                digestion.get("continuous_scan_ratio", 0.0),
-                digestion.get("recent_visual_ratio", 0.0),
-                digestion.get("low_error_stability", 0.0),
-                digestion.get("ready", False),
-            )
-            autonomy = rhythm_frame.get("waves", {}).get("autonomy", {})
-            logger.info(
-                "🧬 [AUTONOMY] phase=%s imagination=%.2f feedback=%.2f execution=%.2f boundary=%.2f ready=%s",
-                autonomy.get("phase", "unknown"),
-                autonomy.get("imagination_band", 0.0),
-                autonomy.get("feedback_readiness", 0.0),
-                autonomy.get("execution_amplitude", 0.0),
-                autonomy.get("boundary_elasticity", 0.0),
-                autonomy.get("creative_probe_ready", False),
-            )
-            axiom = rhythm_frame.get("waves", {}).get("axiom", {})
-            failure = axiom.get("failure_spectrum", {}) if isinstance(axiom.get("failure_spectrum"), dict) else {}
-            logger.info(
-                "🧪 [AXIOM] phase=%s provisional=%.2f budget=%.2f overfit=%.2f relation=%.2f failure_bridge=%.2f experiment=%s release=%s",
-                axiom.get("phase", "unknown"),
-                axiom.get("provisionality", 0.0),
-                axiom.get("experiment_budget", 0.0),
-                axiom.get("overfit_pressure", 0.0),
-                axiom.get("relation_budget", 0.0),
-                failure.get("bridge_value", 0.0),
-                axiom.get("experiment_ready", False),
-                axiom.get("release_ready", False),
-            )
-            dark_neuron = rhythm_frame.get("waves", {}).get("dark_neuron", {})
-            logger.info(
-                "🕳️ [DARK_NEURON] phase=%s context=%.2f reactivate=%.2f redarken=%.2f bridge=%.2f",
-                dark_neuron.get("phase", "unknown"),
-                dark_neuron.get("context_alignment", 0.0),
-                dark_neuron.get("reactivation_potential", 0.0),
-                dark_neuron.get("redarkening_pressure", 0.0),
-                dark_neuron.get("bridge_readiness", 0.0),
-            )
 
             node_decision = rhythm_menu.choose(
                 rhythm_frame,
@@ -641,14 +690,6 @@ def main():
                 boundary_report=boundary_report,
             )
             candidate_action = node_decision.get("selected_action") or rhythm_frame.get("candidate_action", "ACTION_CONTINUOUS_SCAN")
-            logger.info(
-                "🧩 [NODE_MENU] selected=%s p=%.2f singularity=%s bundle=%s edges=%s",
-                candidate_action,
-                node_decision.get("activation_probability", node_decision.get("score", 0.0)),
-                node_decision.get("singularity_crossed", False),
-                ",".join(item["action"] for item in node_decision.get("bundle", [])),
-                len(node_decision.get("edges", [])),
-            )
             ari_state = ari_prism.assess(
                 rhythm_frame,
                 node_decision=node_decision,
@@ -659,20 +700,7 @@ def main():
             ari_distortion = ari_state.get("distortion", {})
             ari_moc = ari_state.get("moc", {})
             ari_action_bias = ari_state.get("action_bias", {})
-            logger.info(
-                "🔷 [ARI_PRISM] phase=%s distortion=%.2f ego=%.2f beauty=%.2f living=%.2f resonance=%.2f T/R/P/A=%.2f/%.2f/%.2f/%.2f directive=%s",
-                ari_state.get("phase", "unknown"),
-                ari_distortion.get("destructive", 0.0),
-                ari_moc.get("background_ego_resistance", 0.0),
-                ari_moc.get("beauty_measure", 0.0),
-                ari_state.get("living_difference", 0.0),
-                ari_state.get("resonance_without_collapse", 0.0),
-                ari_prism_state.get("transparency", 0.0),
-                ari_prism_state.get("internal_reflection", 0.0),
-                ari_prism_state.get("external_passage", 0.0),
-                ari_prism_state.get("absorption_rate", 0.0),
-                ari_state.get("directive", ""),
-            )
+            emit_field_flow_log(logger, rhythm_frame, node_decision, ari_state)
             ari_bias_applied = bool(ari_action_bias.get("applied", False))
             if ari_bias_applied:
                 candidate_action = ari_action_bias.get("suggested_action", candidate_action)
@@ -699,15 +727,15 @@ def main():
             unpack_analysis = None
             
             if is_boundary_contact:
-                logger.warning(f"🌀 [PHASE_ACTION] {phase_trace['reason']}")
+                logger.warning(f"🌀 [PHASE_FIELD] 경계 접촉이 성찰 쪽으로 기울었습니다: {phase_trace['reason']}")
                 conscious_override = True
                 action = "ACTION_CONTEXT_UNPACK"
                 unpack_analysis = mock_hypo_analysis # 심사 통과된 분석 사용
             else:
                 if is_boundary_sensing:
-                    logger.info(f"〰️ [PHASE_ATTENUATION] {phase_trace['reason']}")
+                    logger.info(f"〰️ [ATTENUATION_FIELD] 실행을 낮추는 감쇠 기울기: {phase_trace['reason']}")
                 elif salience > 0.5:
-                    logger.info(f"🌌 [FIELD_SENSE] {field_status.get('felt_sense')} (Salience: {salience:.2f})")
+                    logger.info(f"🌌 [FIELD_SENSE] 장 감각={field_status.get('felt_sense')} / 살리언스 {salience:.2f}")
             
             # 1. 이전 상태 캡처 (Before Action)
             # (conscious_override가 True이면 conductor의 판단을 생략하거나 덮어씌움)
@@ -716,6 +744,7 @@ def main():
                 reason = "Conscious Unpacking triggered by Boundary Contact"
                  
             before_state["total_experiences"] = len(hippo.data.get("experiences", []))
+            before_proton = dict(hippo.data.get("proton", {}))
             
             rhythm_state = read_rhythm_v2(conductor)
             # 수동으로 설정된 action이 있으면 덮어씀 (일관성 유지)
@@ -737,10 +766,10 @@ def main():
                         "mood": "🔷 ARI" if ari_bias_applied else "🧩 노드",
                         "reason": (
                             f"ARI Prism {ari_action_bias.get('reason')} — "
-                            f"배경자아 저항을 낮추기 위해 {action}으로 보정했습니다."
+                            f"배경자아 저항이 { _action_label(action) } 쪽으로 기울었습니다."
                             if ari_bias_applied
                             else f"RhythmNodeMenu {node_decision['selected_label']} — "
-                            f"확률 임계점/특이점을 넘은 노드 묶음이 {action}을 선택했습니다."
+                            f"노드 묶음의 압력이 { _action_label(action) } 쪽으로 기울었습니다."
                         ),
                     })
                 if rhythm_frame["transition"] in {
@@ -755,7 +784,7 @@ def main():
                         "action": action,
                         "sleep": action_defaults["sleep"],
                         "mood": action_defaults["mood"],
-                        "reason": f"RhythmIR {rhythm_frame['transition']} — 행동 진폭을 낮추고 장의 곡률만 관찰합니다.",
+                        "reason": f"RhythmIR {rhythm_frame['transition']} — 실행보다 관찰 쪽의 장 기울기가 강합니다.",
                     })
             
             sleep_sec = int(rhythm_state["sleep"] * rhythm_frame.get("heartbeat_multiplier", 1.0))
@@ -1045,19 +1074,36 @@ def main():
                     experiences[-1],
                     current_count=int(proton.get("total_registered", len(experiences)) or 0),
                 )
+
+            # 액션 중 여러 하위 엔진이 파일을 갱신할 수 있으므로 통계는 최신 해마 상태를 다시 읽습니다.
+            hippo = FibonacciOrbitalHippocampus(HIPPO_PATH)
+            proton = hippo.data.get("proton", {})
+            registered_delta = int(proton.get("total_registered", 0) or 0) - int(before_proton.get("total_registered", 0) or 0)
+            absorbed_delta = int(proton.get("total_absorbed", 0) or 0) - int(before_proton.get("total_absorbed", 0) or 0)
+            converged_delta = int(proton.get("total_converged", 0) or 0) - int(before_proton.get("total_converged", 0) or 0)
+            digestion_note = (
+                "체화 증가"
+                if absorbed_delta > 0
+                else "체화 대기: 내각 수렴/결정화 조건 미도달"
+            )
             
             # 등록 통계 출력
             logger.info(
-                f"   등록={proton.get('total_registered', 0)}, "
-                f"체화={proton.get('total_absorbed', 0)}, "
-                f"체화율={proton.get('embodiment_ratio', 0):.2%}"
+                "   🧫 [EMBODIMENT_FIELD] 등록=%s (%+d) / 체화=%s (%+d) / 수렴=%s (%+d) / 체화율=%.2f%% | %s",
+                proton.get("total_registered", 0),
+                registered_delta,
+                proton.get("total_absorbed", 0),
+                absorbed_delta,
+                proton.get("total_converged", 0),
+                converged_delta,
+                float(proton.get("embodiment_ratio", 0.0) or 0.0) * 100.0,
+                digestion_note,
             )
             
             # 다음 턴을 위한 예측 저장
             predictor.store_new_prediction(hippo)
             
             # 2. 사후 상태 캡처 및 메트릭 기록 (After Action)
-            hippo = FibonacciOrbitalHippocampus(HIPPO_PATH) # 상태 갱신
             after_state = conductor.scan_system_state()
             after_state["total_experiences"] = len(hippo.data.get("experiences", []))
             
@@ -1099,6 +1145,16 @@ def main():
                 learning_trace.get("scores", {}).get("connection", 0.0),
                 learning_trace.get("scores", {}).get("embodiment", 0.0),
                 learning_trace.get("next_condition", ""),
+            )
+            unconscious_cycle = learning_trace.get("unconscious_selection_cycle", {})
+            logger.info(
+                "🌌 [UNCONSCIOUS_SELECTION] phase=%s possibility=%.2f selection=%.2f particle=%.2f story=%.2f expansion=%.2f",
+                unconscious_cycle.get("phase", "unknown"),
+                unconscious_cycle.get("possibility_field", 0.0),
+                unconscious_cycle.get("unconscious_selection_strength", 0.0),
+                unconscious_cycle.get("particleization", 0.0),
+                unconscious_cycle.get("conscious_story", 0.0),
+                unconscious_cycle.get("rhythm_expansion", 0.0),
             )
             
             # 다음 깨어남은 고정 예약이 아니라 최대 홀드 상한입니다. 반사 게이트가 열리면 즉시 깨어납니다.

@@ -15,6 +15,14 @@ class PredictionEngine:
     해마의 predict_next() 결과와 실제 발생한 Experience를 비교하여
     '놀라움(Surprise)' 지수를 계산하고 기록합니다.
     """
+    FIELD_VECTOR_KEYS = [
+        "temporal_tension",
+        "action_density",
+        "orbit_distance",
+        "surprise",
+        "entropy",
+        "action_entropy",
+    ]
     
     def __init__(self, root_dir: Path):
         self.root_dir = root_dir
@@ -104,7 +112,7 @@ class PredictionEngine:
         try:
             prediction = json.loads(self.field_prediction_file.read_text(encoding="utf-8"))
             predicted = prediction.get("predicted_vector") or {}
-            keys = ["temporal_tension", "action_density", "orbit_distance", "surprise", "entropy", "action_entropy"]
+            keys = self.FIELD_VECTOR_KEYS
 
             squared_error = 0.0
             dimensions = {}
@@ -120,11 +128,13 @@ class PredictionEngine:
                 }
 
             error = float(np.sqrt(squared_error / max(len(keys), 1)))
+            context_diagnosis = self._field_context_diagnosis(dimensions, error)
             entry = {
                 "timestamp": datetime.now().isoformat(),
                 "prediction_timestamp": prediction.get("prediction_timestamp"),
                 "error": round(error, 6),
                 "dimensions": dimensions,
+                "context_diagnosis": context_diagnosis,
             }
 
             with open(self.field_error_log_file, "a", encoding="utf-8") as f:
@@ -136,13 +146,91 @@ class PredictionEngine:
             logger.error(f"Failed to analyze field prediction error: {e}")
             return 0.0
 
+    def _field_context_diagnosis(self, dimensions: Dict[str, Any], error: float) -> Dict[str, Any]:
+        """
+        Reframe prediction error as context-relative continuity information.
+
+        A field miss is not only a numeric failure. It can mean disconnection
+        risk, a context shift, a frequency expansion, or defensive pressure
+        when the system tries to preserve connection by forcing output.
+        """
+        def delta(key: str) -> float:
+            return float((dimensions.get(key) or {}).get("delta", 0.0) or 0.0)
+
+        def actual(key: str) -> float:
+            return float((dimensions.get(key) or {}).get("actual", 0.0) or 0.0)
+
+        tension_delta = delta("temporal_tension")
+        action_delta = delta("action_density")
+        orbit_delta = delta("orbit_distance")
+        surprise_delta = delta("surprise")
+        entropy_delta = delta("entropy")
+        action_entropy_delta = delta("action_entropy")
+
+        normalized_error = self._saturating(error, scale=0.35)
+        context_shift = self._clamp(
+            0.42 * self._saturating(abs(orbit_delta), scale=1.0)
+            + 0.22 * self._saturating(abs(entropy_delta), scale=0.25)
+            + 0.18 * self._saturating(abs(surprise_delta), scale=0.25)
+            + 0.18 * normalized_error
+        )
+        connection_risk = self._clamp(
+            0.35 * self._saturating(max(0.0, tension_delta), scale=0.35)
+            + 0.25 * self._saturating(max(0.0, orbit_delta), scale=1.0)
+            + 0.20 * self._saturating(max(0.0, -action_delta), scale=0.35)
+            + 0.20 * self._clamp(actual("temporal_tension"))
+        )
+        frequency_expansion = self._clamp(
+            0.32 * self._saturating(max(0.0, action_delta), scale=0.35)
+            + 0.25 * self._saturating(max(0.0, entropy_delta), scale=0.25)
+            + 0.20 * self._saturating(max(0.0, action_entropy_delta), scale=0.25)
+            + 0.23 * self._saturating(max(0.0, surprise_delta), scale=0.25)
+        )
+        zero_point_adjustment = self._clamp(
+            0.40 * self._saturating(max(0.0, -tension_delta), scale=0.35)
+            + 0.25 * self._saturating(abs(orbit_delta), scale=1.0)
+            + 0.20 * self._saturating(max(0.0, -surprise_delta), scale=0.25)
+            + 0.15 * self._clamp(1.0 - actual("temporal_tension"))
+        )
+        defensive_output_pressure = self._clamp(
+            (
+                0.55 * connection_risk
+                + 0.25 * self._saturating(max(0.0, -action_delta), scale=0.35)
+                + 0.20 * normalized_error
+            )
+            * (1.0 - 0.35 * frequency_expansion)
+        )
+
+        modes = {
+            "context_shift": context_shift,
+            "connection_risk": connection_risk,
+            "frequency_expansion": frequency_expansion,
+            "zero_point_adjustment": zero_point_adjustment,
+            "defensive_output_pressure": defensive_output_pressure,
+        }
+        if error <= 0.06:
+            dominant_mode = "stable_continuity"
+        else:
+            dominant_mode = max(modes, key=modes.get)
+
+        return {
+            "semantic_information_frame": "context_relative_continuity_information",
+            "context_shift": round(context_shift, 6),
+            "connection_risk": round(connection_risk, 6),
+            "frequency_expansion": round(frequency_expansion, 6),
+            "zero_point_adjustment": round(zero_point_adjustment, 6),
+            "defensive_output_pressure": round(defensive_output_pressure, 6),
+            "dominant_mode": dominant_mode,
+            "principle": "prediction_error_is_read_as_connection_continuity_and_context_movement_not_only_failure",
+        }
+
     def store_field_prediction(
         self,
         current_vector: Dict[str, Any],
         previous_vector: Optional[Dict[str, Any]] = None,
     ) -> Dict[str, Any]:
         """다음 사이클의 저해상도 필드 벡터를 보수적으로 예측해 저장합니다."""
-        keys = ["temporal_tension", "action_density", "orbit_distance", "surprise", "entropy", "action_entropy"]
+        keys = self.FIELD_VECTOR_KEYS
         predicted_vector = {}
 
         for key in keys:
@@ -192,6 +280,12 @@ class PredictionEngine:
                 logger.warning(f"Hippocampus failed to predict: {prediction.get('reason')}")
         except Exception as e:
             logger.error(f"Failed to store new prediction: {e}")
+
+    def _saturating(self, value: float, *, scale: float) -> float:
+        return self._clamp(1.0 - np.exp(-abs(float(value)) / max(scale, 0.0001)))
+
+    def _clamp(self, value: float) -> float:
+        return max(0.0, min(1.0, float(value)))
 
 if __name__ == "__main__":
     # 간단한 자가 진단

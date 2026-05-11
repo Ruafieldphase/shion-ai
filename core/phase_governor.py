@@ -280,7 +280,7 @@ class PhaseGovernor:
 
     def _log_phase(self, trace: Dict[str, Any]):
         logger.info(
-            "🌊 [PHASE] %s | interference=%s transparency=%.2f amplitude=%.2f",
+            "🌊 [PHASE_FIELD] 위상 기울기=%s | 간섭=%s / 투명 %.2f / 실행진폭 %.2f",
             trace["phase_decision"],
             trace["interference"],
             trace["boundary_transparency"],
