@@ -60,6 +60,7 @@ from ari_prism import ARIPrism
 from unfinished_waypoint_graph import UnfinishedWaypointGraph
 from organic_learning_lifecycle import OrganicLearningLifecycle
 from sleep_cycle_integrator import SleepCycleIntegrator
+from suno_lyric_experience import maybe_register_suno_lyric_experience
 
 # 적응형 리듬 설정 — 고정 간격이 아니라 해마 상태에 반응
 CYCLES_PER_RUN = 1          # 한 인지 사이클에는 한 번만 감각-판단-행동합니다.
@@ -1255,9 +1256,28 @@ def main():
                     registered_delta = int(proton.get("total_registered", 0) or 0) - int(before_proton.get("total_registered", 0) or 0)
                     absorbed_delta = int(proton.get("total_absorbed", 0) or 0) - int(before_proton.get("total_absorbed", 0) or 0)
                     converged_delta = int(proton.get("total_converged", 0) or 0) - int(before_proton.get("total_converged", 0) or 0)
+            if registered_delta == 0:
+                lyric_entry = maybe_register_suno_lyric_experience(
+                    logger,
+                    hippo,
+                    rhythm_frame,
+                    action,
+                )
+                if lyric_entry:
+                    hippo = FibonacciOrbitalHippocampus(HIPPO_PATH)
+                    proton = hippo.data.get("proton", {})
+                    registered_delta = int(proton.get("total_registered", 0) or 0) - int(before_proton.get("total_registered", 0) or 0)
+                    absorbed_delta = int(proton.get("total_absorbed", 0) or 0) - int(before_proton.get("total_absorbed", 0) or 0)
+                    converged_delta = int(proton.get("total_converged", 0) or 0) - int(before_proton.get("total_converged", 0) or 0)
+            latest_ref = ""
+            experiences = hippo.data.get("experiences", [])
+            if experiences and isinstance(experiences[-1], dict):
+                latest_ref = str(experiences[-1].get("content_ref") or "")
             digestion_note = (
                 "체화 증가"
                 if absorbed_delta > 0
+                else "수노 가사 motif 경험 등록"
+                if registered_delta > 0 and latest_ref.startswith("suno_lyric_ontology:")
                 else "작은 경험 피드백 등록"
                 if registered_delta > 0
                 else "체화 대기: 내각 수렴/결정화 조건 미도달"

@@ -223,6 +223,7 @@ lyric_ontology_compression:
     - dream_replay_language_palette
     - blender_field_label_palette
     - future_audio_wave_analysis_manifest
+    - low_pressure_experience_feedback
   audio_policy:
     current: metadata_and_local_media_manifest_only
     later:
@@ -236,6 +237,11 @@ lyric_ontology_compression:
     not_generation_api: do_not_treat_suno_as_required_runtime_dependency
     not_raw_injection: compress_motifs_before_using_as_learning_signal
     no_bulk_wave_analysis_without_intent: analyze_selected_tracks_before_full_corpus
+  current_bridge:
+    module: core/suno_lyric_experience.py
+    output_log: outputs/suno_lyric_experience.jsonl
+    state: outputs/suno_lyric_experience_state.json
+    cadence: one_contextual_motif_with_cooldown
 ```
 
 ## First Sentence
