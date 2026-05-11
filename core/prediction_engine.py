@@ -34,7 +34,7 @@ class PredictionEngine:
         
     def analyze_error(self, current_experience: Dict[str, Any], current_count: Optional[int] = None) -> float:
         """
-        이전 사이클에서 저장된 예측값과 현재 발생한 실제 경험을 비교합니다.
+        이전 사이클의 예측 흔적과 현재 발생한 실제 경험을 비교합니다.
         
         반환값: surprise_score (0.0 ~ 1.0)
         """
@@ -50,7 +50,7 @@ class PredictionEngine:
                 prediction.get("baseline_experience_count"),
             )
             if baseline_count is None:
-                logger.info("Prediction has no baseline; storing a fresh baseline before scoring.")
+                logger.info("Prediction has no baseline; preparing a fresh trace before scoring.")
                 return 0.0
 
             if current_count is not None and current_count <= baseline_count:
@@ -252,14 +252,14 @@ class PredictionEngine:
         try:
             with open(self.field_prediction_file, "w", encoding="utf-8") as f:
                 json.dump(prediction, f, ensure_ascii=False, indent=2)
-            logger.info("🔭 Field prediction stored for next cycle.")
+            logger.info("🔭 Field prediction trace prepared for next cycle.")
         except Exception as e:
             logger.error(f"Failed to store field prediction: {e}")
 
         return predicted_vector
 
     def store_new_prediction(self, hippo: Any):
-        """해마에게 다음 사이클의 예측을 요청하고 저장합니다."""
+        """해마에게 다음 사이클의 예측 흔적을 요청하고 기록합니다."""
         try:
             prediction = hippo.predict_next(recent_n=5)
             if prediction.get("predicted"):
@@ -275,7 +275,7 @@ class PredictionEngine:
                 })
                 with open(self.prediction_file, "w", encoding="utf-8") as f:
                     json.dump(prediction, f, indent=2)
-                logger.info("🔭 Future Prediction stored for next cycle.")
+                logger.info("🔭 Future prediction trace prepared for next cycle.")
             else:
                 logger.warning(f"Hippocampus failed to predict: {prediction.get('reason')}")
         except Exception as e:

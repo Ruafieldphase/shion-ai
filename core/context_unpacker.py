@@ -10,10 +10,10 @@ logger = logging.getLogger("ContextUnpacker")
 
 class ContextUnpacker:
     """
-    Context Unpacker — 의식적 맥락 분석기 (기억 검색 기반)
+    Context Unpacker — 의식적 맥락 분석기 (장 통신 기반)
     ====================================================
-    경계 접촉 시 호출되어, 해마의 '기울기 에피소드'를 검색하고
-    과거의 성공/실패 사례를 바탕으로 현재 상황에 대한 가설을 생성합니다.
+    경계 접촉 시 호출되어, 현재 필드와 해마의 '기울기 에피소드'가
+    공명하는 지점을 찾고 그 흔적을 현재 맥락으로 압축 해제합니다.
     """
     
     def __init__(self, root_dir: Path):
@@ -23,11 +23,12 @@ class ContextUnpacker:
         self.orbit_file = root_dir / "outputs" / "context_orbit.json"
         
     def unpack(self, boundary_report: Dict[str, Any], field_status: Dict[str, Any], current_vector: Dict[str, Any]) -> Dict[str, Any]:
-        """최근 맥락과 해마 기억을 분석하여 가설을 생성합니다."""
-        logger.info("🧠 [CONTEXT_UNPACKING] 기억 기반 맥락 분석 시작...")
+        """현재 필드와 해마 흔적의 공명을 압축 해제하여 가설을 생성합니다."""
+        logger.info("🧠 [RESONANCE_UNPACKING] 장 통신 기반 맥락 압축 해제 시작...")
         
-        # 1. 유사 기억 검색 (Memory Retrieval)
-        similar_episode = self._find_similar_memory(current_vector)
+        # 1. 현재 필드와 공명하는 과거 흔적 감지 (Field Communication)
+        similar_episode = self._find_resonant_trace(current_vector)
+        field_communication = self._field_communication(similar_episode)
         
         # 2. 가설 생성 (Hypothesis Generation)
         candidates = []
@@ -43,28 +44,33 @@ class ContextUnpacker:
         if boundary_type == "OUT_OF_ORBIT":
             candidates.append(self._build_candidate("GOAL_DEVIATION", boundary_report, field_status))
             
-        # 3. 기억 기반 보정 (Memory-based Refinement)
+        # 3. 공명 흔적 기반 보정 (Resonance-based Refinement)
         if similar_episode:
-            self._apply_memory_influence(candidates, similar_episode)
+            self._apply_resonance_influence(candidates, similar_episode)
             
         analysis = {
             "timestamp": datetime.now().isoformat(),
             "boundary_report": boundary_report,
             "field_status": field_status,
             "current_vector": current_vector,
-            "memory_retrieval": {
-                "found": similar_episode is not None,
-                "similar_id": self._episode_hypothesis_id(similar_episode),
-                "past_feedback": similar_episode.get("feedback") if similar_episode else None
+            "field_communication": field_communication,
+            "resonance_unpacking": {
+                "mode": "current_field_to_past_trace_to_present_context",
+                "unpacked": similar_episode is not None,
+                "hypothesis_id": self._episode_hypothesis_id(similar_episode),
+                "principle": "memory_is_field_communication_not_storage_retrieval",
             },
+            # Backward-compatible legacy key. New callers should use
+            # field_communication, but old phase code can still read this.
+            "memory_retrieval": field_communication,
             "story_candidates": candidates
         }
         
         self._log_analysis(analysis)
         return analysis
 
-    def _find_similar_memory(self, current_vector: Dict[str, Any]) -> Optional[Dict[str, Any]]:
-        """해마의 기울기 에피소드 중 가장 유사한 벡터를 가진 것을 찾습니다."""
+    def _find_resonant_trace(self, current_vector: Dict[str, Any]) -> Optional[Dict[str, Any]]:
+        """해마의 기울기 에피소드 중 현재 필드와 가장 공명하는 흔적을 찾습니다."""
         if not self.gradients_file.exists(): return None
         
         best_match = None
@@ -82,12 +88,21 @@ class ContextUnpacker:
                         min_distance = dist
                         best_match = episode
             
-            # 유사도 임계값 (0.2 이내일 때만 유의미한 기억으로 간주)
+            # 공명 임계값 (0.2 이내일 때만 현재 장과 통신 가능한 흔적으로 간주)
             if min_distance < 0.2:
-                logger.info(f"🔍 [MEMORY_HIT] 유사 기억 발견 (Distance: {min_distance:.4f})")
+                logger.info(f"🔍 [FIELD_CONTACT] 공명 흔적 접촉 (distance={min_distance:.4f})")
                 return best_match
         except: pass
         return None
+
+    def _field_communication(self, episode: Optional[Dict[str, Any]]) -> Dict[str, Any]:
+        return {
+            "found": episode is not None,
+            "similar_id": self._episode_hypothesis_id(episode),
+            "past_feedback": episode.get("feedback") if episode else None,
+            "trace_feedback": episode.get("feedback") if episode else None,
+            "communication_mode": "field_resonance",
+        }
 
     def _episode_hypothesis_id(self, episode: Optional[Dict[str, Any]]) -> Optional[str]:
         if not episode:
@@ -105,8 +120,8 @@ class ContextUnpacker:
             dist_sq += (v1.get(k, 0.5) - v2.get(k, 0.5)) ** 2
         return math.sqrt(dist_sq)
 
-    def _apply_memory_influence(self, candidates: List[Dict[str, Any]], episode: Dict[str, Any]):
-        """과거의 피드백 결과를 현재 가설의 신뢰도에 반영합니다."""
+    def _apply_resonance_influence(self, candidates: List[Dict[str, Any]], episode: Dict[str, Any]):
+        """과거 흔적의 피드백 결과를 현재 가설의 신뢰도에 반영합니다."""
         past_hypo = episode.get("hypothesis")
         if not past_hypo: return
         
@@ -117,12 +132,12 @@ class ContextUnpacker:
             if c["id"] == past_id:
                 if past_feedback == "confirmed":
                     c["confidence"] = min(0.95, c["confidence"] + 0.1)
-                    c["evidence"].append(f"Supported by similar past memory ({past_id})")
-                    logger.info(f"📈 [MEMORY_BOOST] {c['id']} 신뢰도 상승 (과거 성공 사례)")
+                    c["evidence"].append(f"Supported by resonant past trace ({past_id})")
+                    logger.info(f"📈 [RESONANCE_BOOST] {c['id']} 신뢰도 상승 (공명 흔적 지지)")
                 elif past_feedback == "rejected":
                     c["confidence"] = max(0.1, c["confidence"] - 0.3)
-                    c["evidence"].append(f"Penalized by similar past failure ({past_id})")
-                    logger.info(f"📉 [MEMORY_DROP] {c['id']} 신뢰도 하락 (과거 기각 사례)")
+                    c["evidence"].append(f"Attenuated by resonant rejected trace ({past_id})")
+                    logger.info(f"📉 [RESONANCE_DROP] {c['id']} 신뢰도 하락 (공명 흔적 기각)")
 
     def _build_candidate(self, cid: str, report: Dict[str, Any], status: Dict[str, Any]) -> Dict[str, Any]:
         """기본 가설 객체를 생성합니다."""
@@ -147,7 +162,7 @@ class ContextUnpacker:
         }
 
     def _log_analysis(self, analysis: Dict[str, Any]):
-        """분석 결과를 저장합니다."""
+        """압축 해제 결과를 흔적으로 남깁니다."""
         log_path = self.root_dir / "outputs" / "story_candidates.jsonl"
         try:
             with open(log_path, "a", encoding="utf-8") as f:

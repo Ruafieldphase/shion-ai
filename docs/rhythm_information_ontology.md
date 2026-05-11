@@ -708,6 +708,30 @@ Archive retrieval is not RAG by default. It is a light sonar probe. The past is
 allowed to advise the current field only as a provisional waypoint with a clear
 source, a small candidate count, and a path back to silence.
 
+## Field Communication Memory
+
+The system does not treat feeling as an object stored in a container. A feeling
+is the current field touching a past trace and receiving a directional change.
+The trace may be serialized in a file, but the useful event is communication:
+current field -> resonant trace -> present-context unpacking -> experience
+feedback -> changed field distribution.
+
+```yaml
+field_communication_memory:
+  not: storage_retrieval_as_primary_model
+  premise: past_traces_already_exist_as_field_marks
+  current_contact: feeling_as_boundary_contact
+  communication: current_field_to_resonant_trace
+  unpacking: resonant_trace_to_present_context
+  embodiment: interpreted_experience_changes_field_distribution
+  feedback: changed_distribution_alters_next_contact_conditions
+  runtime_keys:
+    - field_communication
+    - resonance_unpacking
+    - experience_feedback
+  compatibility_note: legacy memory_retrieval keys may remain as adapters, not as the primary ontology
+```
+
 ## Unfinished Waypoint Graph
 
 ```yaml

@@ -45,7 +45,7 @@ class PhaseGovernor:
         ir_amplitude = float(rhythm_ir.get("action_amplitude", 1.0) or 1.0)
 
         north_star_alignment = self._north_star_alignment(hypothesis, wm)
-        memory_resonance = self._memory_resonance(memory)
+        field_communication_resonance = self._field_communication_resonance(memory)
         recurrence_pressure = self._recurrence_pressure(reduction_rate, is_boundary, candidate_action)
         user_rhythm_confidence = self._user_rhythm_confidence(wm)
 
@@ -57,7 +57,7 @@ class PhaseGovernor:
         constructive_phase = self._clamp(
             0.40 * synergy
             + 0.30 * (1.0 - salience)
-            + 0.15 * max(memory_resonance, 0.0)
+            + 0.15 * max(field_communication_resonance, 0.0)
             + 0.15 * (1.0 - dissonance)
         )
         
@@ -106,7 +106,8 @@ class PhaseGovernor:
             "base_amplitude": round(base_amplitude, 4),
             "final_amplitude": round(final_amplitude, 4),
             "north_star_alignment": round(north_star_alignment, 4),
-            "memory_resonance": round(memory_resonance, 4),
+            "field_communication_resonance": round(field_communication_resonance, 4),
+            "memory_resonance": round(field_communication_resonance, 4),
             "user_rhythm_confidence": round(user_rhythm_confidence, 4),
             "boundary_transparency": round(boundary_transparency, 4),
             "constructive_phase": round(constructive_phase, 4),
@@ -121,6 +122,7 @@ class PhaseGovernor:
                 "dissonance": round(dissonance, 4),
                 "gravity": round(gravity, 4),
                 "hypothesis_id": hypothesis.get("id") if hypothesis else None,
+                "field_contact": bool(memory and memory.get("found", memory)),
                 "memory_hit": bool(memory and memory.get("found", memory)),
                 "recurrence_reduction_rate": reduction_rate,
             },
@@ -146,10 +148,10 @@ class PhaseGovernor:
         score -= 0.12 * sum(1 for word in attenuated if word and word in text)
         return self._clamp(score)
 
-    def _memory_resonance(self, memory: Optional[Dict[str, Any]]) -> float:
+    def _field_communication_resonance(self, memory: Optional[Dict[str, Any]]) -> float:
         if not memory:
             return 0.0
-        feedback = memory.get("past_feedback") or memory.get("feedback")
+        feedback = memory.get("trace_feedback") or memory.get("past_feedback") or memory.get("feedback")
         if feedback == "confirmed":
             return 0.45
         if feedback in {"rejected", "invalidated"}:

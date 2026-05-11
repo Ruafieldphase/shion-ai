@@ -661,11 +661,24 @@ def main():
                     "boundary_report": boundary_report,
                     "field_status": field_status,
                     "current_vector": current_vector,
+                    "field_communication": {
+                        "found": False,
+                        "similar_id": None,
+                        "past_feedback": None,
+                        "trace_feedback": None,
+                        "communication_mode": "field_resonance",
+                    },
+                    "resonance_unpacking": {
+                        "mode": "current_field_to_past_trace_to_present_context",
+                        "unpacked": False,
+                        "hypothesis_id": None,
+                        "principle": "memory_is_field_communication_not_storage_retrieval",
+                    },
                     "memory_retrieval": {"found": False, "similar_id": None, "past_feedback": None},
                     "story_candidates": [],
                 }
             
-            # 현재까지의 모든 지표와 기억 검색 결과를 관리자에게 제출
+            # 현재까지의 모든 지표와 장 통신 결과를 관리자에게 제출
             learning_state = {}
             try:
                 metrics_path = HIPPO_PATH.parent / "learning_state.json"
@@ -714,7 +727,7 @@ def main():
                 )
             phase_trace = phase_governor.modulate(
                 sensing={**field_status, "is_boundary": is_boundary_sensing},
-                memory=mock_hypo_analysis.get("memory_retrieval"),
+                memory=mock_hypo_analysis.get("field_communication") or mock_hypo_analysis.get("memory_retrieval"),
                 hypothesis=mock_hypo_analysis.get("story_candidates", [])[0] if mock_hypo_analysis.get("story_candidates") else None,
                 metrics={**learning_state, "rhythm_ir": rhythm_frame, "ari_prism": ari_state},
                 candidate_action=candidate_action,
