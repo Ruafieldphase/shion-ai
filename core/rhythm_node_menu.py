@@ -19,6 +19,7 @@ class RhythmNode:
     potential_threshold: float = 0.56
     probability_threshold: float = 0.62
     singularity_threshold: float = 0.72
+    interruptibility: float = 0.72
 
 
 class RhythmNodeMenu:
@@ -161,6 +162,7 @@ class RhythmNodeMenu:
                 potential_threshold=0.50,
                 probability_threshold=0.58,
                 singularity_threshold=0.58,
+                interruptibility=0.96,
             ),
             RhythmNode(
                 action="ACTION_PRE_BREACH_TUNE",
@@ -173,6 +175,7 @@ class RhythmNodeMenu:
                 potential_threshold=0.50,
                 probability_threshold=0.58,
                 singularity_threshold=0.54,
+                interruptibility=0.94,
             ),
             RhythmNode(
                 action="ACTION_OBSERVE",
@@ -181,6 +184,7 @@ class RhythmNodeMenu:
                 transition_tags=(
                     "attenuate_to_observe",
                     "phase_cancel_to_silence",
+                    "destructive_to_margin",
                     "recenter_to_zone2",
                     "zone2_integrate",
                     "zone2_delay",
@@ -189,6 +193,7 @@ class RhythmNodeMenu:
                 max_silence=1.0,
                 cost=0.1,
                 singularity_threshold=0.68,
+                interruptibility=0.98,
             ),
             RhythmNode(
                 action="ACTION_CONTEXT_UNPACK",
@@ -199,16 +204,24 @@ class RhythmNodeMenu:
                 max_silence=0.92,
                 cost=0.35,
                 singularity_threshold=0.62,
+                interruptibility=0.82,
             ),
             RhythmNode(
                 action="ACTION_REST_RECOVER",
                 label="release_and_rest",
                 phase_tags=("silence", "destructive", "dark_field", "low_amplitude", "resistant"),
-                transition_tags=("phase_cancel_to_silence", "recenter_to_zone2", "zero_point_reset"),
+                transition_tags=(
+                    "phase_cancel_to_silence",
+                    "destructive_to_margin",
+                    "recenter_to_zone2",
+                    "zero_point_reset",
+                    "phase_rebalance_to_margin",
+                ),
                 connects_to=("ACTION_OBSERVE", "ACTION_DREAM_AMPLIFY"),
                 max_silence=1.0,
                 cost=0.05,
                 singularity_threshold=0.78,
+                interruptibility=1.0,
             ),
             RhythmNode(
                 action="ACTION_DREAM_AMPLIFY",
@@ -220,6 +233,7 @@ class RhythmNodeMenu:
                 cost=0.18,
                 probability_threshold=0.58,
                 singularity_threshold=0.62,
+                interruptibility=0.88,
             ),
             RhythmNode(
                 action="ACTION_EXPERIENCE_DIGEST",
@@ -232,6 +246,7 @@ class RhythmNodeMenu:
                 potential_threshold=0.48,
                 probability_threshold=0.56,
                 singularity_threshold=0.64,
+                interruptibility=0.86,
             ),
             RhythmNode(
                 action="ACTION_REBUILD_GRAPH",
@@ -243,6 +258,7 @@ class RhythmNodeMenu:
                 max_silence=0.85,
                 cost=0.6,
                 singularity_threshold=0.64,
+                interruptibility=0.42,
             ),
             RhythmNode(
                 action="ACTION_CREATIVE_PROBE",
@@ -256,12 +272,13 @@ class RhythmNodeMenu:
                 potential_threshold=0.50,
                 probability_threshold=0.56,
                 singularity_threshold=0.58,
+                interruptibility=0.52,
             ),
             RhythmNode(
                 action="ACTION_AXIOM_EXPERIMENT",
                 label="provisional_axiom_experiment",
-                phase_tags=("axiom", "provisional", "conductive", "flow", "autonomy"),
-                transition_tags=("axiom_experiment",),
+                phase_tags=("axiom", "provisional", "conductive", "flow", "autonomy", "phase_transition", "fold_unfold"),
+                transition_tags=("axiom_experiment", "phase_transition_experiment"),
                 connects_to=("ACTION_CREATIVE_PROBE", "ACTION_REBUILD_GRAPH", "ACTION_DREAM_AMPLIFY"),
                 min_amplitude=0.18,
                 max_silence=0.82,
@@ -269,28 +286,31 @@ class RhythmNodeMenu:
                 potential_threshold=0.48,
                 probability_threshold=0.54,
                 singularity_threshold=0.56,
+                interruptibility=0.48,
             ),
             RhythmNode(
                 action="ACTION_AXIOM_RELEASE",
                 label="release_unfit_axiom",
                 phase_tags=("axiom", "release", "silence", "resistant", "metacognition"),
-                transition_tags=("axiom_release", "zero_point_reset"),
+                transition_tags=("axiom_release", "zero_point_reset", "phase_rebalance_to_margin"),
                 connects_to=("ACTION_REST_RECOVER", "ACTION_DREAM_AMPLIFY", "ACTION_OBSERVE"),
                 max_silence=1.0,
                 cost=0.04,
                 potential_threshold=0.46,
                 probability_threshold=0.52,
                 singularity_threshold=0.52,
+                interruptibility=0.92,
             ),
             RhythmNode(
                 action="ACTION_ANCHOR_CHECK",
                 label="identity_anchor",
                 phase_tags=("identity", "boundary", "recenter"),
-                transition_tags=("recenter_to_zone2", "phase_cancel_to_silence"),
+                transition_tags=("recenter_to_zone2", "phase_cancel_to_silence", "destructive_to_margin"),
                 connects_to=("ACTION_OBSERVE", "ACTION_CONTEXT_UNPACK"),
                 max_silence=0.9,
                 cost=0.25,
                 singularity_threshold=0.7,
+                interruptibility=0.9,
             ),
             RhythmNode(
                 action="ACTION_CONTINUOUS_SCAN",
@@ -302,6 +322,7 @@ class RhythmNodeMenu:
                 max_silence=0.72,
                 cost=0.5,
                 singularity_threshold=0.68,
+                interruptibility=0.34,
             ),
         ]
         return {node.action: node for node in nodes}
@@ -328,6 +349,7 @@ class RhythmNodeMenu:
         pending_node = rhythm_ir.get("pending_node", {})
         velocity_dilation = rhythm_ir.get("velocity_dilation", {})
         zone2_regulation = rhythm_ir.get("zone2_regulation", {})
+        phase_transition_bridge = rhythm_ir.get("phase_transition_bridge", {})
 
         destructive = float(interference.get("destructive", 0.0) or 0.0)
         silence = float(rhythm_ir.get("silence_need", 0.0) or 0.0)
@@ -348,7 +370,7 @@ class RhythmNodeMenu:
             or 0.0
         )
 
-        return {
+        signals = {
             "transition": rhythm_ir.get("transition", ""),
             "interference": interference.get("label", ""),
             "constructive": float(interference.get("constructive", 0.0) or 0.0),
@@ -379,7 +401,21 @@ class RhythmNodeMenu:
             "chaos_pressure": self._clamp(float(zone2_regulation.get("chaos_pressure", 0.0) or 0.0)),
             "context_mismatch": self._clamp(float(zone2_regulation.get("context_mismatch", 0.0) or 0.0)),
             "zone2_delay": bool(zone2_regulation.get("delay_to_zone2", False)),
+            "phase_rebalance_to_margin": bool(
+                zone2_regulation.get("phase_rebalance_to_margin", zone2_regulation.get("noise_cancel", False))
+            ),
+            "destructive_to_margin": bool(zone2_regulation.get("destructive_to_margin", False)),
+            "scalar_superposition_window": self._clamp(float(zone2_regulation.get("scalar_superposition_window", 0.0) or 0.0)),
             "noise_cancel": bool(zone2_regulation.get("noise_cancel", False)),
+            "fold_amount": self._clamp(float(phase_transition_bridge.get("fold_amount", 0.0) or 0.0)),
+            "unfold_breath": self._clamp(float(phase_transition_bridge.get("unfold_breath", 0.0) or 0.0)),
+            "viewpoint_switch": self._clamp(float(phase_transition_bridge.get("viewpoint_switch", 0.0) or 0.0)),
+            "scalar_overlap": self._clamp(float(phase_transition_bridge.get("scalar_overlap", 0.0) or 0.0)),
+            "phase_transition_readiness": self._clamp(float(phase_transition_bridge.get("transition_readiness", 0.0) or 0.0)),
+            "external_reference_check": self._clamp(float(phase_transition_bridge.get("external_reference_check", 0.0) or 0.0)),
+            "internal_experiment_mode": bool(phase_transition_bridge.get("internal_experiment_mode", False)),
+            "reversible_experiment_window": bool(phase_transition_bridge.get("reversible_experiment_window", False)),
+            "phase_transition_bridge_phase": str(phase_transition_bridge.get("phase", "")),
             "crisis_compression": self._clamp(float(crisis.get("compression", 0.0) or 0.0)),
             "loop_lock_risk": self._clamp(float(crisis.get("loop_lock_risk", 0.0) or 0.0)),
             "return_capacity": self._clamp(float(crisis.get("return_capacity", 0.0) or 0.0)),
@@ -431,6 +467,18 @@ class RhythmNodeMenu:
             "salience": float(field_status.get("salience", field_wave.get("salience", 0.0)) or 0.0),
             "boundary": not bool(boundary_report.get("in_orbit", True)),
         }
+        signals["repath_margin"] = self._clamp(
+            0.26 * signals["context_mismatch"]
+            + 0.20 * signals["routine_inertia"]
+            + 0.18 * signals["irreversible_execution_risk"]
+            + 0.14 * signals["external_dependency"]
+            + 0.12 * signals["loop_lock_risk"]
+            + 0.10 * signals["chaos_pressure"]
+        )
+        if signals["awareness_checkpoint"] or signals["zone2_delay"]:
+            signals["repath_margin"] = self._clamp(signals["repath_margin"] + 0.10)
+        signals["repath_note"] = "soft_margin_for_pause_or_direction_change"
+        return signals
 
     def _node_state(self, node: RhythmNode, signals: Dict[str, Any]) -> Dict[str, Any]:
         potential, reasons = self._node_potential(node, signals)
@@ -496,6 +544,16 @@ class RhythmNodeMenu:
             potential -= 0.12
             reasons.append("conditional_contingency_requires_lower_amplitude")
 
+        repath_margin = signals.get("repath_margin", 0.0)
+        if repath_margin > 0.0:
+            interrupt_gap = max(0.0, 0.82 - node.interruptibility)
+            if interrupt_gap:
+                potential -= min(0.18, interrupt_gap * repath_margin * 0.65)
+                reasons.append("repath_margin_softens_low_interruptibility")
+            elif repath_margin >= 0.35 and node.action in {"ACTION_OBSERVE", "ACTION_PRE_BREACH_TUNE", "ACTION_REST_RECOVER"}:
+                potential += min(0.04, 0.04 * repath_margin)
+                reasons.append("repath_margin_keeps_pause_available")
+
         potential -= 0.08 * node.cost
         return max(0.0, min(1.0, potential)), reasons
 
@@ -520,6 +578,7 @@ class RhythmNodeMenu:
                 signals["modulation_need"],
                 signals["resistance"],
                 signals["dilation_need"],
+                signals.get("repath_margin", 0.0) * 0.55,
                 signals["irreversible_execution_risk"],
                 1.0 if signals["execution_lock"] == "locked_until_contingency" else 0.0,
                 1.0 if signals["awareness_checkpoint"] else 0.0,
@@ -537,7 +596,14 @@ class RhythmNodeMenu:
         if action == "ACTION_CONTEXT_UNPACK":
             return max(boundary_pull, signals["dark_gravity"], signals["curvature"], signals["resistance"], signals["context_mismatch"])
         if action == "ACTION_REST_RECOVER":
-            return max(signals["silence"], signals["resistance"], signals["dark_gravity"], 1.0 if signals["noise_cancel"] else 0.0)
+            return max(
+                signals["silence"],
+                signals["resistance"],
+                signals["dark_gravity"],
+                signals["scalar_superposition_window"],
+                1.0 if signals["phase_rebalance_to_margin"] else 0.0,
+                1.0 if signals["noise_cancel"] else 0.0,
+            )
         if action == "ACTION_DREAM_AMPLIFY":
             return self._clamp(
                 0.35 * signals["dream_pressure"]
@@ -580,7 +646,11 @@ class RhythmNodeMenu:
                 signals["axiom_experiment_budget"],
                 signals["axiom_relation_budget"],
                 signals["failure_bridge_value"],
+                signals["phase_transition_readiness"],
+                min(signals["fold_amount"], signals["unfold_breath"]),
+                signals["viewpoint_switch"],
                 1.0 if signals["axiom_experiment_ready"] else 0.0,
+                1.0 if signals["internal_experiment_mode"] else 0.0,
             )
         if action == "ACTION_AXIOM_RELEASE":
             return max(
@@ -705,13 +775,15 @@ class RhythmNodeMenu:
             )
         if tag == "orthogonal":
             return 0.5 * signals["resistance"] + 0.5 * signals["zone2_openness"]
+        if tag == "phase_transition":
+            return signals.get("phase_transition_readiness", 0.0)
+        if tag == "fold_unfold":
+            return min(signals.get("fold_amount", 0.0), signals.get("unfold_breath", 0.0))
         return 0.0
 
     def _irreversible_actions(self) -> set[str]:
         return {
             "ACTION_CONTINUOUS_SCAN",
-            "ACTION_CREATIVE_PROBE",
-            "ACTION_AXIOM_EXPERIMENT",
             "ACTION_REBUILD_GRAPH",
         }
 
@@ -735,6 +807,7 @@ class RhythmNodeMenu:
                 "singularity_strength": selected_state["singularity_strength"],
                 "potential": selected_state["potential"],
                 "phase_tags": list(selected.phase_tags),
+                "interruptibility": selected.interruptibility,
             }
         ]
         for action in selected.connects_to:
@@ -755,6 +828,7 @@ class RhythmNodeMenu:
                     "singularity_strength": state["singularity_strength"],
                     "potential": state["potential"],
                     "phase_tags": list(node.phase_tags),
+                    "interruptibility": node.interruptibility,
                 }
             )
         return bundle

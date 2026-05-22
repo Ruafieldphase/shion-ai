@@ -12,7 +12,7 @@ def test_sensory_injection():
     desc = "The screen shows a Python code editor with Antigravity agent logs. There is a blue background."
     
     print("🌊 [Test] Injecting visual memory...")
-    node_id = builder.inject_sensory_memory(
+    node_id = builder.imprint_sensory_wave(
         sensory_type="vision",
         description=desc,
         content_ref="dummy_screen.png"

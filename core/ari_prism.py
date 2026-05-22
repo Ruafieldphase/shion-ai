@@ -315,9 +315,11 @@ class ARIPrism:
         action = selected_action or "ACTION_CONTINUOUS_SCAN"
         expansion_actions = {
             "ACTION_CONTINUOUS_SCAN",
+            "ACTION_REBUILD_GRAPH",
+        }
+        recoverable_experiment_actions = {
             "ACTION_CREATIVE_PROBE",
             "ACTION_AXIOM_EXPERIMENT",
-            "ACTION_REBUILD_GRAPH",
         }
         protected_actions = {
             "ACTION_CRISIS_STABILIZE",
@@ -334,7 +336,9 @@ class ARIPrism:
         suggested = action
         reason = "selected_action_preserved"
 
-        if action in protected_actions:
+        if action in recoverable_experiment_actions:
+            reason = "recoverable_experiment_preserved_for_failure_learning"
+        elif action in protected_actions:
             reason = "action_already_bounds_or_softens_ego_resistance"
         elif action in expansion_actions and ego >= 0.62 and closure >= 0.56:
             digest_pressure = float(digestion.get("pressure", 0.0) or 0.0)

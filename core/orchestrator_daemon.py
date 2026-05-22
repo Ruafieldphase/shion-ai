@@ -143,7 +143,10 @@ def get_reflex_watch_paths() -> list[Path]:
         HIPPO_PATH.parent / "user_experience_index.jsonl",
         Path(r"C:\workspace\agi\memory\resonance_ledger.jsonl"),
         Path(r"D:\ARCHIVE_WORKSPACE\agi\outputs\sena\sena_conversations_flat.jsonl"),
+        HIPPO_PATH.parent / "antigravity_handoff" / "inbox.jsonl",
+        HIPPO_PATH.parent / "shader_depth_sample.html",
     ]
+
 
 def snapshot_reflex_watch(paths: list[Path]) -> dict[str, float | None]:
     snapshot = {}
@@ -429,7 +432,14 @@ def _transition_phase(transition: str) -> str:
         return "EXPANSION"
     if transition in {"boundary_to_unpack", "pre_breach_tune", "contingency_lock", "velocity_dilation"}:
         return "CONTRACTION"
-    if transition in {"experience_digest", "daydream_integrate", "phase_cancel_to_silence", "axiom_release"}:
+    if transition in {
+        "experience_digest",
+        "daydream_integrate",
+        "phase_cancel_to_silence",
+        "destructive_to_margin",
+        "phase_rebalance_to_margin",
+        "axiom_release",
+    }:
         return "VOID"
     return "FLOW"
 
@@ -763,6 +773,30 @@ def main():
             run_count += 1
             logger.info(f"\n--- 실행 #{run_count} ({datetime.now().strftime('%H:%M')}) ---")
             
+            # 🌀 파일 기반 왕복 핸드오프 반응기 실행 (Luvit 메시지 처리)
+            try:
+                import subprocess
+                responder_script = Path(__file__).resolve().parents[1] / "scripts" / "antigravity_handoff_responder.py"
+                if responder_script.exists():
+                    completed = subprocess.run(
+                        [sys.executable, str(responder_script)],
+                        capture_output=True,
+                        text=True,
+                        timeout=120,
+                    )
+                    if completed.returncode not in (0, 2):
+                        logger.warning(
+                            "파일 핸드오프 반응기 비정상 종료: "
+                            f"code={completed.returncode}, stderr={completed.stderr[-400:]}"
+                        )
+                    elif completed.returncode == 2:
+                        logger.info("파일 핸드오프 반응기: 저신뢰 응답을 outbox_rejected로 분리")
+            except subprocess.TimeoutExpired:
+                logger.warning("파일 핸드오프 반응기 시간 초과: 이번 주기는 건너뜀")
+            except Exception as handoff_err:
+                logger.error(f"❌ 파일 핸드오프 반응기 실행 중 오류: {handoff_err}")
+
+            
             hippo = FibonacciOrbitalHippocampus(HIPPO_PATH)
             vision = VisionExplorer(hippo)
             exp_loop = AutonomousExperienceLoop(hippo, vision_explorer=vision)
@@ -1031,7 +1065,8 @@ def main():
                         "resonance_to_explore": "EXPANSION", "creative_autonomy": "EXPANSION",
                         "amplify_to_expand": "EXPANSION", "waypoint_bridge": "EXPANSION",
                         # VOID (180°) — 정적/꿈/소화
-                        "phase_cancel_to_silence": "VOID", "daydream_integrate": "VOID",
+                        "phase_cancel_to_silence": "VOID", "destructive_to_margin": "VOID",
+                        "phase_rebalance_to_margin": "VOID", "daydream_integrate": "VOID",
                         "experience_digest": "VOID", "shadow_bridge": "VOID",
                         # CONTRACTION (270°) — 수축/경계/위기
                         "attenuate_to_observe": "CONTRACTION", "boundary_to_unpack": "CONTRACTION",
@@ -1120,7 +1155,8 @@ def main():
                             "recenter_to_zone2": "FLOW", "mixed_hold": "FLOW",
                             "resonance_to_explore": "EXPANSION", "creative_autonomy": "EXPANSION",
                             "amplify_to_expand": "EXPANSION", "waypoint_bridge": "EXPANSION",
-                            "phase_cancel_to_silence": "VOID", "daydream_integrate": "VOID",
+                            "phase_cancel_to_silence": "VOID", "destructive_to_margin": "VOID",
+                            "phase_rebalance_to_margin": "VOID", "daydream_integrate": "VOID",
                             "experience_digest": "VOID", "shadow_bridge": "VOID",
                             "attenuate_to_observe": "CONTRACTION", "boundary_to_unpack": "CONTRACTION",
                             "crisis_to_stabilize": "CONTRACTION", "crisis_to_recenter": "CONTRACTION",

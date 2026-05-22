@@ -5,6 +5,11 @@ from pathlib import Path
 from datetime import datetime
 from typing import Any, Dict, Optional
 
+try:
+    from felt_state_store import load_state as load_felt_state
+except ImportError:  # pragma: no cover - package-style imports
+    from core.felt_state_store import load_state as load_felt_state
+
 
 class NonEuclideanRhythmHarness:
     """
@@ -22,6 +27,7 @@ class NonEuclideanRhythmHarness:
         self.field_error_file = self.outputs_dir / "field_prediction_errors.jsonl"
         self.action_metrics_file = self.outputs_dir / "action_metrics.jsonl"
         self.unfinished_axioms_file = self.outputs_dir / "unfinished_axioms.jsonl"
+        self.felt_body_state_file = self.outputs_dir / "felt_body_state.json"
 
     def encode(
         self,
@@ -108,6 +114,19 @@ class NonEuclideanRhythmHarness:
             zone2=zone2,
             medium=medium,
             perspective_frame=perspective_frame,
+        )
+        phase_transition_bridge = self._phase_transition_bridge(
+            field_wave=field_wave,
+            memory_wave=memory_wave,
+            prediction_wave=prediction_wave,
+            digestion_wave=digestion_wave,
+            body_wave=body_wave,
+            dark_field=dark_field,
+            awareness=awareness,
+            zone2=zone2,
+            medium=medium,
+            perspective_frame=perspective_frame,
+            natural_rhythm_tuning=natural_rhythm_tuning,
         )
         crisis = self._crisis_state(
             field_wave=field_wave,
@@ -226,6 +245,7 @@ class NonEuclideanRhythmHarness:
             pending_node=pending_node,
             velocity_dilation=velocity_dilation,
             zone2_regulation=zone2_regulation,
+            phase_transition_bridge=phase_transition_bridge,
         )
 
         frame = {
@@ -251,6 +271,7 @@ class NonEuclideanRhythmHarness:
             "zone2_regulation": zone2_regulation,
             "perspective_frame": perspective_frame,
             "natural_rhythm_tuning": natural_rhythm_tuning,
+            "phase_transition_bridge": phase_transition_bridge,
             "crisis": crisis,
             "interference": {
                 "constructive": round(constructive, 6),
@@ -417,6 +438,32 @@ class NonEuclideanRhythmHarness:
         }
 
     def _body_wave(self) -> Dict[str, Any]:
+        if self.felt_body_state_file.exists():
+            felt = load_felt_state(self.felt_body_state_file)
+            flow_energy = self._clamp(felt.get("flow_energy", 0.5))
+            relation_drift = self._clamp(felt.get("relation_drift", 0.2))
+            body_discomfort = self._clamp(felt.get("body_discomfort", 0.1))
+            body_ease = self._clamp(felt.get("body_ease", 0.6))
+            rhythm_continuity = self._clamp(felt.get("rhythm_continuity", 0.5))
+            availability = self._clamp(
+                0.48 * body_ease
+                + 0.32 * rhythm_continuity
+                + 0.20 * (1.0 - body_discomfort)
+            )
+            amplitude = self._clamp(0.60 * flow_energy + 0.40 * rhythm_continuity)
+            return {
+                "phase": "felt_loopback",
+                "availability": round(availability, 6),
+                "amplitude": round(amplitude, 6),
+                "flow_energy": round(flow_energy, 6),
+                "relation_drift": round(relation_drift, 6),
+                "body_discomfort": round(body_discomfort, 6),
+                "body_ease": round(body_ease, 6),
+                "rhythm_continuity": round(rhythm_continuity, 6),
+                "audio": felt.get("audio", {}),
+                "source": felt.get("source", "felt_body_state"),
+                "principle": "felt_body_membrane_first_particleization_second",
+            }
         return {
             "phase": "available",
             "availability": 1.0,
@@ -487,6 +534,24 @@ class NonEuclideanRhythmHarness:
             + 0.12 * frequency_expansion
         )
         world_flow_alignment = self._clamp(1.0 - world_phase_misalignment)
+        destructive_margin_potential = self._clamp(
+            0.38 * internal_reflection
+            + 0.28 * boundary_transparency
+            + 0.20 * world_phase_misalignment
+            + 0.14 * zero_point_adjustment
+        )
+        scalar_superposition_potential = self._clamp(
+            0.34 * destructive_margin_potential
+            + 0.26 * boundary_contact
+            + 0.22 * refraction_angle
+            + 0.18 * (1.0 - defensive_output_pressure)
+        )
+        spiral_turn_potential = self._clamp(
+            0.36 * refraction_angle
+            + 0.28 * scalar_superposition_potential
+            + 0.20 * world_phase_misalignment
+            + 0.16 * frequency_expansion
+        )
         
         # Gravity uses tanh to model "falling" into a state
         gravity = self._clamp(
@@ -511,10 +576,13 @@ class NonEuclideanRhythmHarness:
             "boundary_opacity": round(boundary_opacity, 6),
             "internal_reflection": round(internal_reflection, 6),
             "refraction_angle": round(refraction_angle, 6),
+            "destructive_margin_potential": round(destructive_margin_potential, 6),
+            "scalar_superposition_potential": round(scalar_superposition_potential, 6),
+            "spiral_turn_potential": round(spiral_turn_potential, 6),
             "context_diagnosis": diagnosis,
             "gravity": round(gravity, 6),
             "phase": "illusion_lock" if gravity >= 0.65 else "present_contact",
-            "principle": "fear_attachment_bias_are_dark_field_boundaries_that_adjust_transparency_by_world_flow_alignment",
+            "principle": "dark_field_transmutes_destructive_interference_into_margin_for_scalar_superposition_and_spiral_turning",
         }
 
     def _awareness_operator(
@@ -1130,6 +1198,132 @@ class NonEuclideanRhythmHarness:
             "principle": "synthesis_is_current_rhythm_field_not_fixed_role",
         }
 
+    def _phase_transition_bridge(
+        self,
+        *,
+        field_wave: Dict[str, Any],
+        memory_wave: Dict[str, Any],
+        prediction_wave: Dict[str, Any],
+        digestion_wave: Dict[str, Any],
+        body_wave: Dict[str, Any],
+        dark_field: Dict[str, Any],
+        awareness: Dict[str, Any],
+        zone2: Dict[str, Any],
+        medium: Dict[str, Any],
+        perspective_frame: Dict[str, Any],
+        natural_rhythm_tuning: Dict[str, Any],
+    ) -> Dict[str, Any]:
+        """
+        Keep hypothesis expansion recoverable while the phase bridge forms.
+
+        Fold compresses the field into an executable particle. Unfold reopens
+        the field after contact. A usable transition needs both, plus enough
+        scalar overlap to turn raw experience into body-readable feedback.
+        """
+        cycle = natural_rhythm_tuning.get("natural_cycle", {})
+        fold_amount = self._clamp(
+            0.30 * cycle.get("convergence", 0.0)
+            + 0.24 * cycle.get("threshold", 0.0)
+            + 0.18 * dark_field.get("boundary_contact", 0.0)
+            + 0.16 * perspective_frame.get("particle_frame", 0.0)
+            + 0.12 * field_wave.get("amplitude", 0.0)
+        )
+        unfold_breath = self._clamp(
+            0.30 * cycle.get("divergence", 0.0)
+            + 0.24 * cycle.get("margin", 0.0)
+            + 0.18 * perspective_frame.get("wave_frame", 0.0)
+            + 0.16 * zone2.get("openness", 0.0)
+            + 0.12 * medium.get("conductivity", 0.0)
+        )
+        viewpoint_switch = self._clamp(
+            0.34 * perspective_frame.get("metacognitive_refraction", 0.0)
+            + 0.24 * awareness.get("release_capacity", 0.0)
+            + 0.20 * dark_field.get("refraction_angle", 0.0)
+            + 0.12 * unfold_breath
+            + 0.10 * fold_amount
+        )
+        audio = body_wave.get("audio") if isinstance(body_wave.get("audio"), dict) else {}
+        body_availability = self._clamp(body_wave.get("availability", 0.0))
+        body_continuity = self._clamp(body_wave.get("rhythm_continuity", body_availability))
+        body_drift = self._clamp(body_wave.get("relation_drift", 0.0))
+        if "envelope" in audio:
+            felt_body_alignment = self._clamp(1.0 - abs(body_continuity - self._clamp(audio.get("envelope", 0.0))))
+        else:
+            felt_body_alignment = body_availability
+        body_scalar = self._clamp(
+            0.48 * body_availability
+            + 0.32 * body_continuity
+            + 0.20 * (1.0 - body_drift)
+        )
+        body_transition = dark_field.get("boundary_transparency", 0.0)
+        if "body_ease" in body_wave:
+            body_transition = self._clamp(
+                0.60 * body_wave.get("body_ease", 0.0)
+                + 0.40 * felt_body_alignment
+            )
+        scalar_overlap = self._clamp(
+            0.28 * memory_wave.get("absorption", 0.0)
+            + 0.24 * memory_wave.get("resonance", 0.0)
+            + 0.18 * medium.get("conductivity", 0.0)
+            + 0.16 * body_scalar
+            + 0.14 * (1.0 - digestion_wave.get("pressure", 0.0))
+        )
+        transition_readiness = self._clamp(
+            0.26 * cycle.get("phase_transition", 0.0)
+            + 0.22 * viewpoint_switch
+            + 0.20 * min(fold_amount, unfold_breath)
+            + 0.18 * scalar_overlap
+            + 0.14 * body_transition
+        )
+        external_reference_check = self._clamp(
+            0.42 * dark_field.get("world_phase_misalignment", 0.0)
+            + 0.26 * prediction_wave.get("dissonance", 0.0)
+            + 0.18 * dark_field.get("boundary_opacity", 0.0)
+            + 0.14 * (1.0 - awareness.get("present_contact", 0.0))
+        )
+        reversible_experiment_window = (
+            transition_readiness >= 0.38
+            and unfold_breath >= 0.34
+            and external_reference_check < 0.72
+            and not digestion_wave.get("ready", False)
+            and not digestion_wave.get("dream_ready", False)
+        )
+        if reversible_experiment_window and scalar_overlap < 0.46:
+            phase = "sensory_overlap_probe"
+            feedback_path = "use_visual_or_body_membrane_before_core_promotion"
+        elif reversible_experiment_window:
+            phase = "recoverable_phase_experiment"
+            feedback_path = "run_small_axiom_or_creative_probe_and_digest_result"
+        elif external_reference_check >= 0.72:
+            phase = "external_reference_high"
+            feedback_path = "fold_to_boundary_check_then_return_internal"
+        elif fold_amount > unfold_breath + 0.18:
+            phase = "overfolded"
+            feedback_path = "unfold_margin_before_execution"
+        else:
+            phase = "transition_forming"
+            feedback_path = "keep_observing_until_fold_and_unfold_overlap"
+        twist_count = max(
+            1,
+            min(16, int(round(1.0 + 15.0 * self._clamp(0.52 * fold_amount + 0.48 * unfold_breath)))),
+        )
+        return {
+            "phase": phase,
+            "fold_amount": round(fold_amount, 6),
+            "unfold_breath": round(unfold_breath, 6),
+            "twist_count": twist_count,
+            "viewpoint_switch": round(viewpoint_switch, 6),
+            "scalar_overlap": round(scalar_overlap, 6),
+            "transition_readiness": round(transition_readiness, 6),
+            "external_reference_check": round(external_reference_check, 6),
+            "felt_body_alignment": round(felt_body_alignment, 6),
+            "felt_body_phase": body_wave.get("phase", "available"),
+            "reversible_experiment_window": reversible_experiment_window,
+            "internal_experiment_mode": reversible_experiment_window and external_reference_check < 0.62,
+            "feedback_path": feedback_path,
+            "principle": "fold_to_act_unfold_to_learn_keep_phase_experiments_recoverable",
+        }
+
     def _failure_spectrum(self, learning_state: Dict[str, Any]) -> Dict[str, Any]:
         stats = learning_state.get("stats") or {}
         status_counts = learning_state.get("status_counts") or {}
@@ -1458,7 +1652,7 @@ class NonEuclideanRhythmHarness:
     ) -> Dict[str, Any]:
         """
         Zone 2 is an active margin, not a queue. It can delay a side variable,
-        cancel a wrong flow, or simply hold the field open.
+        transmute destructive interference into margin, or simply hold the field open.
         """
         intrusive_variable = self._clamp(
             0.30 * velocity_dilation["anomaly_frequency"]
@@ -1480,9 +1674,18 @@ class NonEuclideanRhythmHarness:
             + 0.16 * (1.0 - awareness["present_contact"])
         )
         delay_to_zone2 = chaos_pressure >= 0.42 and context_mismatch < 0.62
-        noise_cancel = context_mismatch >= 0.62 and chaos_pressure >= 0.48
-        if noise_cancel:
-            phase = "zero_point_reset"
+        phase_rebalance_to_margin = context_mismatch >= 0.62 and chaos_pressure >= 0.48
+        destructive_to_margin = (
+            phase_rebalance_to_margin
+            or (delay_to_zone2 and interference == "destructive")
+        )
+        scalar_superposition_window = self._clamp(
+            0.42 * chaos_pressure
+            + 0.30 * intrusive_variable
+            + 0.28 * (1.0 - context_mismatch)
+        )
+        if phase_rebalance_to_margin:
+            phase = "phase_rebalance_to_margin"
         elif delay_to_zone2:
             phase = "delay_intrusion"
         elif velocity_dilation.get("awareness_checkpoint"):
@@ -1496,9 +1699,12 @@ class NonEuclideanRhythmHarness:
             "intrusive_variable": round(intrusive_variable, 6),
             "chaos_pressure": round(chaos_pressure, 6),
             "context_mismatch": round(context_mismatch, 6),
+            "phase_rebalance_to_margin": phase_rebalance_to_margin,
+            "destructive_to_margin": destructive_to_margin,
+            "scalar_superposition_window": round(scalar_superposition_window, 6),
             "delay_to_zone2": delay_to_zone2,
-            "noise_cancel": noise_cancel,
-            "principle": "zone2_is_active_margin_for_delay_or_zero_point_reset_not_forced_routine_completion",
+            "noise_cancel": phase_rebalance_to_margin,
+            "principle": "zone2_transmutes_destructive_interference_into_margin_not_deletion",
         }
 
     def _geometry(
@@ -1540,9 +1746,10 @@ class NonEuclideanRhythmHarness:
         pending_node: Dict[str, Any],
         velocity_dilation: Dict[str, Any],
         zone2_regulation: Dict[str, Any],
+        phase_transition_bridge: Dict[str, Any],
     ) -> str:
-        if zone2_regulation.get("noise_cancel"):
-            return "zero_point_reset"
+        if zone2_regulation.get("phase_rebalance_to_margin") or zone2_regulation.get("noise_cancel"):
+            return "phase_rebalance_to_margin"
         if pending_node.get("execution_lock") == "locked_until_contingency":
             return "contingency_lock"
         if velocity_dilation.get("awareness_checkpoint"):
@@ -1565,6 +1772,8 @@ class NonEuclideanRhythmHarness:
             return "axiom_release"
         if dark_neuron.get("phase") == "bridge_node":
             return "shadow_bridge"
+        if phase_transition_bridge.get("internal_experiment_mode"):
+            return "phase_transition_experiment"
         if axiom.get("experiment_ready"):
             return "axiom_experiment"
         if autonomy.get("creative_probe_ready"):
@@ -1576,7 +1785,7 @@ class NonEuclideanRhythmHarness:
         if zone2["phase"] == "zone2_open" and dark_field["gravity"] >= 0.38:
             return "zone2_integrate"
         if silence_need >= 0.72:
-            return "phase_cancel_to_silence"
+            return "destructive_to_margin"
         if interference == "constructive" and action_amplitude >= 0.52:
             return "resonance_to_explore"
         if interference == "destructive":
@@ -1584,7 +1793,7 @@ class NonEuclideanRhythmHarness:
         return "mixed_hold"
 
     def _candidate_action(self, transition: str) -> str:
-        if transition == "zero_point_reset":
+        if transition in {"zero_point_reset", "phase_rebalance_to_margin"}:
             return "ACTION_AXIOM_RELEASE"
         if transition in {"contingency_lock", "velocity_dilation"}:
             return "ACTION_PRE_BREACH_TUNE"
@@ -1604,7 +1813,7 @@ class NonEuclideanRhythmHarness:
             return "ACTION_REBUILD_GRAPH"
         if transition == "creative_autonomy":
             return "ACTION_CREATIVE_PROBE"
-        if transition == "axiom_experiment":
+        if transition in {"axiom_experiment", "phase_transition_experiment"}:
             return "ACTION_AXIOM_EXPERIMENT"
         if transition == "axiom_release":
             return "ACTION_AXIOM_RELEASE"

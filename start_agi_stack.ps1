@@ -55,7 +55,7 @@ function Get-CommandLineProcess {
     Get-CimInstance Win32_Process | Where-Object {
         $_.CommandLine -and
         $_.CommandLine -match $Pattern -and
-        $_.Name -notmatch "^(powershell|pwsh)(\.exe)?$"
+        $_.Name -notmatch "^(powershell|pwsh|cmd|conhost)(\.exe)?$"
     }
 }
 

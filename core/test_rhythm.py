@@ -9,7 +9,7 @@ sys.path.append(str(SHION_ROOT / "core"))
 
 from shion_minimal import ShionMinimal
 
-async def test_rhythmic_filter():
+async def _test_rhythmic_filter_async():
     shion = ShionMinimal(SHION_ROOT)
     
     print("🌊 Testing Phase 64: Rhythmic Filter & Obsession Detector")
@@ -44,4 +44,8 @@ async def test_rhythmic_filter():
                 print("✅ Success: Obsession detected after 3 repeated RESEARCH intents.")
 
 if __name__ == "__main__":
-    asyncio.run(test_rhythmic_filter())
+    asyncio.run(_test_rhythmic_filter_async())
+
+
+def test_rhythmic_filter():
+    asyncio.run(_test_rhythmic_filter_async())

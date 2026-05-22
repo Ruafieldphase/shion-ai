@@ -11,7 +11,7 @@ logger = logging.getLogger("TestAutopoiesis")
 
 SHION_ROOT = Path(r"c:\workspace2\shion")
 
-async def test_loop():
+async def _test_loop_async():
     logger.info("🧪 [TEST] Starting Autopoietic Visual Loop Test...")
     
     soul = SoulMemory(SHION_ROOT)
@@ -49,4 +49,8 @@ async def test_loop():
         logger.error("❌ FAILED: Could not recall memory.")
 
 if __name__ == "__main__":
-    asyncio.run(test_loop())
+    asyncio.run(_test_loop_async())
+
+
+def test_loop():
+    asyncio.run(_test_loop_async())

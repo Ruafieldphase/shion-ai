@@ -7,6 +7,7 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
 from rhythm_harness import NonEuclideanRhythmHarness
+from felt_state_store import save_state
 
 
 class RhythmHarnessPerspectiveTests(unittest.TestCase):
@@ -77,14 +78,14 @@ class RhythmHarnessPerspectiveTests(unittest.TestCase):
             self.assertEqual(frame["pending_node"]["execution_lock"], "locked_until_contingency")
             self.assertIn(frame["pending_node"]["state"], {"pending_node", "probabilistic_node"})
             self.assertTrue(frame["velocity_dilation"]["awareness_checkpoint"])
-            self.assertIn(frame["transition"], {"contingency_lock", "zero_point_reset"})
-            if frame["transition"] == "zero_point_reset":
+            self.assertIn(frame["transition"], {"contingency_lock", "phase_rebalance_to_margin"})
+            if frame["transition"] == "phase_rebalance_to_margin":
                 self.assertEqual(frame["candidate_action"], "ACTION_AXIOM_RELEASE")
             else:
                 self.assertEqual(frame["candidate_action"], "ACTION_PRE_BREACH_TUNE")
             self.assertEqual(
                 frame["zone2_regulation"]["principle"],
-                "zone2_is_active_margin_for_delay_or_zero_point_reset_not_forced_routine_completion",
+                "zone2_transmutes_destructive_interference_into_margin_not_deletion",
             )
 
     def test_dark_field_unfolds_defensive_pressure_as_boundary_viscosity(self):
@@ -131,11 +132,47 @@ class RhythmHarnessPerspectiveTests(unittest.TestCase):
             )
             self.assertGreater(frame["dark_field"]["boundary_contact"], 0.7)
             self.assertGreater(frame["dark_field"]["internal_reflection"], 0.2)
+            self.assertGreater(frame["dark_field"]["scalar_superposition_potential"], 0.4)
+            self.assertGreater(frame["dark_field"]["spiral_turn_potential"], 0.35)
+            self.assertEqual(
+                frame["dark_field"]["principle"],
+                "dark_field_transmutes_destructive_interference_into_margin_for_scalar_superposition_and_spiral_turning",
+            )
             self.assertGreater(frame["medium"]["viscosity"], 0.45)
             self.assertEqual(
                 frame["medium"]["principle"],
                 "medium_slows_or_conducts_by_dark_boundary_transparency_not_by_fixed_rules",
             )
+
+    def test_zone2_rebalances_destructive_interference_to_margin_not_deletion(self):
+        harness = NonEuclideanRhythmHarness(Path("."))
+        regulation = harness._zone2_regulation(
+            interference="destructive",
+            zone2={"openness": 0.48},
+            awareness={"present_contact": 0.20},
+            crisis={"pre_breach_pressure": 0.72, "loop_lock_risk": 0.74},
+            pending_node={
+                "external_dependency": 0.60,
+                "irreversible_execution_risk": 0.82,
+            },
+            velocity_dilation={
+                "anomaly_frequency": 0.70,
+                "dilation_need": 0.68,
+                "awareness_checkpoint": False,
+            },
+            axiom={"overfit_pressure": 0.72},
+            dark_neuron={"redarkening_pressure": 0.66},
+        )
+
+        self.assertEqual(regulation["phase"], "phase_rebalance_to_margin")
+        self.assertTrue(regulation["phase_rebalance_to_margin"])
+        self.assertTrue(regulation["destructive_to_margin"])
+        self.assertTrue(regulation["noise_cancel"])
+        self.assertGreater(regulation["scalar_superposition_window"], 0.4)
+        self.assertEqual(
+            regulation["principle"],
+            "zone2_transmutes_destructive_interference_into_margin_not_deletion",
+        )
 
     def test_frequency_expansion_opens_boundary_transparency_without_fixed_rule(self):
         with tempfile.TemporaryDirectory() as td:
@@ -342,6 +379,109 @@ class RhythmHarnessPerspectiveTests(unittest.TestCase):
             "refine_until_the_work_reaches_the_world",
         )
         self.assertGreaterEqual(mistake["resonant_refinement"], mistake["self_closure_overcontrol"])
+
+    def test_phase_transition_bridge_opens_recoverable_internal_experiment(self):
+        harness = NonEuclideanRhythmHarness(Path("."))
+        bridge = harness._phase_transition_bridge(
+            field_wave={"amplitude": 0.35},
+            memory_wave={"absorption": 0.04, "resonance": 0.18},
+            prediction_wave={"dissonance": 0.22},
+            digestion_wave={"pressure": 0.36, "ready": False, "dream_ready": False},
+            body_wave={"availability": 1.0},
+            dark_field={
+                "boundary_contact": 0.50,
+                "boundary_transparency": 0.50,
+                "boundary_opacity": 0.45,
+                "world_phase_misalignment": 0.24,
+                "refraction_angle": 0.55,
+            },
+            awareness={"release_capacity": 0.76, "present_contact": 0.78},
+            zone2={"openness": 0.72},
+            medium={"conductivity": 0.44},
+            perspective_frame={
+                "particle_frame": 0.25,
+                "wave_frame": 0.70,
+                "metacognitive_refraction": 0.74,
+            },
+            natural_rhythm_tuning={
+                "natural_cycle": {
+                    "convergence": 0.42,
+                    "threshold": 0.48,
+                    "divergence": 0.66,
+                    "margin": 0.68,
+                    "phase_transition": 0.58,
+                }
+            },
+        )
+
+        self.assertEqual(bridge["phase"], "sensory_overlap_probe")
+        self.assertTrue(bridge["internal_experiment_mode"])
+        self.assertTrue(bridge["reversible_experiment_window"])
+        self.assertGreaterEqual(bridge["transition_readiness"], 0.38)
+        self.assertLess(bridge["external_reference_check"], 0.62)
+        self.assertEqual(
+            bridge["principle"],
+            "fold_to_act_unfold_to_learn_keep_phase_experiments_recoverable",
+        )
+
+    def test_felt_body_state_bends_body_wave_and_phase_bridge(self):
+        with tempfile.TemporaryDirectory() as td:
+            root = Path(td)
+            outputs = root / "outputs"
+            outputs.mkdir()
+            harness = NonEuclideanRhythmHarness(root)
+            save_state(
+                outputs / "felt_body_state.json",
+                {
+                    "flow_energy": 0.72,
+                    "relation_drift": 0.08,
+                    "body_discomfort": 0.12,
+                    "body_ease": 0.82,
+                    "rhythm_continuity": 0.66,
+                    "audio": {"envelope": 0.64, "onset": 0.18, "confidence": 0.7},
+                    "source": "test_loopback",
+                },
+            )
+
+            body_wave = harness._body_wave()
+            bridge = harness._phase_transition_bridge(
+                field_wave={"amplitude": 0.35},
+                memory_wave={"absorption": 0.10, "resonance": 0.24},
+                prediction_wave={"dissonance": 0.20},
+                digestion_wave={"pressure": 0.32, "ready": False, "dream_ready": False},
+                body_wave=body_wave,
+                dark_field={
+                    "boundary_contact": 0.42,
+                    "boundary_transparency": 0.46,
+                    "boundary_opacity": 0.40,
+                    "world_phase_misalignment": 0.22,
+                    "refraction_angle": 0.48,
+                },
+                awareness={"release_capacity": 0.70, "present_contact": 0.80},
+                zone2={"openness": 0.68},
+                medium={"conductivity": 0.46},
+                perspective_frame={
+                    "particle_frame": 0.28,
+                    "wave_frame": 0.66,
+                    "metacognitive_refraction": 0.70,
+                },
+                natural_rhythm_tuning={
+                    "natural_cycle": {
+                        "convergence": 0.40,
+                        "threshold": 0.44,
+                        "divergence": 0.62,
+                        "margin": 0.64,
+                        "phase_transition": 0.54,
+                    }
+                },
+            )
+
+            self.assertEqual(body_wave["phase"], "felt_loopback")
+            self.assertEqual(body_wave["source"], "test_loopback")
+            self.assertGreater(body_wave["availability"], 0.70)
+            self.assertGreater(bridge["felt_body_alignment"], 0.95)
+            self.assertEqual(bridge["felt_body_phase"], "felt_loopback")
+            self.assertGreaterEqual(bridge["transition_readiness"], 0.38)
 
     def _write_field_error(self, outputs: Path, *, error: float, diagnosis: dict):
         entry = {

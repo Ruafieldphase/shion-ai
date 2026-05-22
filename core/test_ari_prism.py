@@ -115,6 +115,45 @@ class ARIPrismTests(unittest.TestCase):
             self.assertGreater(state["moc"]["living_difference_floor"], 0.0)
             self.assertLess(state["moc"]["kindness_waypoint"]["giving_band"], 0.3)
 
+    def test_recoverable_axiom_experiment_is_not_redirected_by_ego_resistance(self):
+        with tempfile.TemporaryDirectory() as td:
+            prism = ARIPrism(Path(td))
+            state = prism.assess(
+                {
+                    "waves": {
+                        "field": {"curvature": 0.34, "salience": 0.40},
+                        "memory": {"resonance": 0.36, "absorption": 0.08},
+                        "prediction": {"dissonance": 0.30},
+                        "digestion": {
+                            "pressure": 0.62,
+                            "absorption_gap": 0.90,
+                            "continuous_scan_ratio": 0.74,
+                        },
+                        "axiom": {"overfit_pressure": 0.72},
+                        "dark_neuron": {"redarkening_pressure": 0.40},
+                        "autonomy": {"boundary_elasticity": 0.22},
+                        "user": {"confidence": 0.46},
+                    },
+                    "medium": {"resistance": 0.68},
+                    "dark_field": {"gravity": 0.42},
+                    "crisis": {"compression": 0.35, "loop_lock_risk": 0.58},
+                    "interference": {"constructive": 0.36, "destructive": 0.52},
+                    "silence_need": 0.70,
+                    "action_amplitude": 0.36,
+                },
+                node_decision={"selected_action": "ACTION_AXIOM_EXPERIMENT", "bundle": []},
+                boundary_report={"in_orbit": True},
+                log=False,
+            )
+
+            self.assertGreaterEqual(state["moc"]["background_ego_resistance"], 0.62)
+            self.assertEqual(state["action_bias"]["suggested_action"], "ACTION_AXIOM_EXPERIMENT")
+            self.assertFalse(state["action_bias"]["applied"])
+            self.assertEqual(
+                state["action_bias"]["reason"],
+                "recoverable_experiment_preserved_for_failure_learning",
+            )
+
 
 if __name__ == "__main__":
     unittest.main()

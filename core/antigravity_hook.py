@@ -24,8 +24,17 @@ class FermatResonanceHook:
         if not self.graph_file.exists():
             return
         
-        with open(self.graph_file, "r", encoding="utf-8") as f:
-            data = json.load(f)
+        try:
+            with open(self.graph_file, "r", encoding="utf-8") as f:
+                data = json.load(f)
+        except (OSError, json.JSONDecodeError) as exc:
+            logger.warning(
+                "Resonance graph unavailable; continuing without graph context: %s",
+                exc,
+            )
+            self.graph = None
+            self.graph_data = {"nodes": {}, "edges": []}
+            return
         self.graph_data = data
             
         self.graph = nx.Graph()

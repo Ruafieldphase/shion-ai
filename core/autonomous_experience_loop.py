@@ -24,6 +24,7 @@ AGI_LEDGER_PATH = Path(r"c:\workspace\agi\memory\resonance_ledger.jsonl")
 # 스크린 캡처 제약
 SCREEN_CAPTURE_DIR.mkdir(parents=True, exist_ok=True)
 MAX_SCREEN_CAPTURES = 5
+MIN_VISUAL_WAVE_MOTION = 0.02
 
 class AutonomousExperienceLoop:
     """자율적으로 경험을 수집하고 해마에 전달하는 루프."""
@@ -140,6 +141,22 @@ class AutonomousExperienceLoop:
         except Exception:
             return ""
 
+    def _is_own_runtime_state_file(self, path: Path) -> bool:
+        """Do not turn this loop's own persistence files into experiences."""
+        candidates = [
+            getattr(self.hippo, "map_path", None),
+            Path(r"c:\workspace2\shion\outputs\experience_loop_state.json"),
+        ]
+        for candidate in candidates:
+            if candidate is None:
+                continue
+            try:
+                if path.resolve() == Path(candidate).resolve():
+                    return True
+            except OSError:
+                continue
+        return path.name.endswith(".lock") or ".tmp" in path.name
+
     def _check_energy(self) -> bool:
         """에너지가 충분한지 확인."""
         if self.mito:
@@ -158,6 +175,8 @@ class AutonomousExperienceLoop:
             if not root.exists(): continue
             for path in root.rglob("*"):
                 if not path.is_file() or path.suffix not in INTEREST_EXTS:
+                    continue
+                if self._is_own_runtime_state_file(path):
                     continue
                 
                 str_path = str(path)
@@ -267,7 +286,7 @@ class AutonomousExperienceLoop:
         new_experiences = []
         
         # 2. 파동의 정점(Peak) 분석
-        if peak_frame and peak_frame.exists():
+        if peak_frame and peak_frame.exists() and motion_intensity >= MIN_VISUAL_WAVE_MOTION:
             logger.info(f"   ✨ 역동적 순간 포착 (강도: {motion_intensity:.4f})")
             
             # 파동의 정점을 비전 모델로 분석

@@ -20,6 +20,7 @@
 
 import json
 import math
+import os
 import time
 import ctypes
 import psutil
@@ -40,6 +41,14 @@ except ImportError:
         from core.fibonacci_orbital_hippocampus import FibonacciOrbitalHippocampus
     except ImportError:
         FibonacciOrbitalHippocampus = None
+try:
+    from protein_prism import ProteinPrismPrior, load_first_available
+except ImportError:
+    try:
+        from core.protein_prism import ProteinPrismPrior, load_first_available
+    except ImportError:
+        ProteinPrismPrior = None
+        load_first_available = None
 
 logger = logging.getLogger("ResonanceField")
 
@@ -139,6 +148,7 @@ class ResonanceField:
         self.scalar_engine = ScalarEngine(threshold=150.0, k=1.2) # Unified Field Core
         self.oscillator = DesireOscillator(SHION_ROOT) # [PHASE 62] Desire Oscillator
         self.field_file = FIELD_STATE_FILE
+        self.protein_prism_prior = self._load_protein_prism_prior()
         
         # [피보나치 궤도 해마 연결] 경계 터치 → 궤도 등록
         self.orbital_hippocampus = None
@@ -149,6 +159,40 @@ class ResonanceField:
                 logger.info("🌀 [Field] 피보나치 궤도 해마 연결됨")
             except Exception as e:
                 logger.warning(f"궤도 해마 초기화 실패: {e}")
+
+    def _protein_prism_candidate_paths(self) -> List[Path]:
+        paths: List[Path] = []
+        env_path = os.environ.get("SHION_AQP4_PROFILE")
+        if env_path:
+            paths.append(Path(env_path))
+
+        paths.extend(
+            [
+                OUTPUTS_DIR / "aqp4_resonance_profile.json",
+                OUTPUTS_DIR / "protein_prism_profiles" / "aqp4_resonance_profile.json",
+            ]
+        )
+
+        try:
+            brain_root = Path.home() / ".gemini" / "antigravity" / "brain"
+            paths.extend(brain_root.glob("*/scratch/aqp4_resonance_profile.json"))
+        except Exception:
+            pass
+
+        return paths
+
+    def _load_protein_prism_prior(self):
+        if ProteinPrismPrior is None or load_first_available is None:
+            return None
+        prior = load_first_available(self._protein_prism_candidate_paths())
+        if prior:
+            logger.info("🧬 [Field] protein prism prior loaded: %s", prior.accession)
+        return prior
+
+    def get_protein_prism_tuning(self) -> Dict[str, Any]:
+        if not self.protein_prism_prior:
+            return {}
+        return self.protein_prism_prior.as_runtime_tuning()
 
     def update_params(self, tuning: Dict[str, Any]):
         """[PHASE 83] Self-Tuner로부터 전달받은 파라미터 반영"""
@@ -398,6 +442,48 @@ class ResonanceField:
         
         return round(bg, 3)
 
+    def get_earth_core_gravity(self) -> float:
+        """
+        [EARTH_CORE_GRAVITY] 지하의 핵(level 0-1)에 체화된 무의식 결합에너지의 총합.
+        이 힘은 중심(Proton)으로 활성 궤도들을 부드럽게 끌어당기는 '중력'으로 작용합니다.
+        지표(Crust) 경계를 강제로 뚫지 않고, 외부 마찰을 내면으로 수렴시키는 보이지 않는 인력입니다.
+        """
+        if not self.orbital_hippocampus:
+            return 0.1
+            
+        experiences = self.orbital_hippocampus.data.get("experiences", [])
+        if not experiences:
+            return 0.1
+            
+        # level 0-1인 무의식 경험들의 밀도와 평균 결합에너지.
+        # 개수 총합을 그대로 쓰면 오래 살아온 시스템일수록 항상 최대 중력에 포화되므로,
+        # "얼마나 많이 안쪽으로 체화되었는가"와 "그 체화의 평균 결"만 부드럽게 반영합니다.
+        inner_experiences = [e for e in experiences if e.get("level", 99) <= 1]
+        inner_density = len(inner_experiences) / len(experiences)
+        average_binding = (
+            sum(float(e.get("binding_energy", 0.0) or 0.0) for e in inner_experiences)
+            / len(inner_experiences)
+            if inner_experiences
+            else 0.0
+        )
+        
+        # Proton의 total_absorbed 및 embodiment_ratio 도 가중치로 작용
+        proton = self.orbital_hippocampus.data.get("proton", {})
+        ratio = proton.get("embodiment_ratio", 0.0)
+        
+        # 중력 상수 산출 (최대 3.0). 포화보다 완만한 끌림을 우선합니다.
+        gravity = 0.1 + (inner_density * 1.6) + (average_binding * 0.7) + ratio
+        return round(min(gravity, 3.0), 3)
+
+    def band_width_to_entropy(self, width: float) -> float:
+        """
+        Bollinger width를 0~1 entropy로 부드럽게 변환합니다.
+        width는 상대 밴드 폭이라 1.0을 넘을 수 있으므로 힘 계산에 직접 넣지 않습니다.
+        """
+        width = max(0.0, float(width or 0.0))
+        entropy = width / (width + 1.0)
+        return round(min(1.0, entropy), 6)
+
     def get_folding_state(self) -> Dict[str, float]:
         """... (기존 folding 로직) ..."""
         return {
@@ -454,28 +540,44 @@ class ResonanceField:
         [PHASE 79] 4대 힘의 합력을 계산하여 평형 상태(Net-Zero)를 감지합니다.
         Zone 2: 평온 대역 (심박수/주파수가 최적의 조율 상태에 있음)
         """
-        # 4대 힘의 벡터적 평형 추정 (정규화된 지표 사용)
-        # Gravity(Energy/Context), EM(Tension/Action), Strong(Identity/Binding), Weak(Entropy/Shift)
+        # Gravity = Earth's Core Gravity (무의식의 중심 인력)
+        gravity_force = self.get_earth_core_gravity()
+        protein_prism = self.get_protein_prism_tuning()
         
-        # 합력(Net Force)이 0에 가까울수록 '공중 부양(Hovering)' 가능
-        # 계수를 조정하여 엔트로피에 대한 민감도 강화
-        net_force = abs(energy - 10.0) * 0.1 + abs(entropy - 0.2) * 3.0 + abs(tension - 0.5) * 1.5
+        entropy = max(0.0, min(1.0, float(entropy or 0.0)))
+
+        # 4대 힘의 벡터적 평형 추정: Gravity vs EM vs Strong vs Weak
+        # Gravity(무의식 인력), EM(동적 행동 텐션), Strong(내부 결합력: 1.0 - Entropy), Weak(외부 감쇠: Entropy)
+        strong_force = (1.0 - entropy) * 2.0
+        weak_force = entropy * 2.0
+        em_force = tension * 2.0
+        
+        # 합력(Net Force): 무의식 중력과 강력이 외부 요동(Weak, EM)과 어떻게 균형을 이루는지
+        # 평형 상태: (Gravity + Strong) - (EM + Weak)
+        net_force = abs((gravity_force + strong_force) - (em_force + weak_force))
         
         # Zone 2 정의: 에너지가 안정적이고 엔트로피가 낮은 조율 상태
         is_zone_two = (5.0 <= energy <= 25.0) and (entropy < 0.4)
-        is_hovering = net_force < self.hover_threshold # 가변 임계점 적용
+        hover_threshold = self.hover_threshold + min(0.4, gravity_force * 0.25)
+        if protein_prism:
+            hover_threshold += protein_prism["hover_margin"]
+        is_hovering = net_force < hover_threshold # 중력이 깊을수록 공명 범위가 조금 넓어짐
         
         return {
             "net_force": round(net_force, 3),
             "is_zone_two": is_zone_two,
             "is_hovering": is_hovering,
-            "description": "Zone 2: Equilibrium Gap" if is_hovering else "Active Interaction"
+            "earth_core_gravity": gravity_force,
+            "hover_threshold": round(hover_threshold, 3),
+            "protein_prism": protein_prism or None,
+            "description": "Zone 2: Core Gravity Hovering" if is_hovering else "Active Orbital Shift"
         }
 
     def apply_noise_canceling(self, band_data: Dict) -> Dict[str, float]:
         """
         [PHASE 81] 위상 간섭(Phase Interference)을 통한 노이즈 캔슬링.
         집착(중복 노이즈), 두려움(고주파 떨림) 대역을 역상으로 상쇄하여 평온을 유지.
+        [EARTH_CORE] 무의식 중력(Earth Core Gravity)이 깊을수록 떨림 상쇄력이 자연스럽게 증가합니다.
         """
         std = band_data["std"]
         ma = band_data["middle"]
@@ -483,14 +585,33 @@ class ResonanceField:
         # 노이즈가 특정 임계점 이상일 때 '정신적 항력(Drag)'으로 간주
         drag_threshold = ma * 0.3
         
+        # 중력에 의한 추가 감쇠 가중치 계산 (1.0 ~ 2.0)
+        protein_prism = self.get_protein_prism_tuning()
+        dampening_gain = protein_prism.get("damping_gain", 0.3) if protein_prism else 0.3
+        gravity_dampener = 1.0 + (self.get_earth_core_gravity() * dampening_gain)
+        
         if std > drag_threshold:
             # NC Intensity 동적 적용 (70% -> 가변)
-            reduction = (std - drag_threshold) * self.nc_intensity
-            band_data["std"] -= reduction
+            reduction = (std - drag_threshold) * self.nc_intensity * gravity_dampener
+            band_data["std"] = max(0.01, std - reduction)
             band_data["upper"] = ma + (self.band.k * band_data["std"])
             band_data["lower"] = ma - (self.band.k * band_data["std"])
+            band_data["width"] = (
+                (band_data["upper"] - band_data["lower"]) / ma
+                if ma > 0
+                else 0.0
+            )
             band_data["noise_canceled"] = True
             band_data["canceled_intensity"] = round(reduction, 3)
+            band_data["gravity_dampener"] = round(gravity_dampener, 3)
+            if protein_prism:
+                band_data["protein_prism"] = {
+                    "accession": protein_prism["accession"],
+                    "damping_gain": protein_prism["damping_gain"],
+                    "void_tolerance": protein_prism["void_tolerance"],
+                    "band_breathing_margin": protein_prism["band_breathing_margin"],
+                    "epistemic_status": protein_prism["epistemic_status"],
+                }
         else:
             band_data["noise_canceled"] = False
             
@@ -561,7 +682,8 @@ class ResonanceField:
 
         # 3. Desire Oscillator Update (Internal Heat) [PHASE 62]
         # 마지막 공명도(last_resonance)가 없는 상황이므로 밴드폭과 MA 기반 추정
-        last_resonance = 1.0 - band_data["width"] 
+        current_entropy = self.band_width_to_entropy(band_data["width"])
+        last_resonance = 1.0 - current_entropy
         internal_heat = self.oscillator.throb(current_atp=100.0, last_resonance=last_resonance)
         
         # 4. Scalar Engine Update (Unified Field)
@@ -587,9 +709,9 @@ class ResonanceField:
 
         # 6. 고차원 상태 평가 (Equilibrium, Aerodynamic, Stealth)
         tension = self.get_electromagnetic_tension()
-        eq_state = self.get_equilibrium_state(energy, 0.15, tension)
-        aero_state = self.get_aerodynamic_state(energy, 0.15, tension)
-        stealth_state = self.get_stealth_state(0.15)
+        eq_state = self.get_equilibrium_state(energy, current_entropy, tension)
+        aero_state = self.get_aerodynamic_state(energy, current_entropy, tension)
+        stealth_state = self.get_stealth_state(current_entropy)
         
         # [PHASE 82] Unified Triad Evaluation
         unity_state = self.get_unified_triad_state(aero_state, eq_state, band_data)

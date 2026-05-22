@@ -9,7 +9,7 @@ sys.path.append(str(SHION_ROOT / "core"))
 
 from shion_minimal import ShionMinimal
 
-async def test_full_autonomous_loop():
+async def _test_full_autonomous_loop_async(*, execute_pulse: bool = False):
     shion = ShionMinimal(SHION_ROOT)
     
     # 1. 시뮬레이션: 열망 주입 (최고조)
@@ -21,7 +21,7 @@ async def test_full_autonomous_loop():
     # 2. 공명 감지
     result = shion.field.sense(efficiency=1.0)
     
-    if result["should_pulse"]:
+    if result["should_pulse"] and execute_pulse:
         # 3. Pulse 실행 (Intent 생성 포함)
         await shion.pulse(sense_result=result)
         
@@ -39,6 +39,12 @@ async def test_full_autonomous_loop():
                 print(f"⚡ Priority: {goal_data['priority']}")
             else:
                 print("❌ AGI Goal file not found.")
+    elif result["should_pulse"]:
+        print("✅ Pulse would run; pytest smoke keeps full pulse for direct script execution.")
 
 if __name__ == "__main__":
-    asyncio.run(test_full_autonomous_loop())
+    asyncio.run(_test_full_autonomous_loop_async(execute_pulse=True))
+
+
+def test_full_autonomous_loop():
+    asyncio.run(_test_full_autonomous_loop_async(execute_pulse=False))
