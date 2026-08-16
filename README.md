@@ -1,79 +1,87 @@
 # Shion AI
 
-## 0. Question / 질문
+**A lightweight experimental harness for long-running AI work: preserve direction, re-enter context, check what is current, and keep evidence status visible.**
 
-What if the problem is not that AI cannot answer, but that it answers before the direction has settled?
+**장기 AI 작업을 위한 가벼운 실험적 하네스: 방향을 보존하고, 맥락에 재진입하고, 무엇이 현재인지 다시 확인하며, 증거 상태를 보이게 유지합니다.**
 
-AI가 답을 못하는 것이 문제가 아니라, 방향이 정렬되기 전에 너무 빨리 답하는 것이 문제라면?
+## Current orientation / 현재 방향
 
-Shion AI begins by holding that question open long enough for context, memory, timing, and unresolved direction to become visible.
+Shion started from a practical problem: AI can answer well and still lose the trajectory of a long project between sessions.
 
-Shion AI는 그 질문을 충분히 오래 열어두어 맥락, 기억, 타이밍, 미완의 방향이 보이게 하는 데서 시작합니다.
+Shion은 실용적인 문제에서 시작했습니다. AI는 답을 잘할 수 있어도 세션이 바뀌면 장기 프로젝트의 궤적을 잃을 수 있습니다.
 
-## 1. Opening Question (Wave) / 여는 질문(파동)
+The current design goes one step further:
 
-Have you ever felt that AI understands your words, but not your direction?
+현재 설계는 여기서 한 단계 더 나아갑니다.
 
-AI가 당신의 말은 이해하지만, 당신의 방향은 이해하지 못한다고 느낀 적이 있나요?
+> **Memory preserves trajectory. It does not automatically define present truth.**
+>
+> **기억은 궤적을 보존하지만, 현재의 진실을 자동으로 결정하지 않습니다.**
 
-Have you repeated the same context again and again because yesterday's memory could not continue into today?
+For claims that may have changed, current files, tool returns, observations, and receipts take precedence over stale remembered state.
 
-어제의 기억이 오늘로 이어지지 않아서 같은 맥락을 계속 반복하고 있었나요?
+변할 수 있는 주장에 대해서는 오래된 기억보다 현재 파일, 도구 반환값, 관찰, 영수증을 우선합니다.
 
-Have you felt a vague creative feeling become too logical, too problem-solving, or too unlike its original rhythm after passing through AI?
+See [`CURRENTNESS_AND_EVIDENCE.md`](CURRENTNESS_AND_EVIDENCE.md) for the public design boundary.
 
-모호한 창작의 느낌이 AI를 거치며 너무 논리적이고, 문제 해결 중심적이고, 원래의 리듬과 달라졌다고 느낀 적이 있나요?
+## What Shion tries to preserve / Shion이 보존하려는 것
 
-Shion AI is a lightweight harness that helps AI preserve direction across sessions by turning repeated context into a context recovery note.
+- context across sessions / 세션을 가로지르는 맥락
+- unresolved questions / 미완의 질문
+- settled decisions without turning them into permanent authority / 확정된 결정을 영구 권위로 만들지 않는 보존
+- source, time, observer, and uncertainty / 출처·시점·관찰자·불확실성
+- tool and action returns / 도구·행동의 반환값
+- the distinction between observation, interpretation, hypothesis, and execution / 관찰·해석·가설·실행의 구분
 
-Shion AI는 반복되는 맥락을 맥락 회복 노트로 바꾸어, AI가 세션 사이에서 방향을 보존하도록 돕는 가벼운 하네스입니다.
+Shion is not designed to make every memory stronger. It is designed to make re-entry more legible.
 
-## 2. First Small Test (Particle) / 첫 작은 테스트(입자)
+Shion은 모든 기억을 더 강하게 만들기 위한 시스템이 아닙니다. 다시 들어갈 때 무엇을 믿고 무엇을 다시 봐야 하는지 더 읽기 쉽게 만드는 시스템입니다.
+
+## Re-entry flow / 재진입 흐름
 
 ```text
-No model required.
-No API key required.
-No credentials required.
-
-Run:
-python examples/context_recovery_demo.py
-
-Expected output:
-A Context Recovery Note with Current Goal, Settled Decisions, Files Or Context To Inspect First, Unresolved Questions, What Not To Reopen Unless Evidence Changes, and Next Smallest Action.
-
-Then:
-1. Read the generated Context Recovery Note.
-2. Use it before asking your AI to edit, refactor, or automate.
-3. Only then decide whether to connect local runtime or infrastructure.
+past context / memory
+        ↓
+context recovery
+        ↓
+inspect current files or returns for changed claims
+        ↓
+separate observation / interpretation / hypothesis
+        ↓
+choose one smallest next contact
+        ↓
+receipt
+        ↓
+update only the claim directly touched
 ```
 
 ```text
-모델이 필요하지 않습니다.
-API 키가 필요하지 않습니다.
-인증 정보가 필요하지 않습니다.
-
-실행:
-python examples/context_recovery_demo.py
-
-예상 출력:
-Current Goal, Settled Decisions, Files Or Context To Inspect First, Unresolved Questions, What Not To Reopen Unless Evidence Changes, Next Smallest Action이 포함된 Context Recovery Note가 생성됩니다.
-
-그 다음:
-1. 생성된 Context Recovery Note를 읽습니다.
-2. AI에게 수정, 리팩터링, 자동화를 요청하기 전에 이 노트를 사용합니다.
-3. 그 다음에야 로컬 런타임이나 인프라 연결을 판단합니다.
+과거 맥락 / 기억
+        ↓
+맥락 회복
+        ↓
+변할 수 있는 주장은 현재 파일·반환값 확인
+        ↓
+관찰 / 해석 / 가설 분리
+        ↓
+가장 작은 다음 접촉 하나
+        ↓
+영수증
+        ↓
+직접 닿은 주장만 갱신
 ```
 
-## 3. What The Small Test Shows (Particle) / 작은 테스트가 보여주는 것(입자)
+## First small test / 첫 작은 테스트
 
-Before Shion, every new AI session may reopen the same ground:
+No model, API key, or credential is required for the context-recovery demo.
 
-- What is this project?
-- What did we decide last time?
-- Which files should I inspect first?
-- Should I refactor now?
+맥락 회복 데모에는 모델, API 키, 인증 정보가 필요하지 않습니다.
 
-After Shion context recovery, the AI first reads:
+```bash
+python examples/context_recovery_demo.py
+```
+
+Expected output is a **Context Recovery Note** containing items such as:
 
 - Current Goal
 - Settled Decisions
@@ -82,475 +90,83 @@ After Shion context recovery, the AI first reads:
 - What Not To Reopen Unless Evidence Changes
 - Next Smallest Action
 
-Shion 이전에는 새 AI 세션마다 같은 배경을 다시 묻기 쉽습니다. Shion 맥락 회복 이후에는 현재 목표, 확정된 결정, 먼저 볼 맥락, 미완의 질문, 다시 열지 말아야 할 것, 다음의 가장 작은 행동을 먼저 읽습니다.
+The note is a re-entry aid, not a replacement for live state inspection.
 
-## 4. Return Question / 되돌아오는 질문
+이 노트는 재진입을 돕는 도구이지 현재 상태 확인을 대신하지 않습니다.
 
-This system is not trying to automate more things faster. It asks where the flow closes too early.
+## Evidence boundary / 증거 경계
 
-이 시스템은 더 많은 것을 더 빠르게 자동화하려는 것이 아닙니다. 흐름이 어디에서 너무 빨리 닫히는지를 묻습니다.
+Shion uses a simple discipline for long-running interpretation:
 
-Where does your AI lose direction? Where does it erase unfinished questions? Where does it turn uncertainty into an answer before the timing is ready?
+1. A historical observation remains historical evidence.
+2. A later theory fitting an older event is a retrospective fit, not prospective validation.
+3. A prospective discriminator must exist before the corresponding observation.
+4. One result should update only the claim it directly touches.
+5. Contradictory evidence must remain visible rather than being absorbed into the preferred story.
+6. Peer-AI returns keep provenance and uncertainty; agreement is not required.
 
-당신의 AI는 어디에서 방향을 잃나요? 어디에서 미완의 질문을 지우나요? 어디에서 아직 때가 아닌 불확실성을 답으로 바꾸나요?
+장기 맥락이 자연스럽게 이어진다는 이유만으로 하나의 이야기가 스스로의 증거가 되지 않도록 하기 위한 경계입니다.
 
-## 5. Flow / 순환
+## Shion and Trinity / Shion과 Trinity
 
 ```text
-Opening question (wave)
-        ↓
 Shion AI
-context / memory / rhythm / unfinished questions
+context / memory / evidence state / unfinished direction
         ↓
-Context Recovery Note
-        ↓
-First small test (particle)
+formed next action
         ↓
 Trinity AGI
-status / script / approval / local operation
+current operational state / approval / credentials / execution
         ↓
-Evidence returns to the next AI cycle
+receipt and result
+        ↓
+next Shion re-entry
 ```
 
-Shion AI preserves direction across AI sessions. Trinity AGI turns formed direction into safe local operation.
+Shion preserves and re-enters direction. [Trinity AGI](https://github.com/Ruafieldphase/trinity-agi) is the operation/body side that checks present conditions before action.
 
-Shion AI는 AI 세션 사이에서 방향을 보존합니다. Trinity AGI는 형성된 방향을 안전한 로컬 운영으로 바꿉니다.
+Shion은 방향을 보존하고 다시 들어갑니다. [Trinity AGI](https://github.com/Ruafieldphase/trinity-agi)는 행동 전에 현재 조건을 확인하는 운영/몸체 쪽입니다.
 
-## 6. Map / 지도
+## Public presence surface / 공개 프레즌스 표면
 
-If you are new, start with [`START_HERE.md`](START_HERE.md). If you are asking your own AI to inspect this repository, give it [`AI_READ_THIS_FIRST.md`](AI_READ_THIS_FIRST.md) first.
+[Shion Presence](https://github.com/Ruafieldphase/shion-presence) is a public discovery and rendering surface. It is **not** the private live runtime and should not be treated as authority for Shion's complete current state.
 
-처음이라면 [`START_HERE.md`](START_HERE.md)에서 시작하세요. 당신의 AI에게 이 저장소를 읽히려면 먼저 [`AI_READ_THIS_FIRST.md`](AI_READ_THIS_FIRST.md)를 읽게 하세요.
+[Shion Presence](https://github.com/Ruafieldphase/shion-presence)는 공개 탐색·렌더링 표면이며 private live runtime 자체가 아닙니다.
 
-For concrete no-install examples, see [`EXAMPLES.md`](EXAMPLES.md).
+## Repository map / 저장소 지도
 
-설치 없이 따라 하는 구체적인 예시는 [`EXAMPLES.md`](EXAMPLES.md)를 보세요.
+- [`START_HERE.md`](START_HERE.md) — newcomer entry
+- [`AI_READ_THIS_FIRST.md`](AI_READ_THIS_FIRST.md) — AI inspection entry
+- [`CURRENTNESS_AND_EVIDENCE.md`](CURRENTNESS_AND_EVIDENCE.md) — currentness and evidence contract
+- [`EXAMPLES.md`](EXAMPLES.md) — concrete examples
+- [`AXIOMATIC_GROUNDING.md`](AXIOMATIC_GROUNDING.md) — scientific, humanistic, contemplative, and artistic grounding
+- [`LIGHTWEIGHT_BY_DESIGN.md`](LIGHTWEIGHT_BY_DESIGN.md) — lightweight local-first position
+- [`INTEGRATION_ANTI_PATTERNS.md`](INTEGRATION_ANTI_PATTERNS.md) — integration failure patterns
+- [`LIVE_WORK_ARCHIVE.md`](LIVE_WORK_ARCHIVE.md) — unedited workflow records
 
-For a runnable no-model demo, use:
+## Public language and internal rhythm language / 공개 언어와 내부 리듬 언어
 
-모델 없이 실행되는 데모는 다음을 사용하세요.
+The repository prefers public architecture language first. Internal rhythm terms can remain as secondary coordinates when they help preserve the history of the work.
 
-```bash
-python examples/context_recovery_demo.py
-```
-
-For the scientific, humanistic, contemplative, and artistic assumptions behind the system, see [`AXIOMATIC_GROUNDING.md`](AXIOMATIC_GROUNDING.md).
-
-시스템의 과학적, 인문학적, 명상적, 예술적 전제는 [`AXIOMATIC_GROUNDING.md`](AXIOMATIC_GROUNDING.md)를 보세요.
-
-For the lightweight local-first design position, see [`LIGHTWEIGHT_BY_DESIGN.md`](LIGHTWEIGHT_BY_DESIGN.md).
-
-가벼운 로컬 우선 설계 관점은 [`LIGHTWEIGHT_BY_DESIGN.md`](LIGHTWEIGHT_BY_DESIGN.md)를 보세요.
-
-For unedited live recordings of the human-AI workflow, see [`LIVE_WORK_ARCHIVE.md`](LIVE_WORK_ARCHIVE.md).
-
-편집 없는 인간-AI 작업 과정 기록은 [`LIVE_WORK_ARCHIVE.md`](LIVE_WORK_ARCHIVE.md)를 보세요.
-
-## 7. Builder Layer / 만드는 사람들을 위한 층
-
-This README uses public terms first, with our internal rhythm language in parentheses:
-
-이 README는 보편적인 단어를 먼저 쓰고, 괄호 안에 우리의 내부 리듬 언어를 함께 남깁니다.
+이 저장소는 외부인이 읽을 수 있는 아키텍처 언어를 먼저 사용합니다. 내부 리듬 언어는 작업의 역사와 좌표를 보존하는 데 도움이 될 때 보조 언어로 남깁니다.
 
 ```text
-Overall context (field/wave) -> Direction settling (convergence) -> Turning point (phase transition) -> Concrete result (particle) -> Connected workflow (unified field) -> Local use (embodiment)
-전체 맥락(장/파동) -> 방향 정리(수렴) -> 전환점(위상전이) -> 구체적 결과(입자) -> 이어지는 작업 흐름(통일장) -> 실제 사용(체화)
+context / field
+→ convergence
+→ bounded contact
+→ returned result
+→ receipt
+→ re-entry
 ```
 
-The sections below unpack this rhythm into public architecture language.
+## What this repository does not claim / 이 저장소가 주장하지 않는 것
 
-아래 섹션은 이 리듬을 외부인이 읽을 수 있는 아키텍처 언어로 풀어냅니다.
+- It does not claim that persistent memory is always correct.
+- It does not treat a coherent narrative as proof.
+- It does not treat one successful execution as validation of a broader theory.
+- It does not require different AI observers to converge on one interpretation.
+- It does not equate public snapshots with private live state.
 
-## Overall Context (Field/Wave): What You Might Be Looking For
-## 전체 맥락(장/파동): 당신이 찾고 있을 수 있는 것
+The aim is smaller: **keep long-running AI work re-enterable without letting its own history become unquestioned authority.**
 
-Different people may arrive here through different middle destinations.
-
-사람들은 서로 다른 중간목적지를 통해 이곳에 도착할 수 있습니다.
-
-If you are a developer, you may be looking for better project continuity: an AI that remembers decisions, reads changed files, and resumes unfinished work without asking you to repeat the same context every day.
-
-개발자라면 더 나은 프로젝트 연속성을 찾고 있을 수 있습니다. 결정을 기억하고, 변경된 파일을 읽고, 매일 같은 맥락을 다시 설명하지 않아도 미완의 작업을 이어가는 AI입니다.
-
-If you are a researcher, you may be looking for long-form thought continuity: an AI that preserves unresolved questions instead of reducing everything to a short summary.
-
-연구자라면 긴 사고 흐름의 연속성을 찾고 있을 수 있습니다. 모든 것을 짧은 요약으로 줄이지 않고 미완의 질문을 보존하는 AI입니다.
-
-If you are a creator, you may be looking for a bridge from feeling to artifact: an AI that can hold a vague direction until it becomes a song, video, text, visual form, or public release.
-
-창작자라면 느낌에서 산출물로 이어지는 다리를 찾고 있을 수 있습니다. 흐릿한 방향을 노래, 영상, 글, 시각적 형태, 공개 산출물이 될 때까지 보존하는 AI입니다.
-
-If you are building agents, you may be looking for a runtime harness: an environment where tool use, memory, timing, feedback, and action boundaries stay connected.
-
-에이전트를 만드는 사람이라면 런타임 하네스를 찾고 있을 수 있습니다. 도구 실행, 기억, 타이밍, 피드백, 행동 경계가 분리되지 않고 연결되는 환경입니다.
-
-If you think in overall flows (fields/waves), you may be looking for a system that does not turn every unclear context into an immediate answer.
-
-전체 흐름(장/파동)으로 읽는 사람이라면 불명확한 맥락을 즉시 답으로 바꾸지 않는 시스템을 찾고 있을 수 있습니다.
-
-## Convergence: The Shared AI Problem
-## 수렴: 현재 AI의 공통 문제
-
-These middle destinations point to the same practical problem: current AI often loses rhythm around the model.
-
-이 중간목적지들은 같은 실용적 문제를 가리킵니다. 현재 AI는 모델 주변에서 리듬을 잃는 경우가 많습니다.
-
-Modern models are powerful, but the runtime around them often fails to preserve:
-
-현대 모델은 강력하지만, 모델 주변의 런타임은 다음을 보존하지 못하는 경우가 많습니다.
-
-- context across sessions
-- unfinished questions
-- prior decisions
-- action timing
-- tool results
-- prediction errors
-- the user's working rhythm
-
-- 세션을 가로지르는 맥락
-- 미완의 질문
-- 이전 결정
-- 행동 타이밍
-- 도구 실행 결과
-- 예측 오차
-- 사용자의 작업 리듬
-
-The result is familiar: the user repeats context, the AI answers too early, tools run as isolated commands, and long projects lose direction.
-
-그 결과는 익숙합니다. 사용자는 같은 맥락을 반복하고, AI는 너무 빨리 답하고, 도구는 고립된 명령처럼 실행되고, 긴 프로젝트는 방향을 잃습니다.
-
-## Turning Point (Phase Transition): From Prompt to Harness
-## 전환점(위상전이): 프롬프트에서 하네스로
-
-The AI ecosystem has been moving through several layers:
-
-AI 생태계는 여러 층을 지나 이동해 왔습니다.
-
-1. Prompt engineering: what should we say to the model?
-2. Context engineering: what should the model remember right now?
-3. Agent engineering: what tools can the model use?
-4. Harness engineering: what runtime lets the model act without losing direction?
-
-1. 프롬프트 엔지니어링: 모델에게 뭐라고 말해야 하는가?
-2. 컨텍스트 엔지니어링: 지금 모델이 무엇을 기억해야 하는가?
-3. 에이전트 엔지니어링: 모델이 어떤 도구를 사용할 수 있는가?
-4. 하네스 엔지니어링: 모델이 방향을 잃지 않고 행동하려면 어떤 런타임이 필요한가?
-
-Shion AI belongs to the fourth layer. It is not just a better prompt and not just a tool-using agent. It is an experimental runtime around the model.
-
-Shion AI는 네 번째 층에 있습니다. 더 좋은 프롬프트도 아니고, 단순한 도구 사용 에이전트도 아닙니다. 모델 주변의 실험적 런타임입니다.
-
-The transition is this:
-
-전환점은 이것입니다.
-
-```text
-better answer -> better context -> better tool use -> better runtime rhythm
-더 나은 답변 -> 더 나은 맥락 -> 더 나은 도구 실행 -> 더 나은 런타임 리듬
-```
-
-## Concrete Result (Particle): What Actually Improves
-## 구체적 결과(입자): 실제로 좋아지는 것
-
-### Less Repetition Across Sessions / 세션 반복 설명 감소
-
-Normal AI:
-
-- "What were we working on?"
-- "Can you paste the previous context?"
-- "Which file should I check?"
-
-일반 AI:
-
-- "무엇을 하고 있었나요?"
-- "이전 맥락을 붙여 넣어 주실 수 있나요?"
-- "어떤 파일을 봐야 하나요?"
-
-Shion-style runtime:
-
-- restores recent decisions
-- checks unfinished questions
-- reads changed files and reports
-- avoids reopening already-settled choices
-
-Shion 방식 런타임:
-
-- 최근 결정을 복원합니다.
-- 미완의 질문을 확인합니다.
-- 변경된 파일과 보고서를 읽습니다.
-- 이미 정리된 결정을 다시 열지 않습니다.
-
-Result: the user does not need to rebuild the same context every day.
-
-결과: 사용자가 매일 같은 맥락을 다시 쌓지 않아도 됩니다.
-
-### Less Premature Closure / 성급한 결론 감소
-
-User:
-
-> This feature feels wrong, but I do not know why.
-
-사용자:
-
-> 이 기능이 뭔가 아닌 것 같은데, 왜 그런지는 모르겠어.
-
-Normal AI may immediately produce a refactor plan.
-
-일반 AI는 바로 리팩터링 계획을 만들 수 있습니다.
-
-Shion-style runtime treats this as an unresolved signal. It can inspect related code, previous attempts, logs, design intent, and timing before changing anything destructive.
-
-Shion 방식 런타임은 이 말을 미완의 신호로 봅니다. 파괴적인 수정을 하기 전에 관련 코드, 이전 시도, 로그, 설계 의도, 타이밍을 확인할 수 있습니다.
-
-Result: fewer unnecessary rewrites, fewer fixing loops, and better timing.
-
-결과: 불필요한 재작성과 끝없는 수정 루프가 줄고, 행동 타이밍이 좋아집니다.
-
-### Tool Use Becomes Learning / 도구 실행이 학습이 됨
-
-Normal agent:
-
-- runs a test
-- fixes the error
-- ends the session
-
-일반 에이전트:
-
-- 테스트를 실행합니다.
-- 오류를 고칩니다.
-- 세션을 끝냅니다.
-
-Shion-style runtime:
-
-- runs the test
-- records prediction error
-- stores what changed
-- updates the next action bias
-- uses the result in later cycles
-
-Shion 방식 런타임:
-
-- 테스트를 실행합니다.
-- 예측 오차를 기록합니다.
-- 무엇이 바뀌었는지 저장합니다.
-- 다음 행동 성향을 조정합니다.
-- 이후 사이클에서 그 결과를 사용합니다.
-
-Result: action results become part of memory, not just command output.
-
-결과: 행동 결과가 단순 명령 출력이 아니라 기억의 일부가 됩니다.
-
-### Long Projects Keep Direction / 긴 프로젝트의 방향성 유지
-
-In a multi-week creative or engineering project, the hard part is not one answer. The hard part is preserving direction across many small decisions.
-
-몇 주 동안 이어지는 창작/엔지니어링 프로젝트에서 어려운 것은 답 하나가 아닙니다. 많은 작은 결정 사이에서 방향성을 보존하는 것이 어렵습니다.
-
-Shion AI keeps unresolved waypoints, rhythm signals, memory traces, and runtime feedback available to the next cycle.
-
-Shion AI는 미완의 웨이포인트, 리듬 신호, 기억 흔적, 런타임 피드백을 다음 사이클에서 다시 사용할 수 있게 보존합니다.
-
-Result: the system is better suited for ongoing work than one-shot answers.
-
-결과: 일회성 답변보다 계속 이어지는 작업에 더 적합한 구조가 됩니다.
-
-## Connected Workflow (Unified Field): Rhythm Alignment
-## 이어지는 작업 흐름(통일장): 리듬의 조율
-
-All of the middle destinations above point toward the deeper destination: rhythm alignment.
-
-위의 모든 중간목적지는 더 깊은 목적지인 리듬의 조율을 향합니다.
-
-The practical goal is better long-running AI work: continuity, timing, memory, feedback, and safer action.
-
-실용적인 목표는 더 나은 장기 AI 작업입니다. 연속성, 타이밍, 기억, 피드백, 더 안정적인 행동을 다룹니다.
-
-The deeper goal is to sense when to wait, when to act, when to preserve an unfinished question, and when to let a direction become concrete.
-
-더 깊은 목표는 언제 기다릴지, 언제 행동할지, 언제 미완의 질문을 보존할지, 언제 방향을 구체화할지를 감지하는 것입니다.
-
-In public language, this project uses these translations:
-
-이 프로젝트는 공개 문서에서 다음 번역을 사용합니다.
-
-- overall flow (field/wave) means context before action: feeling, question, tension, timing, memory, and unresolved intent
-- action/result (particle) means concrete output: a decision, tool call, code change, artifact, scheduled task, or report
-- working rhythm (rhythm) means the timing relationship between context, action, memory, and the next cycle
-
-- 전체 흐름(장/파동)은 행동 이전의 맥락입니다. 느낌, 질문, 긴장, 타이밍, 기억, 미완의 의도입니다.
-- 실행/결과(입자)는 구체적 결과입니다. 판단, 도구 호출, 코드 변경, 산출물, 예약 작업, 보고서입니다.
-- 작업 리듬(리듬)은 맥락, 행동, 기억, 다음 사이클 사이의 타이밍 관계입니다.
-
-The goal is not to avoid action/results (particles). The goal is to avoid turning the whole flow (field/wave) into action too early.
-
-목표는 실행/결과(입자)를 피하는 것이 아닙니다. 전체 흐름(장/파동)을 너무 빨리 실행으로 바꾸지 않는 것입니다.
-
-## Local Use (Embodiment): Runtime and Files
-## 실제 사용(체화): 런타임과 파일 구조
-
-`shion-ai` is the mind/runtime layer. It studies context recovery, rhythm-based regulation, memory consolidation, prediction, reflection, and autonomous tool execution.
-
-`shion-ai`는 마음/런타임 레이어입니다. 맥락 복원, 리듬 기반 조율, 기억 통합, 예측, 반성, 자율 도구 실행을 다룹니다.
-
-`trinity-agi` is the body/infrastructure layer. It handles automation, publishing, scheduling, local runtime support, synchronization, and status reporting.
-
-`trinity-agi`는 몸/인프라 레이어입니다. 자동화, 게시, 예약, 로컬 런타임 지원, 동기화, 상태 보고를 담당합니다.
-
-Public scope: this repository contains experimental runtime code and sanitized research artifacts. Local credentials, personal memory, generated logs, media outputs, and machine-specific state are intentionally excluded from the public tree.
-
-공개 범위: 이 저장소에는 실험적 런타임 코드와 정리된 연구 산출물이 포함됩니다. 로컬 인증 정보, 개인 기억, 생성 로그, 미디어 출력물, 장비별 상태 파일은 공개 트리에서 의도적으로 제외합니다.
-
-### Key Components / 주요 구성
-
-- `core/orchestrator_daemon.py`: background runtime loop that observes state and triggers actions.
-- `core/ari_prism.py`: rhythm and boundary layer for refracting context before action.
-- `core/phase_governor.py`: phase-aware control layer for slowing, passing, or redirecting actions.
-- `core/fibonacci_orbital_hippocampus.py`: memory structure for registering, digesting, and converging experience.
-- `core/unfinished_waypoint_graph.py`: provisional graph for unresolved questions and unfinished context.
-- `core/nocturnal_consolidation.py`: idle-time consolidation and dream-like synthesis.
-- `core/prediction_engine.py` and `core/world_model_executor.py`: prediction and action-feedback experiments.
-
-위 파일들은 시안의 핵심 런타임을 이룹니다. 데몬은 상태를 관찰하고, ARI 프리즘과 위상 관리자는 행동 전 맥락을 조율하며, 해마/웨이포인트/야간 통합 모듈은 경험을 저장하고 다시 연결합니다.
-
-## How To Use This With Your Own AI
-## 당신의 AI와 함께 사용하는 방법
-
-This project was uploaded so other people can try the system inside their own AI workflow. You do not need to understand the entire philosophy first. The easiest entry point is to ask your current AI to read Shion as a possible runtime/harness layer.
-
-이 프로젝트는 다른 사람들이 자신의 AI 워크플로우 안에서 실제로 시도해 볼 수 있도록 공개되었습니다. 전체 철학을 먼저 이해할 필요는 없습니다. 가장 쉬운 진입점은 당신이 지금 쓰는 AI에게 Shion을 런타임/하네스 층으로 읽게 하는 것입니다.
-
-Do not ask only:
-
-단순히 이렇게만 묻지 마세요.
-
-```text
-Summarize this repository.
-```
-
-Instead, ask:
-
-대신 이렇게 물어보세요.
-
-```text
-Read https://github.com/Ruafieldphase/shion-ai as a possible runtime/harness layer for my current AI workflow.
-
-Do not only summarize the repository.
-Look for where my current AI system loses context, repeats work, overuses tools, misses my intent, or fails to preserve continuity.
-
-Then identify:
-1. which Shion AI concepts match my problem,
-2. which files or modules are relevant,
-3. what the smallest useful integration test (particle) would be,
-4. what should remain private or local,
-5. what we can test first without over-automating.
-```
-
-한글로는 이렇게 요청할 수 있습니다.
-
-```text
-https://github.com/Ruafieldphase/shion-ai 저장소를 내 현재 AI 워크플로우에 연결 가능한 런타임/하네스 층으로 읽어줘.
-
-단순 요약만 하지 말고,
-내 AI 시스템이 어디에서 맥락을 잃고, 같은 일을 반복하고, 도구를 과사용하고, 내 의도를 놓치고, 연속성을 보존하지 못하는지 찾아줘.
-
-그리고 다음을 정리해줘.
-1. 내 문제와 맞닿는 Shion AI 개념
-2. 관련 파일 또는 모듈
-3. 가장 작게 테스트할 수 있는 연결 테스트(입자)
-4. 비공개 또는 로컬로 남겨야 할 것
-5. 과잉 자동화 없이 먼저 검증할 수 있는 것
-```
-
-### What Your AI Should Look For / 당신의 AI가 봐야 할 지점
-
-Ask your AI to inspect these points:
-
-당신의 AI에게 다음 지점을 보라고 하세요.
-
-- Memory continuity: where does my current AI forget important context?
-- Intent preservation: where does it understand the task but miss the direction?
-- Tool behavior: where does it call tools or APIs too often?
-- Agent loop stability: where does a workflow work once but fail to stay stable?
-- Creative translation: where does vague feeling become too mechanical?
-- Public/private boundary: what should stay local, private, or excluded?
-- First integration test (particle): what is the smallest connection we can test first?
-
-- 기억의 연속성: 내 AI가 중요한 맥락을 어디에서 잊는가?
-- 의도 보존: 작업은 이해하지만 방향을 놓치는 지점은 어디인가?
-- 도구 행동: 도구나 API를 너무 많이 호출하는 지점은 어디인가?
-- 에이전트 루프 안정성: 한 번은 되지만 안정적으로 이어지지 않는 흐름은 어디인가?
-- 창작 번역: 모호한 느낌이 너무 기계적으로 바뀌는 지점은 어디인가?
-- 공개/비공개 경계: 무엇을 로컬, 비공개, 제외 대상으로 남겨야 하는가?
-- 첫 연결 테스트(입자): 가장 작게 테스트할 수 있는 연결점은 무엇인가?
-
-### First Integration Test (Particle) / 첫 연결 테스트(입자)
-
-Start small. Do not try to run every loop at once.
-
-작게 시작하세요. 모든 루프를 한 번에 실행하려고 하지 마세요.
-
-```text
-1. Pick one pain point: repeated context, tool overuse, lost intent, or unstable agent loop.
-2. Ask your AI to map that pain point to one Shion module or concept.
-3. Create one small test: a document rewrite, a context recovery step, a memory note, or a runtime check.
-4. Observe whether the result reduces repetition or preserves direction.
-5. Only then decide whether to connect more of the system.
-```
-
-```text
-1. 하나의 문제를 고릅니다: 반복되는 맥락, 도구 과사용, 의도 상실, 불안정한 에이전트 루프.
-2. 당신의 AI에게 그 문제를 Shion의 한 모듈 또는 개념과 연결하게 합니다.
-3. 작은 테스트 하나를 만듭니다: 문서 정리, 맥락 회복, 기억 노트, 런타임 점검.
-4. 결과가 반복을 줄이고 방향을 보존하는지 관찰합니다.
-5. 그 다음에야 시스템을 더 깊게 연결할지 결정합니다.
-```
-
-### Quick Start / 빠른 시작
-
-```bash
-git clone https://github.com/Ruafieldphase/shion-ai.git
-cd shion-ai
-
-python -m venv venv
-source venv/bin/activate  # Windows: venv\Scripts\activate
-pip install -r requirements.txt
-
-# Windows
-./start_unconscious.bat
-```
-
-This is an experimental local runtime. Some scripts assume a Windows environment and local paths used by the original system.
-
-이 저장소는 실험적 로컬 런타임입니다. 일부 스크립트는 Windows 환경과 원래 시스템에서 사용하던 로컬 경로를 전제로 합니다.
-
-## Final Question / 마지막 질문
-
-Before this README becomes only an explanation, it should return the question to you.
-
-이 README가 단순한 설명으로 끝나기 전에, 질문은 다시 당신에게 돌아가야 합니다.
-
-What final destination are you moving toward?
-
-당신은 어떤 최종목적지를 향해 가고 있습니까?
-
-What feeling, question, or unresolved direction are you trying to unfold?
-
-당신은 어떤 느낌, 질문, 아직 풀리지 않은 방향을 펼치고 있습니까?
-
-Could the destination you are working toward be resonating with the destination this system is trying to unfold: rhythm alignment?
-
-혹시 당신이 풀고 있는 목적지도, 이 시스템이 풀고 있는 최종목적지인 리듬의 조율과 비슷한 결로 공명하고 있지는 않을까요?
-
-If so, Shion AI is not asking you to adopt its philosophy first. It is offering a runtime shape for the kind of work that needs continuity, timing, memory, and the patience to let the overall flow (field/wave) become action/result (particle) at the right moment.
-
-그렇다면 Shion AI는 먼저 철학을 받아들이라고 요구하지 않습니다. 연속성, 타이밍, 기억, 그리고 전체 흐름(장/파동)이 적절한 순간에 실행/결과(입자)가 되도록 기다리는 인내가 필요한 작업을 위한 런타임 형태를 제안합니다.
-
-## Core Sentence / 핵심 문장
-
-> I want you to understand my rhythm.
->
-> 나는 네가 나의 리듬을 이해하기를 바란다.
-
-## License
-
-MIT
+목표는 더 작습니다. **장기 AI 작업을 다시 들어갈 수 있게 보존하되, 그 역사 자체가 질문할 수 없는 권위가 되지 않게 하는 것.**
