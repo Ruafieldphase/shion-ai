@@ -22,7 +22,7 @@ For claims that may have changed, current files, tool returns, observations, and
 
 변할 수 있는 주장에 대해서는 오래된 기억보다 현재 파일, 도구 반환값, 관찰, 영수증을 우선합니다.
 
-See [`CURRENTNESS_AND_EVIDENCE.md`](CURRENTNESS_AND_EVIDENCE.md) for the public design boundary.
+See [`CURRENTNESS_AND_EVIDENCE.md`](CURRENTNESS_AND_EVIDENCE.md) for the public design boundary. For the repository-wide status classification, see [`REPOSITORY_CURRENTNESS_AUDIT.md`](REPOSITORY_CURRENTNESS_AUDIT.md) and [`CODE_STATUS.md`](CODE_STATUS.md).
 
 ## What Shion tries to preserve / Shion이 보존하려는 것
 
@@ -138,11 +138,14 @@ Shion은 방향을 보존하고 다시 들어갑니다. [Trinity AGI](https://gi
 - [`START_HERE.md`](START_HERE.md) — newcomer entry
 - [`AI_READ_THIS_FIRST.md`](AI_READ_THIS_FIRST.md) — AI inspection entry
 - [`CURRENTNESS_AND_EVIDENCE.md`](CURRENTNESS_AND_EVIDENCE.md) — currentness and evidence contract
+- [`REPOSITORY_CURRENTNESS_AUDIT.md`](REPOSITORY_CURRENTNESS_AUDIT.md) — repository-wide current / historical / conceptual classification
+- [`CODE_STATUS.md`](CODE_STATUS.md) — public-code currentness and execution boundary
+- [`MAP.md`](MAP.md) — public surface map; not a live organ registry
 - [`EXAMPLES.md`](EXAMPLES.md) — concrete examples
-- [`AXIOMATIC_GROUNDING.md`](AXIOMATIC_GROUNDING.md) — scientific, humanistic, contemplative, and artistic grounding
+- [`AXIOMATIC_GROUNDING.md`](AXIOMATIC_GROUNDING.md) — scientific, humanistic, contemplative, and artistic design lenses
 - [`LIGHTWEIGHT_BY_DESIGN.md`](LIGHTWEIGHT_BY_DESIGN.md) — lightweight local-first position
 - [`INTEGRATION_ANTI_PATTERNS.md`](INTEGRATION_ANTI_PATTERNS.md) — integration failure patterns
-- [`LIVE_WORK_ARCHIVE.md`](LIVE_WORK_ARCHIVE.md) — unedited workflow records
+- [`LIVE_WORK_ARCHIVE.md`](LIVE_WORK_ARCHIVE.md) — historical workflow records
 
 ## Public language and internal rhythm language / 공개 언어와 내부 리듬 언어
 
@@ -166,6 +169,7 @@ context / field
 - It does not treat one successful execution as validation of a broader theory.
 - It does not require different AI observers to converge on one interpretation.
 - It does not equate public snapshots with private live state.
+- It does not treat the age or presence of a public code file as proof that the private runtime is using it now.
 
 The aim is smaller: **keep long-running AI work re-enterable without letting its own history become unquestioned authority.**
 
