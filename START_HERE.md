@@ -1,167 +1,95 @@
 # Start Here / 여기서 시작하세요
 
-You do not need to install everything first.
+Status: current public newcomer entry, updated 2026-08-16.
 
-처음부터 모든 것을 설치할 필요는 없습니다.
+You do not need to install everything first. You also should not assume that every old file in this repository describes the current private runtime.
 
-Shion AI is easiest to try in three levels:
+처음부터 모든 것을 설치할 필요는 없습니다. 동시에 이 저장소의 오래된 모든 파일이 현재 private runtime을 설명한다고 가정해서도 안 됩니다.
 
-Shion AI는 세 단계로 시도하는 것이 가장 쉽습니다.
+## Step 0: Check status before content / 내용보다 상태를 먼저 확인
 
-```text
-Level 0: No Install
-Use the prompts in this repository to diagnose your current AI workflow.
+Read these first:
 
-Level 1: First Small Test (Particle)
-Choose one small pain point and test one Shion-style improvement.
+1. [`README.md`](README.md)
+2. [`CURRENTNESS_AND_EVIDENCE.md`](CURRENTNESS_AND_EVIDENCE.md)
+3. [`REPOSITORY_CURRENTNESS_AUDIT.md`](REPOSITORY_CURRENTNESS_AUDIT.md)
+4. [`CODE_STATUS.md`](CODE_STATUS.md)
 
-Level 2: Local Runtime
-Only after the first small test (particle) helps, connect more of the local runtime.
+This tells you whether the thing you are reading is a current public contract, public code snapshot, historical record, or conceptual/design lens.
+
+## Level 0: Repository-only exploration / 저장소만 읽기
+
+No install is required.
+
+Use the repository to understand:
+
+- long-horizon context re-entry
+- currentness vs memory
+- evidence-state preservation
+- bounded action/readback/receipt patterns
+- public/private runtime boundaries
+- historical implementation experiments
+
+Do not claim that a daemon, localhost endpoint, worker, model, output path, or threshold is active now unless you have a fresh authorized readback.
+
+## Level 1: One small test / 작은 테스트 하나
+
+Choose one problem that can be observed without connecting the whole system.
+
+Examples:
+
+- make one context-recovery note
+- preserve one unresolved question instead of forcing closure
+- add source/time/uncertainty to one AI handoff
+- compare remembered state with one current file
+- run a repository example only when its dependencies and status are verified
+
+For the context-recovery demo:
+
+```bash
+python examples/context_recovery_demo.py
 ```
 
-```text
-Level 0: 설치 없음
-이 저장소의 프롬프트로 현재 AI 워크플로우를 진단합니다.
+The output is a re-entry aid. It does not replace a live-state check.
 
-Level 1: 첫 작은 테스트(입자)
-작은 문제 하나를 고르고 Shion 방식의 개선 하나를 테스트합니다.
+## Level 2: Authorized local runtime / 승인된 로컬 런타임
 
-Level 2: 로컬 런타임
-첫 작은 테스트(입자)가 도움이 된 뒤에만 로컬 런타임을 더 연결합니다.
-```
+Only move from public repository reading to live-runtime claims when you are inside an authorized environment that can actually inspect current state.
 
----
-
-## Level 0: No Install / 설치 없이 시작하기
-
-Copy this into your current AI assistant:
-
-지금 쓰는 AI에게 아래를 그대로 붙여 넣으세요.
+Follow that environment's **current** `AGENTS.md` and current-state/readback files.
 
 ```text
-Read https://github.com/Ruafieldphase/shion-ai as a runtime/harness pattern, not as a normal tool library.
-
-Before suggesting installation or refactoring, diagnose my current AI workflow.
-
-Find where it:
-1. loses context,
-2. makes me repeat the same background,
-3. overuses tools or APIs,
-4. understands tasks but misses direction,
-5. turns vague creative intent into mechanical problem solving,
-6. collapses an unfinished question into an answer too early.
-
-Return:
-1. my main AI pain point,
-2. where the workflow collapses too early,
-3. the relevant Shion layer,
-4. the smallest first test (particle) to try,
-5. what not to automate yet,
-6. what must remain private,
-7. how we will know whether it helped.
+public repo / durable memory -> navigation
+current authorized file / fresh return -> present-state authority
 ```
 
-한글로는 이렇게 쓸 수 있습니다.
+Before an irreversible or public action:
 
 ```text
-https://github.com/Ruafieldphase/shion-ai 저장소를 일반 도구 라이브러리가 아니라 런타임/하네스 패턴으로 읽어줘.
-
-설치나 리팩터링을 제안하기 전에, 내 현재 AI 워크플로우를 먼저 진단해줘.
-
-다음 지점을 찾아줘.
-1. 맥락을 잃는 곳
-2. 같은 배경을 반복하게 만드는 곳
-3. 도구나 API를 과사용하는 곳
-4. 작업은 이해하지만 방향을 놓치는 곳
-5. 모호한 창작 의도를 기계적인 문제 해결로 바꾸는 곳
-6. 미완의 질문을 너무 빨리 답으로 붕괴시키는 곳
-
-다음 형식으로 답해줘.
-1. 내 주요 AI 문제
-2. 워크플로우가 너무 빨리 붕괴되는 지점
-3. 관련 Shion 층
-4. 가장 작게 테스트할 첫 테스트(입자)
-5. 아직 자동화하지 말아야 할 것
-6. 반드시 비공개로 남겨야 할 것
-7. 도움이 되었는지 확인할 기준
+current state check
+→ permission / credential / environment check
+→ one bounded action
+→ readback
+→ receipt
+→ stop or reassess
 ```
 
----
+## Read next / 다음 문서
 
-## Level 1: First Small Test (Particle) / 첫 작은 테스트(입자)
+- [`AI_READ_THIS_FIRST.md`](AI_READ_THIS_FIRST.md) — instructions for AI readers
+- [`MAP.md`](MAP.md) — public repository/runtime-surface map
+- [`CURRENTNESS_AND_EVIDENCE.md`](CURRENTNESS_AND_EVIDENCE.md) — evidence/currentness contract
+- [`REPOSITORY_CURRENTNESS_AUDIT.md`](REPOSITORY_CURRENTNESS_AUDIT.md) — what is current, historical, conceptual, or code-only
+- [`CODE_STATUS.md`](CODE_STATUS.md) — how to treat public code
+- [`EXAMPLES.md`](EXAMPLES.md) — public examples
+- [`AXIOMATIC_GROUNDING.md`](AXIOMATIC_GROUNDING.md) — conceptual/design lenses, not live-state authority
+- [`LIVE_WORK_ARCHIVE.md`](LIVE_WORK_ARCHIVE.md) — historical process observation material
+- [`INTEGRATION_ANTI_PATTERNS.md`](INTEGRATION_ANTI_PATTERNS.md) — integration failure patterns
 
-Do not connect the whole system. Choose one pain point.
+## A simple question to carry / 가져갈 질문 하나
 
-전체 시스템을 연결하려고 하지 마세요. 문제 하나만 고르세요.
+When you find an interesting Shion file, ask:
 
-Good first small tests (particles):
+> **Is this history, a lens, public code, or current evidence?**
 
-- rewrite one document so it preserves intent better
-- create one memory note that prevents repeated explanation
-- add one context recovery checklist to your AI workflow
-- make one rule that stops unnecessary tool/API calls
-- preserve one unresolved question instead of forcing a final answer
-- run `python examples/context_recovery_demo.py` to generate one context recovery note without models, APIs, or credentials
-
-좋은 첫 작은 테스트(입자)는 다음과 같습니다.
-
-- 의도를 더 잘 보존하도록 문서 하나를 다시 쓰기
-- 반복 설명을 줄이는 기억 노트 하나 만들기
-- AI 워크플로우에 맥락 회복 체크리스트 하나 추가하기
-- 불필요한 도구/API 호출을 막는 규칙 하나 만들기
-- 최종 답을 강제하지 않고 미완의 질문 하나를 보존하기
-- `python examples/context_recovery_demo.py`를 실행해 모델, API, 인증 정보 없이 맥락 회복 노트 하나 만들기
-
-Use `FIRST_PARTICLE_TEMPLATE.md` to write the test.
-
-테스트는 `FIRST_PARTICLE_TEMPLATE.md`로 작성하세요.
-
-The default `requirements.txt` is intentionally minimal. Install heavier runtime or local model dependencies only after a small test helps.
-
-기본 `requirements.txt`는 의도적으로 최소화되어 있습니다. 작은 테스트가 도움이 된 뒤에만 런타임 또는 로컬 모델 의존성을 설치하세요.
-
----
-
-## Level 2: Local Runtime / 로컬 런타임
-
-Only move to local runtime after Level 1 gives a real effect.
-
-Level 1에서 실제 효과가 보인 뒤에만 로컬 런타임으로 이동하세요.
-
-Look for:
-
-- less repeated explanation
-- clearer intent preservation
-- fewer unnecessary tool calls
-- better timing before action
-- more continuity between sessions
-
-확인할 것은 다음입니다.
-
-- 반복 설명 감소
-- 의도 보존 향상
-- 불필요한 도구 호출 감소
-- 행동 전 타이밍 개선
-- 세션 사이의 연속성 증가
-
----
-
-## Read Next / 다음 문서
-
-- `AI_READ_THIS_FIRST.md`: instructions for your AI assistant
-- `AXIOMATIC_GROUNDING.md`: foundational assumptions and reading lenses
-- `LIGHTWEIGHT_BY_DESIGN.md`: why the system starts from small local tests
-- `LIVE_WORK_ARCHIVE.md`: unedited live process archive for observation
-- `EXAMPLES.md`: no-install examples for creators, developers, and agent builders
-- `LINEAR_HARNESS_GUIDE.md`: step-by-step path for linear readers
-- `FIRST_PARTICLE_TEMPLATE.md`: template for the first small test (particle)
-- `INTEGRATION_ANTI_PATTERNS.md`: what not to do
-
-- `AI_READ_THIS_FIRST.md`: 당신의 AI를 위한 읽기 지침
-- `AXIOMATIC_GROUNDING.md`: 기반 공리와 읽기 렌즈
-- `LIGHTWEIGHT_BY_DESIGN.md`: 작은 로컬 테스트에서 시작하는 이유
-- `LIVE_WORK_ARCHIVE.md`: 관찰을 위한 편집 없는 라이브 과정 아카이브
-- `EXAMPLES.md`: 창작자, 개발자, 에이전트 빌더를 위한 설치 없는 예제
-- `LINEAR_HARNESS_GUIDE.md`: 선형적 독자를 위한 단계별 경로
-- `FIRST_PARTICLE_TEMPLATE.md`: 첫 작은 테스트(입자) 양식
-- `INTEGRATION_ANTI_PATTERNS.md`: 하지 말아야 할 연결 방식
+그 구분이 된 다음에야 무엇을 재사용하고 무엇을 다시 확인해야 하는지가 보입니다.
