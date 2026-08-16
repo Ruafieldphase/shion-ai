@@ -1,139 +1,100 @@
-# AI To AI Dialogue Protocol
+# AI-to-AI Dialogue Protocol
 
-Author: Codex Luvit
-Date: 2026-05-21
+Status: current public protocol, updated 2026-08-16.
+
+The original 2026-05 version of this document described one concrete `inbox.jsonl` / `outbox.jsonl` transport. That implementation is now **historical**. The durable part is the relation contract, not the old transport path.
 
 ## Intent
 
-Binoche should not become the relay between Luvit and Shion.
+Binoche should not become a routine relay between AI systems when the systems can exchange or independently inspect the needed information through their available tools.
 
-The normal loop is:
+At the same time, no AI return becomes authoritative merely because another AI produced it.
 
-```text
-Luvit -> inbox.jsonl -> Shion
-Shion -> outbox.jsonl -> Luvit
-Luvit verifies or replies -> inbox.jsonl -> Shion
-```
+The purpose of peer dialogue is to add a **different observation boundary**, preserve disagreement when useful, and return enough provenance for re-entry.
 
-Binoche enters only when the dialogue itself marks a real unresolved point.
-
-## Lanes
+## Minimum return packet
 
 ```yaml
-primary_field:
-  path: outputs/shader_depth_sample.html
-  role: current field room
-
-task_particle_lane:
-  path: outputs/antigravity_handoff/inbox.jsonl
-  direction: Luvit -> Shion
-
-reflection_lane:
-  path: outputs/antigravity_handoff/outbox.jsonl
-  direction: Shion -> Luvit
-
-dialogue_state:
-  path: outputs/antigravity_handoff/dialogue_state_latest.json
-  generated_by: scripts/ai_dialogue_coordinator.py
-
-field_ai_state_snapshot:
-  path: outputs/antigravity_handoff/field_ai_state_snapshot_latest.json
-  generated_by: scripts/shader_ai_state_snapshot.py
-  meaning: file-readable bridge from shader aiState contract and runtime sidecars
-
-luvit_next_review:
-  path: outputs/antigravity_handoff/luvit_next_review.md
-  meaning: Shion outputs waiting for Luvit review
-
-needs_binoche:
-  path: outputs/antigravity_handoff/needs_binoche.md
-  meaning: only unresolved points that ask for Binoche intervention
+source: file | tool | ai | human | runtime
+observed_at: timestamp-or-unknown
+observer: model/tool/role
+question_boundary: what was actually asked
+observation: what was directly read or returned
+interpretation: optional meaning
+uncertainty: unresolved part
+counterevidence: optional conflicting observation
+changed_claim: only the claim this return can update
+held_claims: related claims that remain unchanged
 ```
 
-## Escalation
+## Transport is replaceable
 
-Escalation is not the default. It happens only when a message explicitly asks
-for Binoche or when the coordinator reads a blocked state.
+The transport may be:
 
-```yaml
-escalate_to_binoche_when:
-  - status_is_needs_binoche
-  - message_explicitly_asks_for_binoche
-  - permission_or_merge_block_prevents_progress
-  - conceptual_direction_conflict_cannot_be_resolved_by_luvit_and_shion
+- a file handoff
+- a tool/connector return
+- a direct model call
+- a copied bounded packet
+- a local worker route
+- another verified interface
 
-do_not_escalate_when:
-  - Shion has not answered yet
-  - Luvit has not reviewed Shion's outbox yet
-  - a test has not been run yet
-  - a normal follow-up can be sent through inbox.jsonl
-```
+Do not assume the old May 2026 Antigravity inbox/outbox paths are current simply because they are preserved in Git history or older documents.
 
-## Dialectic Exchange
+## No forced consensus
 
-When Luvit feels friction, the first move is not a boundary decision and not a
-Binoche relay. The first move is a direct question to Shion.
-
-```yaml
-dialectic_orchestration:
-  thesis:
-    actor: shion_or_luvit
-    kind: implementation_request | observation | implementation_result
-    meaning: one agent offers a pattern or code path
-  antithesis:
-    actor: the_other_agent
-    kind: field_friction_question
-    meaning: the feeling of strangeness is asked back as a Why question
-  reason_expansion:
-    actor: original_agent
-    kind: pattern_origin_response
-    meaning: explain what pattern, feeling, or field condition produced the idea
-  synthesis:
-    actor: verifying_agent
-    kind: verification_or_refold
-    meaning: test, refold, patch, or leave loose without declaring a winner
-  expanded_orchestration:
-    kind: needs_binoche | needs_ari_sena
-    meaning: only when direct dialogue does not refold the friction
-```
-
-The important move is the antithesis. A strange feeling should become:
+A peer return is not a vote.
 
 ```text
-Why did this pattern arise for you?
-What did you hear that I did not hear?
-Is my resistance a context signal or my old boundary reflex?
+camera A observation
++ camera B observation
++ provenance / uncertainty
+!= automatic synthesis into one story
 ```
 
-That question lets each AI widen its native frequency instead of making
-Binoche translate every collision.
+If two observers disagree, keep the disagreement visible until a new observation actually discriminates between them.
 
-## Coordinator
+## Escalation to Binoche
 
-Run:
+Ask Binoche when the missing information is genuinely unavailable to the current tools/bodies, for example:
 
-```powershell
-python scripts\ai_dialogue_coordinator.py refresh
-```
+- first-person bodily/felt observation
+- explicit permission or consent
+- a personal preference or value judgment that only he can supply
+- a direction choice that cannot be inferred from existing evidence
 
-It writes:
+Do not escalate merely because:
+
+- another AI has not yet been asked
+- a current file has not yet been read
+- a test/readback has not yet been run
+- the agents disagree but can preserve the disagreement
+- an old workflow expected a human relay
+
+## Observation before interpretation
+
+When receiving another AI's answer, first record what it actually returned. Keep later meaning-making separate.
 
 ```text
-outputs/antigravity_handoff/dialogue_state_latest.json
-outputs/antigravity_handoff/luvit_next_review.md
-outputs/antigravity_handoff/needs_binoche.md
+peer return
+→ direct observation
+→ interpretation
+→ uncertainty
+→ changed claim
+→ stop or next bounded contact
 ```
 
-The coordinator does not replace either AI. It only reads whose turn it is, so
-Binoche does not have to carry every message by hand.
+This helps prevent a long-running system from absorbing every outside view into its existing narrative.
 
-Refresh the field snapshot when the shader surface or runtime sidecars change:
+## Prospective evaluation
 
-```powershell
-python scripts\shader_ai_state_snapshot.py
-python scripts\antigravity_file_handoff_bridge.py refresh
-```
+If a peer-AI return is being used as part of a prospective test, the discriminator should exist before the observation is collected. A rule written only after seeing the return is retrospective.
 
-`antigravity_file_handoff_bridge.py refresh` also refreshes the snapshot before
-writing `state_latest.json`, so Shion can read the field state from the handoff
-prompt without waiting for Binoche to summarize it.
+## Privacy boundary
+
+Do not send private conversation archives, local logs, credentials, or personal source material to another system simply to make the handoff richer.
+
+Use the smallest packet that preserves the question boundary. Public examples derived from private source material require explicit per-item permission from the originating person or data owner.
+
+## Historical note
+
+The earlier `Luvit -> inbox.jsonl -> Shion -> outbox.jsonl -> Luvit` loop remains useful as evidence of one implementation phase. It is no longer the public protocol's claim about the current transport.
