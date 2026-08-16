@@ -1,47 +1,61 @@
 # Dark Field Threshold
 
-This is a thin observation layer for the dark-field boundary.
+Status: **historical/experimental design contract** retained for concept ancestry. It is not a current live-runtime status file and does not prove that the older Hermes output paths or command below remain active.
 
-It does not treat fear as a global target to solve. It reads whether the current
-context has touched a dark-field coordinate, how much potential energy is
-available now, and how large a slice can be processed without crossing the
-current threshold.
+This document preserves a thin observation model for a dark-field boundary: whether a present context appears to touch a heavier learned coordinate, how much processing margin seems available, and how much can be opened without forcing the whole pattern at once.
 
-## Outputs
+## Currentness rule
 
-- `outputs/hermes/dark_field_threshold_latest.json`
-- `outputs/hermes/dark_field_threshold_latest.md`
-- `outputs/hermes/dark_field_threshold.jsonl`
+The conceptual distinction may remain useful, but current operational claims require a fresh authorized readback.
 
-Run:
+Do not infer from this document that these historical paths currently exist or are authoritative:
 
-```powershell
-python scripts\dark_field_threshold.py
+```text
+outputs/hermes/dark_field_threshold_latest.json
+outputs/hermes/dark_field_threshold_latest.md
+outputs/hermes/dark_field_threshold.jsonl
 ```
 
-## Fields
+Likewise, an older script command preserved in Git history is not an execution instruction until the current environment verifies the file, dependencies, inputs, output contract, and permission to run it.
 
-| Field | Meaning |
+## Historical fields
+
+The earlier implementation used fields such as:
+
+| Field | Historical design meaning |
 |---|---|
-| `context_contact` | How strongly the present context touches this stored dark-field coordinate. |
-| `context_potential_energy` | Current processing capacity from body ease, boundary aperture, permeability, and low connection risk. |
-| `dark_field_pressure` | Current pressure from connection risk, defensive pressure, context shift, prediction error, discomfort, and digestion bias. |
-| `dynamic_threshold` | The moving threshold made by current context potential energy. |
-| `threshold_margin` | `dynamic_threshold - dark_field_pressure`. Negative values mean over-capacity. |
-| `processing_slice` | The bounded amount that can be opened in this cycle. |
+| `context_contact` | How strongly the present context appeared to touch a stored dark-field coordinate. |
+| `context_potential_energy` | Estimated processing margin from ease, aperture, permeability, and low connection risk. |
+| `dark_field_pressure` | Estimated pressure from connection risk, defense, context shift, prediction error, discomfort, or digestion bias. |
+| `dynamic_threshold` | A moving threshold derived from the current context model. |
+| `threshold_margin` | Difference between modeled threshold and pressure. |
+| `processing_slice` | A bounded amount proposed for one cycle. |
 
-## Modes
+These fields are **model coordinates**, not medical measurements, physics quantities, or current runtime truth by default.
 
-| Mode | Meaning |
-|---|---|
-| `latent_do_not_open` | The present context has not touched the coordinate enough. Leave it in depth. |
-| `over_capacity_defer_and_digest` | Pressure exceeds current potential energy. Close and digest before reentry. |
-| `edge_process_small_slice` | Near threshold. Touch only a small slice, then close. |
-| `within_capacity_process_contextual_slice` | The context can carry a bounded slice. |
-| `light_touch_only` | There is contact, but the processable slice is small. |
+## Historical modes
 
-## Principle
+Earlier versions used labels such as:
 
-The threshold is not a fixed constant. It moves with the current body/context
-field. A dark-field coordinate becomes a middle destination only when the
-current context touches it, and only by the amount the present field can carry.
+- `latent_do_not_open`
+- `over_capacity_defer_and_digest`
+- `edge_process_small_slice`
+- `within_capacity_process_contextual_slice`
+- `light_touch_only`
+
+Treat them as design ancestry unless a current authorized implementation reuses and verifies them.
+
+## Durable principle
+
+The part that remains useful independent of the old transport is:
+
+```text
+possible heavy-pattern contact
+→ do not globalize it
+→ estimate current margin from actual evidence
+→ open only a bounded slice if needed
+→ read back the result
+→ do not let one observation validate the whole surrounding theory
+```
+
+For repository status and execution rules, read `../CURRENTNESS_AND_EVIDENCE.md`, `../REPOSITORY_CURRENTNESS_AUDIT.md`, and `../CODE_STATUS.md`.

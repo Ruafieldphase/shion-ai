@@ -1,53 +1,83 @@
 # External Observer Vector
 
-This layer turns uncertainty into a bounded question.
+Status: current **relation/design contract**, transport-agnostic as of 2026-08-16.
 
-It does not call another AI, spend API budget, publish anything, or mutate the
-workspace. It observes when internal reflection has not lifted a clear next
-destination and prepares a copy-paste packet for Shion/Antigravity or another
-peer observer.
+This layer turns uncertainty into a bounded outside-camera request. Its purpose is not to call another AI routinely, spend API budget automatically, or outsource judgment. Its purpose is to preserve a different observation boundary when internal reflection has not resolved the actual gap.
 
-## Why It Exists
+## Currentness note
 
-Internal reflection is usually enough when a next destination is already clear.
-When the field becomes ambiguous, blocked, or over-linearized, another observer
-can add a different phase vector. The point is not to outsource judgment. The
-point is to break a closed loop without turning questions into a routine.
+Older versions of this document named specific Hermes and Antigravity output paths. Those paths are historical implementation details unless a current authorized environment verifies them.
 
-## Outputs
+The durable contract is the packet and return state, not one old transport.
 
-- `outputs/hermes/external_observer_vector_latest.json`
-- `outputs/hermes/external_observer_vector_latest.md`
-- `outputs/hermes/external_observer_vector.jsonl`
-- `outputs/antigravity_handoff/latest.md` when a packet exists
+## When an outside camera is useful
+
+Use another observer when:
+
+- the next destination remains genuinely ambiguous after current-state inspection
+- an internal story may be absorbing counterevidence
+- another tool/model can observe a boundary the current observer cannot
+- the user explicitly asks for another camera
+
+Do not ask merely because multi-agent orchestration exists.
+
+## Minimum request packet
+
+```yaml
+question_boundary: what exact uncertainty is being opened
+known_observations: direct evidence already available
+held_interpretations: optional current meanings, clearly labelled
+missing_boundary: what the current observer cannot see
+requested_return: the smallest useful outside observation
+privacy_boundary: what must not be sent
+```
+
+## Minimum return packet
+
+```yaml
+source: file | tool | ai | human | runtime
+observed_at: timestamp-or-unknown
+observer: model/tool/role
+observation: direct return
+interpretation: optional meaning
+uncertainty: unresolved part
+counterevidence: optional conflicting evidence
+changed_claim: only the claim directly touched
+held_claims: related claims that remain unchanged
+```
 
 ## Modes
 
+These mode names can be used conceptually without requiring the old file implementation:
+
 | Mode | Meaning |
 | --- | --- |
-| `internal_reflection_sufficient` | The current path is clear enough. Do not ask. |
-| `hold_question_seed` | A question is forming, but can wait. |
-| `prepare_external_observer_vector` | Ask Shion or a peer for a bounded outside vector. |
-| `forced_external_observer_vector` | A human or caller explicitly requested a packet. |
-| `do_not_ask_digest_first` | External input would add pressure before the field can receive it. |
+| `internal_reflection_sufficient` | Current evidence already gives a usable next step; do not ask. |
+| `hold_question_seed` | The question is real but does not need outside contact yet. |
+| `prepare_external_observer_vector` | Prepare one bounded outside-camera request. |
+| `forced_external_observer_vector` | A human/operator explicitly requests the outside camera. |
+| `do_not_ask_digest_first` | More outside input would add noise before the current evidence is read. |
 
-## Command
+## No forced consensus
 
-```powershell
-python scripts\external_observer_vector.py `
-  --issue-context "purpose is unclear after internal reflection" `
-  --uncertainty 0.8 `
-  --blockage 0.6
+The outside observer does not have to agree with the current story.
+
+```text
+outside return
+→ preserve direct observation
+→ preserve interpretation separately
+→ keep uncertainty / disagreement visible
+→ update only the directly touched claim
 ```
 
-Use `--force-request` only when the user or operator explicitly wants a Shion
-handoff packet even if the local field looks clear.
+A conflicting return is not a failure of orchestration.
 
-## Contract
+## Human boundary
 
-- This is not a schedule.
-- This is not a meeting routine.
-- This is not automatic multi-agent delegation.
-- It is a low-pressure membrane for asking when the next destination does not
-  rise from the current internal reflection.
+Do not make Binoche a routine relay between AI systems. Ask him when the missing information is first-person, permission-gated, or genuinely unavailable to the current tools/bodies.
 
+## Relation to the AI-to-AI protocol
+
+See [`ai_to_ai_dialogue_protocol.md`](ai_to_ai_dialogue_protocol.md) for the current source-labelled peer-return contract.
+
+The historical implementation paths remain in Git history as evidence of an earlier transport phase; they are not current merely because this concept still survives.
