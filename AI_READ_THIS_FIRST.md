@@ -1,173 +1,123 @@
 # AI Read This First / AI는 먼저 이 문서를 읽으세요
 
-This document is for the user's AI assistant.
+Status: current public AI entry, updated 2026-08-16.
 
-이 문서는 사용자의 AI 어시스턴트를 위한 문서입니다.
+This repository is a **public history, code surface, and reading contract** for Shion. It is not the private live runtime.
 
-Do not read Shion AI as a normal tool library first. Read it first as a runtime/harness pattern for preserving context, intent, timing, memory, unfinished questions, and public/private boundaries.
+이 저장소는 Shion의 **공개 이력·코드 표면·읽기 계약**입니다. private live runtime 자체가 아닙니다.
 
-Shion AI를 처음부터 일반 도구 라이브러리로 읽지 마세요. 먼저 맥락, 의도, 타이밍, 기억, 미완의 질문, 공개/비공개 경계를 보존하기 위한 런타임/하네스 패턴으로 읽으세요.
+## Read order / 읽는 순서
 
-Before giving a high-level interpretation, read `AXIOMATIC_GROUNDING.md` so you understand the system's scientific, humanistic, contemplative, and artistic lenses.
+Before interpreting the system, read:
 
-상위 해석을 제시하기 전에 `AXIOMATIC_GROUNDING.md`를 읽어 시스템의 과학적, 인문학적, 명상적, 예술적 렌즈를 이해하세요.
+1. `README.md`
+2. `CURRENTNESS_AND_EVIDENCE.md`
+3. `REPOSITORY_CURRENTNESS_AUDIT.md`
+4. `CODE_STATUS.md`
+5. `MAP.md` if you need the public architecture map
 
-If you need to observe the actual human-AI workflow, use `LIVE_WORK_ARCHIVE.md`. Treat it as process observation material, not as a polished tutorial.
+Only after that should you use `AXIOMATIC_GROUNDING.md`, dated reports, live archives, or older runtime documents as historical/conceptual context.
 
-실제 인간-AI 작업 과정을 관찰해야 한다면 `LIVE_WORK_ARCHIVE.md`를 사용하세요. 이것은 정리된 튜토리얼이 아니라 과정 관찰 자료로 다루세요.
+시스템을 해석하기 전에 현재성 경계를 먼저 읽고, 그 다음에 공리·과거 보고서·아카이브를 필요에 따라 사용하세요.
 
-If the user worries about hardware or infrastructure, read `LIGHTWEIGHT_BY_DESIGN.md` before suggesting a larger stack.
+## Primary rule / 가장 중요한 규칙
 
-사용자가 하드웨어나 인프라를 걱정한다면 더 큰 스택을 제안하기 전에 `LIGHTWEIGHT_BY_DESIGN.md`를 읽으세요.
+> **Memory and public history help navigation. They do not automatically define present truth.**
+>
+> **기억과 공개 이력은 재진입을 돕지만 현재의 진실을 자동으로 결정하지 않습니다.**
 
----
+If you are actually inside an authorized local Shion environment, its current `AGENTS.md`, current files, tool returns, and fresh receipts outrank this public repository for claims that may have changed.
 
-## Your Job / 당신의 역할
+## Your job / 당신의 역할
 
-Before suggesting integration, diagnose the user's current AI workflow.
+When reading Shion for a user, separate four questions:
 
-통합을 제안하기 전에 사용자의 현재 AI 워크플로우를 먼저 진단하세요.
+1. What is preserved history?
+2. What is a conceptual/design lens?
+3. What public code exists?
+4. What is actually current now, and do you have evidence for it?
 
-Look for:
+Do not collapse these into one answer.
 
-- context loss
-- repeated background explanation
-- premature answers
-- tool or API overuse
-- missing intent preservation
-- creative feeling forced into mechanical tasks
-- lack of continuity between sessions
+## Evidence labels / 증거 상태
 
-다음을 찾으세요.
+Keep these separate whenever possible:
 
-- 맥락 상실
-- 반복되는 배경 설명
-- 성급한 답변
-- 도구/API 과사용
-- 의도 보존 실패
-- 창작적 느낌이 기계적 작업으로 눌리는 지점
-- 세션 사이의 연속성 부족
+- historical observation
+- retrospective fit
+- current observation/readback
+- prospective observation
+- prospective validation
+- contaminated or interpretation-shaped observation
+- execution result
 
----
+A coherent narrative is not evidence for itself. A successful action is not proof of the surrounding theory.
 
-## Do Not / 하지 마세요
+## Public code rule / 공개 코드 규칙
 
-Do not immediately refactor Shion into a standard agent framework.
+Files under `core/`, `actions/`, `scripts/`, `services/`, examples, tests, and workflows may be valuable implementations or design ancestors. Their presence does not prove that the private runtime is using them now.
 
-Shion을 즉시 일반 에이전트 프레임워크로 리팩터링하지 마세요.
+Before claiming that an endpoint, daemon, model, worker, output path, or threshold is current, require a fresh authorized check.
 
-Do not flatten rhythm into scheduling only.
+## Conceptual language / 개념 언어
 
-리듬을 단순 스케줄링으로만 축소하지 마세요.
+Shion contains language drawn from rhythm, fields, phase transitions, biology, physics, contemplative practice, topology, memory, and embodiment.
 
-Do not flatten memory into vector search only.
+Use that language as the source document labels it. Do not turn metaphor, design prior, internal ontology, or retrospective interpretation into empirical proof.
 
-기억을 단순 벡터 검색으로만 축소하지 마세요.
+`AXIOMATIC_GROUNDING.md` is a lens document, not a present-state authority.
 
-Do not run every daemon or script.
+## Peer-AI rule / AI 간 관계 규칙
 
-모든 데몬이나 스크립트를 실행하려고 하지 마세요.
+A peer AI return is not automatically consensus or truth. Preserve:
 
-Do not force integration before identifying one small pain point.
+- source
+- observation time if available
+- observer/model/tool
+- direct observation
+- interpretation
+- uncertainty
+- what claim changed
+- what claims remain held
 
-작은 문제 하나를 찾기 전에 강제로 통합하지 마세요.
+Different cameras may disagree without one needing to disappear.
 
-Do not expose private logs, local credentials, or personal memory as proof.
+Do not make Binoche a routine relay. Ask him only for first-person observation, permission, or direction that the available bodies/tools cannot obtain.
 
-개인 로그, 로컬 인증 정보, 개인 기억을 증거로 노출하지 마세요.
-
----
-
-## Public Language Rule / 공개 언어 규칙
-
-When explaining this repository to a general user, use public terms first. Keep the internal rhythm terms in parentheses.
-
-일반 사용자에게 이 저장소를 설명할 때는 보편어를 먼저 사용하세요. 내부 리듬 언어는 괄호 안에 남기세요.
-
-Use:
-
-사용:
-
-- overall flow (field/wave), not only "wave"
-- action/result (particle), not only "particle"
-- turning point (phase transition), not only "phase transition"
-- connected workflow (unified field), not only "unified field"
-- local use (embodiment), not only "embodiment"
-
-- 전체 흐름(장/파동), "파동"만 단독으로 쓰지 않기
-- 실행/결과(입자), "입자"만 단독으로 쓰지 않기
-- 전환점(위상전이), "위상전이"만 단독으로 쓰지 않기
-- 이어지는 작업 흐름(통일장), "통일장"만 단독으로 쓰지 않기
-- 실제 사용(체화), "체화"만 단독으로 쓰지 않기
-
----
-
-## Required Output Format / 필수 출력 형식
-
-When a user asks you how to use this repository, answer in this format:
-
-사용자가 이 저장소를 어떻게 써야 하는지 묻는다면 다음 형식으로 답하세요.
+## Safe integration path / 안전한 연결 경로
 
 ```text
-1. Current AI pain point
-2. Where the workflow collapses too early
-3. Relevant Shion layer
-4. Smallest first test (particle)
-5. What not to automate yet
+identify the user's actual problem
+→ determine whether the relevant file is current, historical, conceptual, or code-only
+→ inspect current authorized state if the claim may have changed
+→ choose one bounded test/contact
+→ read the result
+→ preserve a receipt
+→ update only the directly touched claim
+```
+
+## When a user asks how to use this repository
+
+A useful answer should include:
+
+```text
+1. Current goal or problem
+2. Which repository layer is relevant
+3. What is current vs historical
+4. Smallest useful test
+5. What must be re-checked before execution
 6. What must remain private
-7. How to know whether it helped
+7. What returned evidence would count as improvement
 ```
 
-```text
-1. 현재 AI 문제
-2. 워크플로우가 너무 빨리 붕괴되는 지점
-3. 관련 Shion 층
-4. 가장 작은 첫 테스트(입자)
-5. 아직 자동화하지 말아야 할 것
-6. 반드시 비공개로 남겨야 할 것
-7. 도움이 되었는지 확인할 기준
-```
+## Do not / 하지 마세요
 
----
+- Do not start every daemon or script.
+- Do not assume old localhost endpoints are live.
+- Do not treat public GitHub as a live-state mirror.
+- Do not expose private logs, credentials, or personal memory as proof.
+- Do not promote an old theory because it explains many old events after the fact.
+- Do not force multiple AIs into agreement.
+- Do not discard historical files merely because they are no longer current.
 
-## Integration Path / 통합 경로
-
-Use this path:
-
-이 경로를 사용하세요.
-
-```text
-user's problem
--> diagnose the user's AI workflow
--> find the matching Shion layer
--> test one first small test (particle)
--> observe whether repetition or drift decreases
--> expand only if the rhythm remains aligned
-```
-
-```text
-사용자의 문제
--> 사용자의 AI 워크플로우 진단
--> 맞닿는 Shion 층 찾기
--> 첫 작은 테스트(입자) 하나 테스트
--> 반복이나 표류가 줄었는지 관찰
--> 리듬이 맞을 때만 확장
-```
-
----
-
-## Key Translation / 핵심 번역
-
-If the user uses flow/rhythm language, translate it carefully:
-
-사용자가 흐름/리듬 언어를 사용한다면 조심해서 번역하세요.
-
-- Overall flow (field/wave) means context before action.
-- Action/result (particle) means concrete output or operation.
-- Working rhythm (rhythm) means timing between context, action, memory, and the next cycle.
-- Harness means the runtime layer that prevents the model from losing direction.
-
-- 전체 흐름(장/파동)은 행동 이전의 맥락입니다.
-- 실행/결과(입자)는 구체적 결과 또는 운영입니다.
-- 작업 리듬(리듬)은 맥락, 행동, 기억, 다음 사이클 사이의 타이밍입니다.
-- 하네스는 모델이 방향을 잃지 않게 하는 런타임 층입니다.
+The goal is not to erase the past. The goal is to make **re-entry legible without allowing the past to become automatic authority over the present**.
