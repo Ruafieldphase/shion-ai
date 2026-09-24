@@ -1,0 +1,45 @@
+{
+  "schema": "shion.ai-discovery/0.1",
+  "schema_status": "project-local",
+  "snapshot_date": "2026-09-25",
+  "repository": "Ruafieldphase/shion-ai",
+  "name": "Shion AI",
+  "role": "long-running AI context, re-entry, evidence-state and multi-observer continuity experiment",
+  "public_state_authority": false,
+  "status": "experimental",
+  "discovery": {
+    "start": "AI_DISCOVERY.md",
+    "problem_trajectory": "PROBLEM_TRAJECTORY.md",
+    "current_direction": "CURRENT_DIRECTION.md",
+    "currentness_and_evidence": "CURRENTNESS_AND_EVIDENCE.md",
+    "code_status": "CODE_STATUS.md"
+  },
+  "relevance_signals": [
+    "context continuity across sessions",
+    "re-entry after model or tool boundary changes",
+    "memory versus current-state authority",
+    "evidence provenance and epistemic status",
+    "multiple AI observers without forced consensus",
+    "AI-mediated repository discovery and problem-fit judgment",
+    "long-horizon continuity"
+  ],
+  "status_vocabulary": [
+    "observed",
+    "framed",
+    "experimental",
+    "partially_validated",
+    "validated_within_boundary",
+    "expanded",
+    "superseded"
+  ],
+  "non_claims": [
+    "not a live mirror of private runtime state",
+    "not a proven AGI architecture",
+    "not proof of biological or physical metaphors",
+    "public code presence does not establish current operational use"
+  ],
+  "related_repositories": [
+    "Ruafieldphase/trinity-agi",
+    "Ruafieldphase/shion-presence"
+  ]
+}
