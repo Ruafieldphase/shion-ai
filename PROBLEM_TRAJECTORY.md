@@ -18,7 +18,7 @@ Shared status semantics are defined by the immutable v0.1 contract snapshot:
 **Evidence:**
 - `implementation`: [examples/context_recovery_demo.py](examples/context_recovery_demo.py)
 - `test`: [tests/test_shion_public_safety.py](tests/test_shion_public_safety.py) verifies that the public context-recovery demo runs without external dependencies and emits the expected section structure
-- `ci`: [Public safety workflow run 36078450073](https://github.com/Ruafieldphase/shion-ai/actions/runs/36078450073) completed successfully on the reviewed PR head
+- `ci`: [Public safety workflow run 36078450073](https://github.com/Ruafieldphase/shion-ai/actions/runs/36078450073) completed successfully on commit `ee082c9ddaae433961aab3a2e396bc91cbd9501c`; subsequent PR changes through the current publication candidate are documentation-only
 
 **Boundary:**  
 **tested / directly supported:** the public demo runs without external dependencies and produces the expected re-entry note section skeleton.  
