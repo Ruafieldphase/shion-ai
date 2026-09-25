@@ -24,6 +24,19 @@ For claims that may have changed, current files, tool returns, observations, and
 
 See [`CURRENTNESS_AND_EVIDENCE.md`](CURRENTNESS_AND_EVIDENCE.md) for the public design boundary. For the repository-wide status classification, see [`REPOSITORY_CURRENTNESS_AUDIT.md`](REPOSITORY_CURRENTNESS_AUDIT.md) and [`CODE_STATUS.md`](CODE_STATUS.md).
 
+## AI discovery / AI 탐색
+
+For a user-side AI deciding whether this repository matches a user's problem, start with:
+
+- [`AI_DISCOVERY.md`](AI_DISCOVERY.md) — fast relevance and reading contract
+- [`PROBLEM_TRAJECTORY.md`](PROBLEM_TRAJECTORY.md) — what problems were encountered, bounded, or remain open
+- [`CURRENT_DIRECTION.md`](CURRENT_DIRECTION.md) — active frontier and what would count as progress
+- [`ai-manifest.json`](ai-manifest.json) — project-local machine-readable discovery metadata
+
+Shared status/evidence semantics are defined in `Ruafieldphase/shion-presence/AI_DISCOVERY_CONTRACT.md` v0.1.
+
+The intended sequence is **problem shape → evidence boundary → current frontier → smallest relevant artifact**, not keyword match → load everything.
+
 ## What Shion tries to preserve / Shion이 보존하려는 것
 
 - context across sessions / 세션을 가로지르는 맥락
@@ -175,14 +188,3 @@ The aim is smaller: **keep long-running AI work re-enterable without letting its
 
 목표는 더 작습니다. **장기 AI 작업을 다시 들어갈 수 있게 보존하되, 그 역사 자체가 질문할 수 없는 권위가 되지 않게 하는 것.**
 
-
-## AI discovery / AI 탐색
-
-For a user-side AI deciding whether this repository matches a user's problem, start with:
-
-- [`AI_DISCOVERY.md`](AI_DISCOVERY.md) — fast relevance and reading contract
-- [`PROBLEM_TRAJECTORY.md`](PROBLEM_TRAJECTORY.md) — what problems were encountered, bounded, expanded, or remain open
-- [`CURRENT_DIRECTION.md`](CURRENT_DIRECTION.md) — active frontier and what would count as progress
-- [`ai-manifest.json`](ai-manifest.json) — small project-local machine-readable discovery metadata
-
-The intended sequence is **problem shape → evidence boundary → current frontier → smallest relevant artifact**, not keyword match → load everything.
