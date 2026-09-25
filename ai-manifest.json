@@ -6,14 +6,16 @@
   "name": "Shion AI",
   "role": "long-running AI context, re-entry, evidence-state and multi-observer continuity experiment",
   "public_state_authority": false,
+  "manifest_role": "pointer_index",
+  "problem_records": "PROBLEM_TRAJECTORY.md",
   "discovery": {
     "start": "AI_DISCOVERY.md",
     "problem_trajectory": "PROBLEM_TRAJECTORY.md",
     "current_direction": "CURRENT_DIRECTION.md",
     "currentness_and_evidence": "CURRENTNESS_AND_EVIDENCE.md",
     "code_status": "CODE_STATUS.md",
-    "evaluation": "https://github.com/Ruafieldphase/shion-presence/blob/0fe9df165e21ea59279d685e2a65123b954c92b2/DISCOVERY_EVAL.md",
-    "repository_metadata_plan": "https://github.com/Ruafieldphase/shion-presence/blob/0fe9df165e21ea59279d685e2a65123b954c92b2/REPOSITORY_DISCOVERY_METADATA.md"
+    "evaluation": "https://github.com/Ruafieldphase/shion-presence/blob/8d68d9e68e6c68f8a1de1caccc8d8db4f98a6d54/DISCOVERY_EVAL.md",
+    "repository_metadata_plan": "https://github.com/Ruafieldphase/shion-presence/blob/4bb48282739831e0a9eb82555ae4d0a9d1759550/REPOSITORY_DISCOVERY_METADATA.md"
   },
   "relevance_signals": [
     "context continuity across sessions",
@@ -37,14 +39,7 @@
   "status_contract": {
     "schema": "shion.ai-discovery/0.1",
     "version": "0.1",
-    "url": "https://github.com/Ruafieldphase/shion-presence/blob/0fe9df165e21ea59279d685e2a65123b954c92b2/AI_DISCOVERY_CONTRACT.md",
-    "snapshot_commit": "0fe9df165e21ea59279d685e2a65123b954c92b2"
-  },
-  "manifest_role": "pointer_index",
-  "problem_records": "PROBLEM_TRAJECTORY.md",
-  "evaluation_declaration": {
-    "url": "https://github.com/Ruafieldphase/shion-presence/blob/0fe9df165e21ea59279d685e2a65123b954c92b2/DISCOVERY_EVAL.md",
-    "declaration_commit": "76a803a5726ebf9fa9ed73f519ef9b6d95675f01",
-    "declared_before_results": true
+    "url": "https://github.com/Ruafieldphase/shion-presence/blob/e5005b38b7a452c73602c634ead71484a7a2e609/AI_DISCOVERY_CONTRACT.md",
+    "snapshot_commit": "e5005b38b7a452c73602c634ead71484a7a2e609"
   }
 }
