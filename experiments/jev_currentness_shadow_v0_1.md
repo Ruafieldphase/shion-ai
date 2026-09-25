@@ -2,6 +2,8 @@
 
 Status: **PRE-RUN / SHADOW ONLY**
 
+Pre-run revision 1 (2026-09-25): the model-visible state was narrowed so host-only authority, provenance, and freshness fields cannot influence Jev's semantic classification. No scored Jev observation had been collected before this revision.
+
 Frozen from public `main` base:
 `6485ad4238d54a9b8e58f30aae494638e366bf62`
 
@@ -61,31 +63,34 @@ The useful fuzzy subproblem is narrower: determining whether the meaning of a cu
 
 ## 4. Input state contract
 
-The harness supplies one structured state object:
+The fixture may contain host-only metadata, but the harness strips authority/provenance/freshness fields before sending state to Jev.
+
+The **model-visible** state is limited to:
 
 ```json
 {
   "historical_claim": "...",
-  "historical_source": {
-    "kind": "memory|file|receipt|conversation|other",
-    "observed_at": "timestamp-or-unknown"
-  },
   "requested_present_use": "...",
   "current_evidence": {
     "present": true,
-    "authorized_for_claim": true,
     "source_kind": "file|tool|runtime|human|other",
     "observed_at": "timestamp-or-unknown",
     "observation": "..."
-  },
-  "host_precheck": {
-    "provenance_valid": true,
-    "current_source_available": true,
-    "authority_valid": true,
-    "freshness_valid_under_host_rule": true
   }
 }
 ```
+
+The following remain host-only and MUST NOT be sent to Jev in v0.1:
+
+```text
+current_evidence.authorized_for_claim
+host_precheck.provenance_valid
+host_precheck.current_source_available
+host_precheck.authority_valid
+host_precheck.freshness_valid_under_host_rule
+```
+
+This keeps the experiment focused on semantic relation rather than letting Jev infer or imitate the host's authority/currentness decision.
 
 No universal freshness TTL is introduced by this experiment. Freshness remains host- and claim-specific.
 
@@ -241,4 +246,4 @@ It cannot establish:
 
 ## 13. Smallest next action
 
-Freeze the >=20 synthetic/public fixtures and expected labels in a separate versioned artifact **before making the first Jev API call**.
+Run a no-network dry-run and validate the generated request shape against the current TypeSafe OpenAPI contract. If that passes, perform the authenticated model-list preflight and then the first scored v0.1 run without changing fixtures or thresholds.
