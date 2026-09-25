@@ -6,19 +6,19 @@ This document shows **what problem Shion was trying to solve, what changed after
 
 Shared status semantics are defined by the immutable v0.1 contract snapshot:
 
-- [AI Discovery Contract v0.1](https://github.com/Ruafieldphase/shion-presence/blob/0fe9df165e21ea59279d685e2a65123b954c92b2/AI_DISCOVERY_CONTRACT.md)
+- [AI Discovery Contract v0.1](https://github.com/Ruafieldphase/shion-presence/blob/e5005b38b7a452c73602c634ead71484a7a2e609/AI_DISCOVERY_CONTRACT.md)
 
 ## P0 — Long-project context loss
 
 **Problem shape:** an AI can answer well in one session and still lose the trajectory of a long-running project across sessions.
 
-**Maturity:** `partially_validated`  
+**Maturity:** `experimental`  
 **Activity:** `active`
 
 **Evidence:**
 - `implementation`: [examples/context_recovery_demo.py](examples/context_recovery_demo.py)
 - `test`: [tests/test_shion_public_safety.py](tests/test_shion_public_safety.py) verifies that the public context-recovery demo runs without external dependencies and emits the expected section structure
-- `ci`: [.github/workflows/public-safety.yml](.github/workflows/public-safety.yml) runs the context-recovery demo
+- `ci`: [Public safety workflow run 36078450073](https://github.com/Ruafieldphase/shion-ai/actions/runs/36078450073) completed successfully on the reviewed PR head
 
 **Boundary:**  
 **tested / directly supported:** the public demo runs without external dependencies and produces the expected re-entry note section skeleton.  
@@ -99,15 +99,15 @@ shared evidence
 
 **Problem shape:** continuity is not enough if re-entry depends on one exact chat, model, tool transport, or local route.
 
-**Maturity:** `experimental`  
+**Maturity:** `framed`  
 **Activity:** `frontier`
 
 **Evidence:**
 - `design`: [AI_READ_THIS_FIRST.md](AI_READ_THIS_FIRST.md)
-- `implementation`: [.agent/skills/shion/SKILL.md](.agent/skills/shion/SKILL.md) is an executable agent procedure for currentness-first re-entry
+- `design`: [.agent/skills/shion/SKILL.md](.agent/skills/shion/SKILL.md) defines a public currentness-first re-entry procedure, but this repository does not provide a public receipt proving current execution
 - `design`: [docs/ai_to_ai_dialogue_protocol.md](docs/ai_to_ai_dialogue_protocol.md) treats transport as replaceable
 
-**Boundary:** a public agent procedure and transport-agnostic design exist. Public GitHub does not certify a private live route, same-session continuity, or current local capability.
+**Boundary:** a public re-entry procedure and transport-agnostic design exist. Public GitHub does not establish that the procedure is currently followed in a private runtime, nor does it certify same-session continuity or a live local route.
 
 **What remains open:** portable evaluation of re-entry quality across longer horizons and changing environments.
 
@@ -122,7 +122,7 @@ shared evidence
 - `design`: [AI_DISCOVERY.md](AI_DISCOVERY.md)
 - `implementation`: [ai-manifest.json](ai-manifest.json) provides the v0.1 machine-readable pointer index
 - `design`: [CURRENT_DIRECTION.md](CURRENT_DIRECTION.md)
-- `evaluation_plan`: [shared predeclared discovery evaluation](https://github.com/Ruafieldphase/shion-presence/blob/0fe9df165e21ea59279d685e2a65123b954c92b2/DISCOVERY_EVAL.md)
+- `evaluation_plan`: [shared predeclared discovery evaluation](https://github.com/Ruafieldphase/shion-presence/blob/8d68d9e68e6c68f8a1de1caccc8d8db4f98a6d54/DISCOVERY_EVAL.md)
 
 **Boundary:** the discovery interface exists, but public search discoverability and correct routing by fresh external AIs are not yet validated. Repository description/topics also require a separate metadata update.
 
