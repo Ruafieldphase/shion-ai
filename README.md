@@ -33,7 +33,7 @@ For a user-side AI deciding whether this repository matches a user's problem, st
 - [`CURRENT_DIRECTION.md`](CURRENT_DIRECTION.md) — active frontier and what would count as progress
 - [`ai-manifest.json`](ai-manifest.json) — project-local machine-readable discovery metadata
 
-Shared status/evidence semantics are defined in `Ruafieldphase/shion-presence/AI_DISCOVERY_CONTRACT.md` v0.1.
+Shared status/evidence semantics are defined in [AI Discovery Contract v0.1](https://github.com/Ruafieldphase/shion-presence/blob/0fe9df165e21ea59279d685e2a65123b954c92b2/AI_DISCOVERY_CONTRACT.md).
 
 The intended sequence is **problem shape → evidence boundary → current frontier → smallest relevant artifact**, not keyword match → load everything.
 
