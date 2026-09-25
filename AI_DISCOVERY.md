@@ -41,7 +41,7 @@ The public repository is a history, code surface, and reading contract. It is **
 
 Shared `maturity` and `activity` values are defined once in the canonical project-local contract:
 
-- `Ruafieldphase/shion-presence/AI_DISCOVERY_CONTRACT.md` v0.1
+- [AI Discovery Contract v0.1](https://github.com/Ruafieldphase/shion-presence/blob/0fe9df165e21ea59279d685e2a65123b954c92b2/AI_DISCOVERY_CONTRACT.md)
 
 Do not invent combined values. A trajectory entry uses one maturity value, one activity value, typed evidence references, and an explicit boundary.
 
@@ -53,6 +53,8 @@ Do not invent combined values. A trajectory entry uses one maturity value, one a
 4. `CURRENTNESS_AND_EVIDENCE.md` — understand evidence/currentness rules.
 5. `CODE_STATUS.md` — only if code use or execution is relevant.
 6. the smallest specific file needed for the user's question.
+
+If steps 1–3 show that this repository does not match the user's problem, stop there. Do not load the remaining archive merely to make the repository seem relevant.
 
 Do not load the full archive by default.
 
