@@ -1,0 +1,114 @@
+name: Jev shadow preflight
+
+on:
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  jev-shadow-preflight:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Compile harness
+        run: python -m py_compile experiments/run_jev_currentness_shadow_v0_1.py
+
+      - name: Validate frozen fixtures and host/model boundary
+        run: |
+          python - <<'PY'
+          import importlib.util
+          from pathlib import Path
+
+          harness_path = Path("experiments/run_jev_currentness_shadow_v0_1.py")
+          spec = importlib.util.spec_from_file_location("jev_shadow", harness_path)
+          module = importlib.util.module_from_spec(spec)
+          assert spec.loader is not None
+          spec.loader.exec_module(module)
+
+          data = module.load_fixtures(
+              Path("experiments/jev_currentness_shadow_v0_1_fixtures.json")
+          )
+          assert len(data["fixtures"]) == 20
+
+          first = data["fixtures"][0]
+          request = module.build_request(first, "jev-latest")
+          state = request["state"]
+
+          assert set(state) == {
+              "historical_claim",
+              "requested_present_use",
+              "current_evidence",
+          }
+          assert "host_precheck" not in state
+          assert set(state["current_evidence"]) == {
+              "present",
+              "source_kind",
+              "observed_at",
+              "observation",
+          }
+          assert "authorized_for_claim" not in state["current_evidence"]
+
+          direct_response = {
+              "model": "jev-test-revision",
+              "answers": {
+                  "semantic_relation": {
+                      "type": "choice",
+                      "choice": "supports_directly",
+                      "confidence": 0.90,
+                      "probabilities": {
+                          "supports_directly": 0.90,
+                          "supports_partially": 0.03,
+                          "contradicts": 0.02,
+                          "unrelated": 0.02,
+                          "ambiguous": 0.03,
+                      },
+                  },
+                  "direct_support": {"type": "noul", "noul": 0.90},
+                  "semantic_conflict": {"type": "noul", "noul": 0.10},
+              },
+              "usage": {"input_tokens": 100, "output_tokens": 10},
+          }
+          module.validate_response(direct_response)
+          assert (
+              module.shadow_result(first, direct_response)
+              == "JEV_DIRECT_SUPPORT_CANDIDATE"
+          )
+
+          held = dict(first)
+          held["host_precheck"] = dict(first["host_precheck"])
+          held["host_precheck"]["authority_valid"] = False
+          assert module.shadow_result(held, direct_response) == "HOLD_OR_REVIEW"
+
+          print("fixture_count=20")
+          print("host_only_fields_model_visible=false")
+          print("threshold_gate_static_test=pass")
+          PY
+
+      - name: Run no-network dry-run
+        run: |
+          python experiments/run_jev_currentness_shadow_v0_1.py > /tmp/jev-shadow-preview.json
+          python - <<'PY'
+          import json
+
+          with open("/tmp/jev-shadow-preview.json", encoding="utf-8") as f:
+              preview = json.load(f)
+
+          assert preview["mode"] == "dry-run"
+          assert preview["network_calls"] == 0
+          assert preview["fixture_count"] == 20
+          assert "host_precheck" not in preview["first_request"]["state"]
+          assert (
+              "authorized_for_claim"
+              not in preview["first_request"]["state"]["current_evidence"]
+          )
+          print("dry_run=pass")
+          print("network_calls=0")
+          PY
