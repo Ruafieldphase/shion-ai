@@ -117,7 +117,7 @@ shared evidence
 - `implementation`: [AI_DISCOVERY.md](AI_DISCOVERY.md)
 - `implementation`: [ai-manifest.json](ai-manifest.json)
 - `design`: [CURRENT_DIRECTION.md](CURRENT_DIRECTION.md)
-- `prospective_test`: the shared predeclared evaluation is in [Ruafieldphase/shion-presence/DISCOVERY_EVAL.md](https://github.com/Ruafieldphase/shion-presence/blob/main/DISCOVERY_EVAL.md) after merge
+- `evaluation_plan`: the shared predeclared evaluation is in [Ruafieldphase/shion-presence/DISCOVERY_EVAL.md](https://github.com/Ruafieldphase/shion-presence/blob/main/DISCOVERY_EVAL.md) after merge
 
 **Boundary:** the discovery documents exist, but discoverability and correct selection by a fresh external AI are not yet validated. Repository description/topics also require a separate metadata update.
 
@@ -132,7 +132,7 @@ shared evidence
 
 **Evidence:**
 - `design`: [CURRENT_DIRECTION.md](CURRENT_DIRECTION.md)
-- `history`: public code and documents contain earlier embodiment/field experiments, but they are not promoted here as current private capability
+- `implementation`: [scripts/embodied_limb_field.py](scripts/embodied_limb_field.py) is a historical software embodiment experiment/ancestor, not evidence of a current physical sensing stack
 
 **Boundary:** this public repository describes the problem shape and reading contracts only. It does not expose private live-state details or certify a particular physical observation stack.
 
