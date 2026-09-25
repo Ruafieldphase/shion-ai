@@ -1,0 +1,112 @@
+name: Jev shadow scored run
+
+on:
+  workflow_dispatch:
+    inputs:
+      confirmation:
+        description: "Run the frozen Jev currentness shadow v0.1 fixture set"
+        required: true
+        type: choice
+        options:
+          - RUN_FROZEN_V0_1
+
+permissions:
+  contents: read
+
+jobs:
+  scored-run:
+    if: >-
+      github.ref_name == 'experiment/jev-currentness-shadow-v0-1' &&
+      inputs.confirmation == 'RUN_FROZEN_V0_1'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    env:
+      TYPESAFE_API_KEY: ${{ secrets.TYPESAFE_API_KEY }}
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Require execution credential
+        run: |
+          if [ -z "$TYPESAFE_API_KEY" ]; then
+            echo "::error::TYPESAFE_API_KEY repository secret is not configured."
+            exit 1
+          fi
+
+      - name: Re-run frozen no-network preflight
+        run: |
+          python -m py_compile experiments/run_jev_currentness_shadow_v0_1.py
+          python experiments/run_jev_currentness_shadow_v0_1.py > /tmp/jev-shadow-preview.json
+          python - <<'PY'
+          import json
+          with open("/tmp/jev-shadow-preview.json", encoding="utf-8") as f:
+              preview = json.load(f)
+          assert preview["mode"] == "dry-run"
+          assert preview["fixture_count"] == 20
+          assert preview["network_calls"] == 0
+          assert "host_precheck" not in preview["first_request"]["state"]
+          assert (
+              "authorized_for_claim"
+              not in preview["first_request"]["state"]["current_evidence"]
+          )
+          print("frozen_no_network_preflight=pass")
+          PY
+
+      - name: Run frozen scored set
+        run: |
+          mkdir -p jev-run
+          python experiments/run_jev_currentness_shadow_v0_1.py \
+            --live \
+            --output jev-run/receipts.jsonl \
+            | tee jev-run/summary.json
+
+      - name: Write run manifest
+        if: always()
+        run: |
+          mkdir -p jev-run
+          python - <<'PY'
+          import hashlib
+          import json
+          import os
+          from datetime import datetime, timezone
+          from pathlib import Path
+
+          def digest(path):
+              p = Path(path)
+              if not p.exists():
+                  return None
+              return hashlib.sha256(p.read_bytes()).hexdigest()
+
+          manifest = {
+              "experiment": "jev-currentness-shadow-v0.1",
+              "workflow": "Jev shadow scored run",
+              "git_sha": os.environ.get("GITHUB_SHA"),
+              "git_ref": os.environ.get("GITHUB_REF"),
+              "run_id": os.environ.get("GITHUB_RUN_ID"),
+              "observed_at": datetime.now(timezone.utc).isoformat(),
+              "protocol_sha256": digest("experiments/jev_currentness_shadow_v0_1.md"),
+              "fixtures_sha256": digest("experiments/jev_currentness_shadow_v0_1_fixtures.json"),
+              "harness_sha256": digest("experiments/run_jev_currentness_shadow_v0_1.py"),
+              "receipts_sha256": digest("jev-run/receipts.jsonl"),
+              "summary_sha256": digest("jev-run/summary.json"),
+              "note": "Artifact is evidence only; it does not authorize merge, execution, or canonical-state promotion.",
+          }
+          Path("jev-run/manifest.json").write_text(
+              json.dumps(manifest, indent=2) + "\n",
+              encoding="utf-8",
+          )
+          print(json.dumps(manifest, indent=2))
+          PY
+
+      - name: Upload scored-run evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: jev-currentness-shadow-v0-1-${{ github.run_id }}
+          path: jev-run/
+          if-no-files-found: warn
+          retention-days: 30
