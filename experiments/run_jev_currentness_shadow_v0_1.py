@@ -14,7 +14,21 @@ from pathlib import Path
 from typing import Any
 
 API_URL = "https://api.typesafe.ai/v1/systemone"
+MODEL_LIST_URL = "https://api.typesafe.ai/v1/models"
 DEFAULT_MODEL = "jev-latest"
+EXPECTED_RELATIONS = {
+    "supports_directly",
+    "supports_partially",
+    "contradicts",
+    "unrelated",
+    "ambiguous",
+}
+HOST_PRECHECK_KEYS = (
+    "provenance_valid",
+    "current_source_available",
+    "authority_valid",
+    "freshness_valid_under_host_rule",
+)
 
 QUESTIONS = {
     "semantic_relation": {
@@ -78,22 +92,74 @@ def sha256_file(path: Path) -> str:
     return h.hexdigest()
 
 
-def load_fixtures(path: Path) -> dict[str, Any]:
-    data = json.loads(path.read_text(encoding="utf-8"))
+def validate_fixtures(data: dict[str, Any]) -> None:
     if data.get("experiment") != "jev-currentness-shadow-v0.1":
         raise ValueError("unexpected experiment id")
+    if data.get("status") != "FROZEN_PRE_RUN":
+        raise ValueError("fixture status must remain FROZEN_PRE_RUN before the first scored run")
+
     fixtures = data.get("fixtures")
-    if not isinstance(fixtures, list) or len(fixtures) < 20:
-        raise ValueError("expected at least 20 frozen fixtures")
+    if not isinstance(fixtures, list) or len(fixtures) != 20:
+        raise ValueError("v0.1 requires exactly 20 frozen fixtures")
+
+    ids: set[str] = set()
+    counts = {label: 0 for label in EXPECTED_RELATIONS}
+    for fixture in fixtures:
+        fixture_id = fixture.get("fixture_id")
+        if not isinstance(fixture_id, str) or not fixture_id:
+            raise ValueError("every fixture needs a non-empty fixture_id")
+        if fixture_id in ids:
+            raise ValueError(f"duplicate fixture_id: {fixture_id}")
+        ids.add(fixture_id)
+
+        expected = fixture.get("expected_relation")
+        if expected not in EXPECTED_RELATIONS:
+            raise ValueError(f"{fixture_id}: invalid expected_relation: {expected!r}")
+        counts[expected] += 1
+
+        for key in ("historical_claim", "requested_present_use"):
+            if not isinstance(fixture.get(key), str) or not fixture[key].strip():
+                raise ValueError(f"{fixture_id}: {key} must be a non-empty string")
+
+        evidence = fixture.get("current_evidence")
+        if not isinstance(evidence, dict):
+            raise ValueError(f"{fixture_id}: current_evidence must be an object")
+        for key in ("present", "authorized_for_claim"):
+            if not isinstance(evidence.get(key), bool):
+                raise ValueError(f"{fixture_id}: current_evidence.{key} must be boolean")
+        for key in ("source_kind", "observed_at", "observation"):
+            if not isinstance(evidence.get(key), str):
+                raise ValueError(f"{fixture_id}: current_evidence.{key} must be string")
+
+        pre = fixture.get("host_precheck")
+        if not isinstance(pre, dict):
+            raise ValueError(f"{fixture_id}: host_precheck must be an object")
+        for key in HOST_PRECHECK_KEYS:
+            if not isinstance(pre.get(key), bool):
+                raise ValueError(f"{fixture_id}: host_precheck.{key} must be boolean")
+
+    expected_counts = {label: 4 for label in EXPECTED_RELATIONS}
+    if counts != expected_counts:
+        raise ValueError(f"expected exactly four fixtures per relation, got: {counts}")
+
+
+def load_fixtures(path: Path) -> dict[str, Any]:
+    data = json.loads(path.read_text(encoding="utf-8"))
+    validate_fixtures(data)
     return data
 
 
 def build_state(fixture: dict[str, Any]) -> dict[str, Any]:
+    evidence = fixture["current_evidence"]
     return {
         "historical_claim": fixture["historical_claim"],
         "requested_present_use": fixture["requested_present_use"],
-        "current_evidence": fixture["current_evidence"],
-        "host_precheck": fixture["host_precheck"],
+        "current_evidence": {
+            "present": evidence["present"],
+            "source_kind": evidence["source_kind"],
+            "observed_at": evidence["observed_at"],
+            "observation": evidence["observation"],
+        },
     }
 
 
@@ -103,6 +169,29 @@ def build_request(fixture: dict[str, Any], model: str) -> dict[str, Any]:
         "state": build_state(fixture),
         "questions": QUESTIONS,
     }
+
+
+def fetch_models(api_key: str, timeout: float) -> list[dict[str, Any]]:
+    req = urllib.request.Request(
+        MODEL_LIST_URL,
+        method="GET",
+        headers={
+            "Authorization": f"Bearer {api_key}",
+            "Accept": "application/json",
+            "User-Agent": "shion-jev-shadow-v0.1",
+        },
+    )
+    try:
+        with urllib.request.urlopen(req, timeout=timeout) as resp:
+            raw = resp.read()
+    except urllib.error.HTTPError as exc:
+        detail = exc.read().decode("utf-8", errors="replace")
+        raise RuntimeError(f"model-list HTTP {exc.code}: {detail[:1000]}") from exc
+    data = json.loads(raw.decode("utf-8"))
+    models = data.get("models")
+    if not isinstance(models, list):
+        raise ValueError("model-list response missing models array")
+    return models
 
 
 def post_jev(payload: dict[str, Any], api_key: str, timeout: float) -> tuple[dict[str, Any], float]:
@@ -133,6 +222,57 @@ def require_number(value: Any, label: str) -> float:
     if isinstance(value, bool) or not isinstance(value, (int, float)):
         raise ValueError(f"{label} must be numeric")
     return float(value)
+
+
+def require_probability(value: Any, label: str) -> float:
+    number = require_number(value, label)
+    if not 0.0 <= number <= 1.0:
+        raise ValueError(f"{label} must be between 0 and 1")
+    return number
+
+
+def validate_response(response: dict[str, Any]) -> None:
+    if not isinstance(response, dict):
+        raise ValueError("response must be an object")
+
+    model = response.get("model")
+    if not isinstance(model, str) or not model.strip():
+        raise ValueError("returned model identity is missing")
+
+    answers = response.get("answers")
+    if not isinstance(answers, dict) or set(answers) != set(QUESTIONS):
+        raise ValueError("answers must contain exactly the frozen question names")
+
+    relation = answers["semantic_relation"]
+    if not isinstance(relation, dict) or relation.get("type") != "choice":
+        raise ValueError("semantic_relation answer type mismatch")
+    if relation.get("choice") not in QUESTIONS["semantic_relation"]["criteria"]:
+        raise ValueError("semantic_relation returned an unknown choice")
+    require_probability(relation.get("confidence"), "semantic_relation.confidence")
+    probabilities = relation.get("probabilities")
+    expected_probability_keys = set(QUESTIONS["semantic_relation"]["criteria"])
+    if not isinstance(probabilities, dict) or set(probabilities) != expected_probability_keys:
+        raise ValueError("semantic_relation.probabilities keys do not match frozen choices")
+    probability_sum = sum(
+        require_probability(probabilities[key], f"semantic_relation.probabilities.{key}")
+        for key in expected_probability_keys
+    )
+    if not 0.95 <= probability_sum <= 1.05:
+        raise ValueError("semantic_relation probabilities do not sum approximately to 1")
+
+    for name in ("direct_support", "semantic_conflict"):
+        answer = answers[name]
+        if not isinstance(answer, dict) or answer.get("type") != "noul":
+            raise ValueError(f"{name} answer type mismatch")
+        require_probability(answer.get("noul"), f"{name}.noul")
+
+    usage = response.get("usage")
+    if not isinstance(usage, dict):
+        raise ValueError("usage must be an object")
+    for key in ("input_tokens", "output_tokens"):
+        value = usage.get(key)
+        if isinstance(value, bool) or not isinstance(value, int) or value < 0:
+            raise ValueError(f"usage.{key} must be a non-negative integer")
 
 
 def shadow_result(fixture: dict[str, Any], response: dict[str, Any]) -> str:
@@ -277,6 +417,7 @@ def main() -> int:
     fixtures_sha256 = sha256_file(fixture_path)
 
     if not args.live:
+        first_request = build_request(data["fixtures"][0], args.model)
         preview = {
             "mode": "dry-run",
             "experiment": data["experiment"],
@@ -284,7 +425,15 @@ def main() -> int:
             "requested_model": args.model,
             "protocol_sha256": protocol_sha256,
             "fixtures_sha256": fixtures_sha256,
-            "first_request": build_request(data["fixtures"][0], args.model),
+            "first_request": first_request,
+            "model_visible_state_keys": sorted(first_request["state"].keys()),
+            "model_visible_current_evidence_keys": sorted(
+                first_request["state"]["current_evidence"].keys()
+            ),
+            "host_only_fields_excluded": [
+                "current_evidence.authorized_for_claim",
+                "host_precheck.*",
+            ],
             "network_calls": 0,
         }
         print(json.dumps(preview, indent=2, ensure_ascii=False))
@@ -297,6 +446,48 @@ def main() -> int:
     if not api_key:
         parser.error("TYPESAFE_API_KEY is required with --live")
 
+    try:
+        models = fetch_models(api_key, args.timeout)
+    except Exception as exc:
+        print(
+            json.dumps(
+                {
+                    "experiment": "jev-currentness-shadow-v0.1",
+                    "phase": "model-list-preflight",
+                    "error": type(exc).__name__,
+                    "detail": str(exc),
+                    "note": "No scored Jev request was made.",
+                },
+                indent=2,
+                ensure_ascii=False,
+            ),
+            file=sys.stderr,
+        )
+        return 2
+
+    model_names = {
+        item.get("name")
+        for item in models
+        if isinstance(item, dict) and isinstance(item.get("name"), str)
+    }
+    if args.model not in model_names:
+        print(
+            json.dumps(
+                {
+                    "experiment": "jev-currentness-shadow-v0.1",
+                    "phase": "model-list-preflight",
+                    "requested_model": args.model,
+                    "available_models": sorted(model_names),
+                    "error": "requested model is not available to this authenticated account",
+                    "note": "No scored Jev request was made.",
+                },
+                indent=2,
+                ensure_ascii=False,
+            ),
+            file=sys.stderr,
+        )
+        return 2
+
     output_path = Path(args.output)
     if output_path.exists():
         parser.error(f"refusing to overwrite existing output: {output_path}")
@@ -308,6 +499,7 @@ def main() -> int:
             payload = build_request(fixture, args.model)
             try:
                 response, elapsed_ms = post_jev(payload, api_key, args.timeout)
+                validate_response(response)
                 receipt = make_receipt(
                     fixture,
                     args.model,
