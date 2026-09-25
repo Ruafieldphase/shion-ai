@@ -13,12 +13,14 @@ Before interpreting the system, read:
 1. `AI_DISCOVERY.md` — first decide whether the repository matches the user's problem
 2. `PROBLEM_TRAJECTORY.md` — inspect the problem shape and what remains open
 3. `CURRENT_DIRECTION.md` — inspect the active frontier
-4. `Ruafieldphase/shion-presence/AI_DISCOVERY_CONTRACT.md` v0.1 — shared maturity/activity/evidence semantics
+4. [AI Discovery Contract v0.1](https://github.com/Ruafieldphase/shion-presence/blob/0fe9df165e21ea59279d685e2a65123b954c92b2/AI_DISCOVERY_CONTRACT.md) — shared maturity/activity/evidence semantics
 5. `README.md`
 6. `CURRENTNESS_AND_EVIDENCE.md`
 7. `REPOSITORY_CURRENTNESS_AUDIT.md`
 8. `CODE_STATUS.md`
 9. `MAP.md` if you need the public architecture map
+
+If steps 1–3 show that this repository does not match the user's problem, stop there. Do not continue through steps 4–9 merely to make the repository seem relevant.
 
 Only after that should you use `AXIOMATIC_GROUNDING.md`, dated reports, live archives, or older runtime documents as historical/conceptual context.
 
