@@ -57,7 +57,9 @@ jobs:
           PY
 
       - name: Run frozen scored set
+        shell: bash
         run: |
+          set -euo pipefail
           mkdir -p jev-run
           python experiments/run_jev_currentness_shadow_v0_1.py \
             --live \
