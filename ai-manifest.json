@@ -12,7 +12,9 @@
     "problem_trajectory": "PROBLEM_TRAJECTORY.md",
     "current_direction": "CURRENT_DIRECTION.md",
     "currentness_and_evidence": "CURRENTNESS_AND_EVIDENCE.md",
-    "code_status": "CODE_STATUS.md"
+    "code_status": "CODE_STATUS.md",
+    "evaluation": "Ruafieldphase/shion-presence/DISCOVERY_EVAL.md",
+    "repository_metadata_plan": "Ruafieldphase/shion-presence/REPOSITORY_DISCOVERY_METADATA.md"
   },
   "relevance_signals": [
     "context continuity across sessions",
@@ -23,15 +25,6 @@
     "AI-mediated repository discovery and problem-fit judgment",
     "long-horizon continuity"
   ],
-  "status_vocabulary": [
-    "observed",
-    "framed",
-    "experimental",
-    "partially_validated",
-    "validated_within_boundary",
-    "expanded",
-    "superseded"
-  ],
   "non_claims": [
     "not a live mirror of private runtime state",
     "not a proven AGI architecture",
@@ -41,5 +34,11 @@
   "related_repositories": [
     "Ruafieldphase/trinity-agi",
     "Ruafieldphase/shion-presence"
-  ]
+  ],
+  "status_contract": {
+    "schema": "shion.ai-discovery/0.1",
+    "repository": "Ruafieldphase/shion-presence",
+    "path": "AI_DISCOVERY_CONTRACT.md",
+    "version": "0.1"
+  }
 }
