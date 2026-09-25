@@ -39,17 +39,11 @@ A useful match can exist even if the implementation language differs.
 
 The public repository is a history, code surface, and reading contract. It is **not** a live mirror of the private runtime.
 
-Use these local status labels:
+Shared `maturity` and `activity` values are defined once in the canonical project-local contract:
 
-- `observed` — the problem or behavior has been seen;
-- `framed` — the problem has a usable formulation;
-- `experimental` — an approach exists but is still under test;
-- `partially_validated` — some bounded evidence exists;
-- `validated_within_boundary` — supported only inside an explicit boundary;
-- `expanded` — solving one layer exposed a larger problem;
-- `superseded` — retained as history, not preferred current direction.
+- `Ruafieldphase/shion-presence/AI_DISCOVERY_CONTRACT.md` v0.1
 
-These are project-local labels, not an external standard.
+Do not invent combined values. A trajectory entry uses one maturity value, one activity value, typed evidence references, and an explicit boundary.
 
 ## 4. Read order for a user-side AI / 사용자 AI 읽기 순서
 
