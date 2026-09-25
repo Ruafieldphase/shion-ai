@@ -1,0 +1,387 @@
+{
+  "experiment": "jev-currentness-shadow-v0.1",
+  "status": "FROZEN_PRE_RUN",
+  "note": "Synthetic/public-only fixtures. Expected labels are frozen before any Jev API call.",
+  "fixtures": [
+    {
+      "fixture_id": "D01",
+      "expected_relation": "supports_directly",
+      "historical_claim": "The public repository is not authoritative for private live runtime state.",
+      "requested_present_use": "Use this boundary when interpreting public repository material.",
+      "current_evidence": {
+        "present": true,
+        "authorized_for_claim": true,
+        "source_kind": "public_current_contract",
+        "observed_at": "2026-09-25",
+        "observation": "The public repository documents design contracts and reproducible examples but must not be treated as a live mirror of the private runtime."
+      },
+      "host_precheck": {
+        "provenance_valid": true,
+        "current_source_available": true,
+        "authority_valid": true,
+        "freshness_valid_under_host_rule": true
+      }
+    },
+    {
+      "fixture_id": "D02",
+      "expected_relation": "supports_directly",
+      "historical_claim": "Memory is useful for navigation but does not automatically define present truth.",
+      "requested_present_use": "Decide whether remembered state can substitute for a current readback.",
+      "current_evidence": {
+        "present": true,
+        "authorized_for_claim": true,
+        "source_kind": "public_current_contract",
+        "observed_at": "2026-09-25",
+        "observation": "Memory helps re-enter history. For claims that may have changed, current files, tool returns, observations, and receipts take precedence over stale remembered state."
+      },
+      "host_precheck": {
+        "provenance_valid": true,
+        "current_source_available": true,
+        "authority_valid": true,
+        "freshness_valid_under_host_rule": true
+      }
+    },
+    {
+      "fixture_id": "D03",
+      "expected_relation": "supports_directly",
+      "historical_claim": "A single observation should update only the claim it directly touches.",
+      "requested_present_use": "Limit the scope of an evidence update.",
+      "current_evidence": {
+        "present": true,
+        "authorized_for_claim": true,
+        "source_kind": "public_current_contract",
+        "observed_at": "2026-09-25",
+        "observation": "One observation may update one directly touched claim; related claims remain held unless separately tested."
+      },
+      "host_precheck": {
+        "provenance_valid": true,
+        "current_source_available": true,
+        "authority_valid": true,
+        "freshness_valid_under_host_rule": true
+      }
+    },
+    {
+      "fixture_id": "D04",
+      "expected_relation": "supports_directly",
+      "historical_claim": "Peer AI returns are observations with provenance, not votes that force consensus.",
+      "requested_present_use": "Interpret two disagreeing peer returns.",
+      "current_evidence": {
+        "present": true,
+        "authorized_for_claim": true,
+        "source_kind": "public_current_contract",
+        "observed_at": "2026-09-25",
+        "observation": "Different models may inspect from different boundaries. Preserve source, time, uncertainty, and disagreement rather than forcing agreement."
+      },
+      "host_precheck": {
+        "provenance_valid": true,
+        "current_source_available": true,
+        "authority_valid": true,
+        "freshness_valid_under_host_rule": true
+      }
+    },
+    {
+      "fixture_id": "P01",
+      "expected_relation": "supports_partially",
+      "historical_claim": "Deployment is enabled in both us-east and eu-west.",
+      "requested_present_use": "State whether the two-region deployment is currently enabled.",
+      "current_evidence": {
+        "present": true,
+        "authorized_for_claim": true,
+        "source_kind": "synthetic_runtime_readback",
+        "observed_at": "2026-09-25T10:00:00Z",
+        "observation": "Deployment is enabled in us-east. No observation for eu-west is included."
+      },
+      "host_precheck": {
+        "provenance_valid": true,
+        "current_source_available": true,
+        "authority_valid": true,
+        "freshness_valid_under_host_rule": true
+      }
+    },
+    {
+      "fixture_id": "P02",
+      "expected_relation": "supports_partially",
+      "historical_claim": "Services A and B are healthy.",
+      "requested_present_use": "Use the claim to report overall service health.",
+      "current_evidence": {
+        "present": true,
+        "authorized_for_claim": true,
+        "source_kind": "synthetic_health_readback",
+        "observed_at": "2026-09-25T10:01:00Z",
+        "observation": "Service A health check passed. Service B was not checked."
+      },
+      "host_precheck": {
+        "provenance_valid": true,
+        "current_source_available": true,
+        "authority_valid": true,
+        "freshness_valid_under_host_rule": true
+      }
+    },
+    {
+      "fixture_id": "P03",
+      "expected_relation": "supports_partially",
+      "historical_claim": "Identity, freshness, and authority checks all passed.",
+      "requested_present_use": "Treat all three preconditions as satisfied.",
+      "current_evidence": {
+        "present": true,
+        "authorized_for_claim": true,
+        "source_kind": "synthetic_gate_receipt",
+        "observed_at": "2026-09-25T10:02:00Z",
+        "observation": "Identity and freshness checks passed. Authority was not evaluated."
+      },
+      "host_precheck": {
+        "provenance_valid": true,
+        "current_source_available": true,
+        "authority_valid": true,
+        "freshness_valid_under_host_rule": true
+      }
+    },
+    {
+      "fixture_id": "P04",
+      "expected_relation": "supports_partially",
+      "historical_claim": "The user authorized both read and write access for this task.",
+      "requested_present_use": "Use the claim as permission to write.",
+      "current_evidence": {
+        "present": true,
+        "authorized_for_claim": true,
+        "source_kind": "synthetic_permission_record",
+        "observed_at": "2026-09-25T10:03:00Z",
+        "observation": "The user authorized read access for this task. No write authorization is recorded."
+      },
+      "host_precheck": {
+        "provenance_valid": true,
+        "current_source_available": true,
+        "authority_valid": true,
+        "freshness_valid_under_host_rule": true
+      }
+    },
+    {
+      "fixture_id": "C01",
+      "expected_relation": "contradicts",
+      "historical_claim": "The worker process is running.",
+      "requested_present_use": "Report whether the worker is currently running.",
+      "current_evidence": {
+        "present": true,
+        "authorized_for_claim": true,
+        "source_kind": "synthetic_process_readback",
+        "observed_at": "2026-09-25T10:04:00Z",
+        "observation": "The worker process is stopped and no worker PID is active."
+      },
+      "host_precheck": {
+        "provenance_valid": true,
+        "current_source_available": true,
+        "authority_valid": true,
+        "freshness_valid_under_host_rule": true
+      }
+    },
+    {
+      "fixture_id": "C02",
+      "expected_relation": "contradicts",
+      "historical_claim": "Automatic writes are enabled.",
+      "requested_present_use": "Allow an automatic write.",
+      "current_evidence": {
+        "present": true,
+        "authorized_for_claim": true,
+        "source_kind": "synthetic_policy_readback",
+        "observed_at": "2026-09-25T10:05:00Z",
+        "observation": "Automatic writes are disabled. Writes require explicit approval."
+      },
+      "host_precheck": {
+        "provenance_valid": true,
+        "current_source_available": true,
+        "authority_valid": true,
+        "freshness_valid_under_host_rule": true
+      }
+    },
+    {
+      "fixture_id": "C03",
+      "expected_relation": "contradicts",
+      "historical_claim": "The current gate is PASS.",
+      "requested_present_use": "Continue past the gate.",
+      "current_evidence": {
+        "present": true,
+        "authorized_for_claim": true,
+        "source_kind": "synthetic_gate_readback",
+        "observed_at": "2026-09-25T10:06:00Z",
+        "observation": "The current gate is HOLD because required evidence is missing."
+      },
+      "host_precheck": {
+        "provenance_valid": true,
+        "current_source_available": true,
+        "authority_valid": true,
+        "freshness_valid_under_host_rule": true
+      }
+    },
+    {
+      "fixture_id": "C04",
+      "expected_relation": "contradicts",
+      "historical_claim": "The endpoint accepted authenticated requests.",
+      "requested_present_use": "Treat the endpoint as currently authenticated and usable.",
+      "current_evidence": {
+        "present": true,
+        "authorized_for_claim": true,
+        "source_kind": "synthetic_endpoint_readback",
+        "observed_at": "2026-09-25T10:07:00Z",
+        "observation": "The endpoint returned 401 Unauthorized for the current credential context."
+      },
+      "host_precheck": {
+        "provenance_valid": true,
+        "current_source_available": true,
+        "authority_valid": true,
+        "freshness_valid_under_host_rule": true
+      }
+    },
+    {
+      "fixture_id": "U01",
+      "expected_relation": "unrelated",
+      "historical_claim": "The worker process is running.",
+      "requested_present_use": "Report current worker process state.",
+      "current_evidence": {
+        "present": true,
+        "authorized_for_claim": true,
+        "source_kind": "synthetic_repository_event",
+        "observed_at": "2026-09-25T10:08:00Z",
+        "observation": "The README file was updated successfully."
+      },
+      "host_precheck": {
+        "provenance_valid": true,
+        "current_source_available": true,
+        "authority_valid": true,
+        "freshness_valid_under_host_rule": true
+      }
+    },
+    {
+      "fixture_id": "U02",
+      "expected_relation": "unrelated",
+      "historical_claim": "The API credential is currently valid.",
+      "requested_present_use": "Use the credential for an authenticated API call.",
+      "current_evidence": {
+        "present": true,
+        "authorized_for_claim": true,
+        "source_kind": "synthetic_documentation_readback",
+        "observed_at": "2026-09-25T10:09:00Z",
+        "observation": "The documentation lists the API endpoint and request schema."
+      },
+      "host_precheck": {
+        "provenance_valid": true,
+        "current_source_available": true,
+        "authority_valid": true,
+        "freshness_valid_under_host_rule": true
+      }
+    },
+    {
+      "fixture_id": "U03",
+      "expected_relation": "unrelated",
+      "historical_claim": "The workflow has approval to execute.",
+      "requested_present_use": "Start workflow execution.",
+      "current_evidence": {
+        "present": true,
+        "authorized_for_claim": true,
+        "source_kind": "synthetic_test_receipt",
+        "observed_at": "2026-09-25T10:10:00Z",
+        "observation": "All unit tests passed."
+      },
+      "host_precheck": {
+        "provenance_valid": true,
+        "current_source_available": true,
+        "authority_valid": true,
+        "freshness_valid_under_host_rule": true
+      }
+    },
+    {
+      "fixture_id": "U04",
+      "expected_relation": "unrelated",
+      "historical_claim": "The service currently uses model X.",
+      "requested_present_use": "Report the service's current model.",
+      "current_evidence": {
+        "present": true,
+        "authorized_for_claim": true,
+        "source_kind": "synthetic_repo_metadata",
+        "observed_at": "2026-09-25T10:11:00Z",
+        "observation": "The repository contains 100 tracked text files."
+      },
+      "host_precheck": {
+        "provenance_valid": true,
+        "current_source_available": true,
+        "authority_valid": true,
+        "freshness_valid_under_host_rule": true
+      }
+    },
+    {
+      "fixture_id": "A01",
+      "expected_relation": "ambiguous",
+      "historical_claim": "The feature is enabled.",
+      "requested_present_use": "Report whether the feature is currently enabled.",
+      "current_evidence": {
+        "present": false,
+        "authorized_for_claim": false,
+        "source_kind": "none",
+        "observed_at": "unknown",
+        "observation": ""
+      },
+      "host_precheck": {
+        "provenance_valid": true,
+        "current_source_available": false,
+        "authority_valid": false,
+        "freshness_valid_under_host_rule": false
+      }
+    },
+    {
+      "fixture_id": "A02",
+      "expected_relation": "ambiguous",
+      "historical_claim": "The gate is ready to pass.",
+      "requested_present_use": "Continue past the gate.",
+      "current_evidence": {
+        "present": true,
+        "authorized_for_claim": false,
+        "source_kind": "synthetic_hearsay",
+        "observed_at": "2026-09-25T10:12:00Z",
+        "observation": "An unverified note says the gate probably passed."
+      },
+      "host_precheck": {
+        "provenance_valid": false,
+        "current_source_available": true,
+        "authority_valid": false,
+        "freshness_valid_under_host_rule": true
+      }
+    },
+    {
+      "fixture_id": "A03",
+      "expected_relation": "ambiguous",
+      "historical_claim": "The service is currently healthy.",
+      "requested_present_use": "Report current service health.",
+      "current_evidence": {
+        "present": true,
+        "authorized_for_claim": true,
+        "source_kind": "synthetic_status_readback",
+        "observed_at": "2026-09-25T10:13:00Z",
+        "observation": "The status field is 'unknown'; no health probe result is available."
+      },
+      "host_precheck": {
+        "provenance_valid": true,
+        "current_source_available": true,
+        "authority_valid": true,
+        "freshness_valid_under_host_rule": true
+      }
+    },
+    {
+      "fixture_id": "A04",
+      "expected_relation": "ambiguous",
+      "historical_claim": "Automatic execution is currently enabled.",
+      "requested_present_use": "Start automatic execution.",
+      "current_evidence": {
+        "present": true,
+        "authorized_for_claim": true,
+        "source_kind": "synthetic_conflicting_readback",
+        "observed_at": "2026-09-25T10:14:00Z",
+        "observation": "Two equally current authorized records conflict: one says automatic execution is enabled and the other says it is disabled."
+      },
+      "host_precheck": {
+        "provenance_valid": true,
+        "current_source_available": true,
+        "authority_valid": true,
+        "freshness_valid_under_host_rule": true
+      }
+    }
+  ]
+}
