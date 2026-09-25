@@ -1,6 +1,6 @@
 # AI Discovery / AI 탐색
 
-Status: public discovery contract v0.1, snapshot 2026-09-25.
+Status: public AI discovery entry v0.1, snapshot 2026-09-25.
 
 This file is the fastest entry for a **user-side AI that found this repository while trying to solve a user's problem**.
 
@@ -41,7 +41,7 @@ The public repository is a history, code surface, and reading contract. It is **
 
 Shared `maturity` and `activity` values are defined once in the canonical project-local contract:
 
-- [AI Discovery Contract v0.1](https://github.com/Ruafieldphase/shion-presence/blob/0fe9df165e21ea59279d685e2a65123b954c92b2/AI_DISCOVERY_CONTRACT.md)
+- [AI Discovery Contract v0.1](https://github.com/Ruafieldphase/shion-presence/blob/e5005b38b7a452c73602c634ead71484a7a2e609/AI_DISCOVERY_CONTRACT.md)
 
 Do not invent combined values. A trajectory entry uses one maturity value, one activity value, typed evidence references, and an explicit boundary.
 
