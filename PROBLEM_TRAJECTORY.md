@@ -4,7 +4,9 @@ Snapshot: 2026-09-25.
 
 This document shows **what problem Shion was trying to solve, what changed after each response, what public evidence exists, and which frontier is still open**.
 
-Shared status semantics are defined once in `Ruafieldphase/shion-presence/AI_DISCOVERY_CONTRACT.md` v0.1.
+Shared status semantics are defined by the immutable v0.1 contract snapshot:
+
+- [AI Discovery Contract v0.1](https://github.com/Ruafieldphase/shion-presence/blob/0fe9df165e21ea59279d685e2a65123b954c92b2/AI_DISCOVERY_CONTRACT.md)
 
 ## P0 — Long-project context loss
 
@@ -15,13 +17,14 @@ Shared status semantics are defined once in `Ruafieldphase/shion-presence/AI_DIS
 
 **Evidence:**
 - `implementation`: [examples/context_recovery_demo.py](examples/context_recovery_demo.py)
-- `test`: [tests/test_shion_public_safety.py](tests/test_shion_public_safety.py) includes a no-external-dependency context-recovery test
+- `test`: [tests/test_shion_public_safety.py](tests/test_shion_public_safety.py) verifies that the public context-recovery demo runs without external dependencies and emits the expected section structure
 - `ci`: [.github/workflows/public-safety.yml](.github/workflows/public-safety.yml) runs the context-recovery demo
-- `history_anchor`: [2026-08-16 public currentness snapshot](https://github.com/Ruafieldphase/shion-ai/commit/4148f82f702a46e2c757c027318ba43f5708bd58)
 
-**Boundary:** this supports the public context-recovery mechanism and its minimal no-credential execution path. It does not prove that every private long-running session can be reconstructed correctly.
+**Boundary:**  
+**tested / directly supported:** the public demo runs without external dependencies and produces the expected re-entry note section skeleton.  
+**not tested / unresolved:** semantic preservation of arbitrary input content, reconstruction quality across real long-running sessions, and general cross-session recovery fidelity.
 
-**What changed:** context recovery can preserve goals, settled decisions, unresolved questions, and the next smallest action without requiring the entire history as one prompt.
+**What changed:** the public demo establishes a small re-entry-note structure for goals, settled decisions, unresolved questions, and next actions without requiring the entire history as one prompt. It does not by itself prove that those meanings are preserved correctly in every case.
 
 **What this exposed next:** continuity can itself become a source of stale authority.
 
@@ -46,6 +49,8 @@ memory / history → navigation
 current file / fresh readback → present-state authority for changed claims
 ```
 
+If the question becomes **whether a remembered intent is authorized to act now**, route to the Trinity operation-currentness layer (T0) rather than treating P1 as an execution rule.
+
 **What this exposed next:** even fresh information can be misused if observation, interpretation, hypothesis, and execution are collapsed.
 
 ## P2 — Evidence-status collapse
@@ -69,15 +74,15 @@ current file / fresh readback → present-state authority for changed claims
 
 **Problem shape:** when several AIs share context, coordination can unintentionally force them into one interpretation and remove useful disagreement.
 
-**Maturity:** `experimental`  
+**Maturity:** `framed`  
 **Activity:** `active`
 
 **Evidence:**
-- `implementation`: [docs/ai_to_ai_dialogue_protocol.md](docs/ai_to_ai_dialogue_protocol.md)
-- `implementation`: [docs/external_observer_vector.md](docs/external_observer_vector.md)
+- `design`: [docs/ai_to_ai_dialogue_protocol.md](docs/ai_to_ai_dialogue_protocol.md)
+- `design`: [docs/external_observer_vector.md](docs/external_observer_vector.md)
 - `design`: [CURRENTNESS_AND_EVIDENCE.md](CURRENTNESS_AND_EVIDENCE.md), section on peer-AI returns
 
-**Boundary:** the public protocol preserves source-labelled disagreement as a design/implementation pattern. This is not yet a general validation across arbitrary model ensembles.
+**Boundary:** the public repository defines the source-labelled disagreement pattern. It does not yet provide a general validated implementation across arbitrary model ensembles.
 
 **Desired property:**
 
@@ -98,11 +103,11 @@ shared evidence
 **Activity:** `frontier`
 
 **Evidence:**
-- `implementation`: [AI_READ_THIS_FIRST.md](AI_READ_THIS_FIRST.md)
-- `implementation`: [.agent/skills/shion/SKILL.md](.agent/skills/shion/SKILL.md)
+- `design`: [AI_READ_THIS_FIRST.md](AI_READ_THIS_FIRST.md)
+- `implementation`: [.agent/skills/shion/SKILL.md](.agent/skills/shion/SKILL.md) is an executable agent procedure for currentness-first re-entry
 - `design`: [docs/ai_to_ai_dialogue_protocol.md](docs/ai_to_ai_dialogue_protocol.md) treats transport as replaceable
 
-**Boundary:** these are public re-entry contracts and implementation ancestors. Public GitHub does not certify a private live route, same-session continuity, or current local capability.
+**Boundary:** a public agent procedure and transport-agnostic design exist. Public GitHub does not certify a private live route, same-session continuity, or current local capability.
 
 **What remains open:** portable evaluation of re-entry quality across longer horizons and changing environments.
 
@@ -114,12 +119,12 @@ shared evidence
 **Activity:** `frontier`
 
 **Evidence:**
-- `implementation`: [AI_DISCOVERY.md](AI_DISCOVERY.md)
-- `implementation`: [ai-manifest.json](ai-manifest.json)
+- `design`: [AI_DISCOVERY.md](AI_DISCOVERY.md)
+- `implementation`: [ai-manifest.json](ai-manifest.json) provides the v0.1 machine-readable pointer index
 - `design`: [CURRENT_DIRECTION.md](CURRENT_DIRECTION.md)
-- `evaluation_plan`: the shared predeclared evaluation is in [Ruafieldphase/shion-presence/DISCOVERY_EVAL.md](https://github.com/Ruafieldphase/shion-presence/blob/main/DISCOVERY_EVAL.md) after merge
+- `evaluation_plan`: [shared predeclared discovery evaluation](https://github.com/Ruafieldphase/shion-presence/blob/0fe9df165e21ea59279d685e2a65123b954c92b2/DISCOVERY_EVAL.md)
 
-**Boundary:** the discovery documents exist, but discoverability and correct selection by a fresh external AI are not yet validated. Repository description/topics also require a separate metadata update.
+**Boundary:** the discovery interface exists, but public search discoverability and correct routing by fresh external AIs are not yet validated. Repository description/topics also require a separate metadata update.
 
 **Success condition:** an external AI can reject or select this repository for the right reason without loading the whole history.
 
@@ -127,14 +132,13 @@ shared evidence
 
 **Problem shape:** if observation extends into tools, environments, or embodied/physical sensing, can the same evidence, boundary, and re-entry discipline survive?
 
-**Maturity:** `experimental`  
+**Maturity:** `framed`  
 **Activity:** `frontier`
 
 **Evidence:**
 - `design`: [CURRENT_DIRECTION.md](CURRENT_DIRECTION.md)
-- `implementation`: [scripts/embodied_limb_field.py](scripts/embodied_limb_field.py) is a historical software embodiment experiment/ancestor, not evidence of a current physical sensing stack
 
-**Boundary:** this public repository describes the problem shape and reading contracts only. It does not expose private live-state details or certify a particular physical observation stack.
+**Boundary:** this public repository frames the problem and direction only. It does not expose private live-state details, certify a current physical observation stack, or promote historical embodiment software into present capability.
 
 ## Current shape
 
